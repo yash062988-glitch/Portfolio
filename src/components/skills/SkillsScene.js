@@ -104,47 +104,38 @@ export default function SkillsScene() {
           </p>
         </div>
 
-        {/* Responsive grid split layout */}
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        {/* Centered layout for Astronaut Composition Centerpiece */}
+        <div className="w-full flex items-center justify-center relative">
+          <motion.div
+            style={{
+              rotateX,
+              rotateY,
+              transformStyle: "preserve-3d",
+            }}
+            className="relative w-full h-[500px] sm:h-[600px] md:h-[680px] lg:h-[730px] flex items-center justify-center"
+          >
+            {/* Volumetric Spotlights & Radial Lighting */}
+            <div
+              className="absolute top-[35%] left-[50%] -translate-x-[50%] -translate-y-[50%] w-[95%] h-[95%] bg-[radial-gradient(circle,rgba(233,177,93,0.06)_0%,transparent_65%)] pointer-events-none z-5"
+              style={{ transform: "translateZ(-80px)" }}
+            />
+            <div
+              className="absolute top-[30%] left-[50%] -translate-x-[50%] -translate-y-[50%] w-[65%] h-[65%] bg-[radial-gradient(circle,rgba(255,221,168,0.03)_0%,transparent_70%)] blur-[90px] pointer-events-none z-5"
+              style={{ transform: "translateZ(-60px)" }}
+            />
 
-          {/* LEFT: Technology Shrine Centerpiece (~58% space) */}
-          <div className="lg:col-span-7 w-full flex items-center justify-center relative">
-            <motion.div
-              style={{
-                rotateX,
-                rotateY,
-                transformStyle: "preserve-3d",
-              }}
-              className="relative w-full h-[500px] sm:h-[600px] md:h-[680px] lg:h-[730px] flex items-center justify-center"
-            >
-              {/* Volumetric Spotlights & Radial Lighting */}
-              <div
-                className="absolute top-[35%] left-[50%] -translate-x-[50%] -translate-y-[50%] w-[95%] h-[95%] bg-[radial-gradient(circle,rgba(233,177,93,0.06)_0%,transparent_65%)] pointer-events-none z-5"
-                style={{ transform: "translateZ(-80px)" }}
-              />
-              <div
-                className="absolute top-[30%] left-[50%] -translate-x-[50%] -translate-y-[50%] w-[65%] h-[65%] bg-[radial-gradient(circle,rgba(255,221,168,0.03)_0%,transparent_70%)] blur-[90px] pointer-events-none z-5"
-                style={{ transform: "translateZ(-60px)" }}
-              />
+            {/* Holographic Aura Rings */}
+            <AuraRings parallaxX={ringsX} parallaxY={ringsY} translateZ={-30} />
 
-              {/* Holographic Aura Rings */}
-              <AuraRings parallaxX={ringsX} parallaxY={ringsY} translateZ={-30} />
+            {/* Platform Emissive Glow & Occlusion Shadow */}
+            <PlatformGlow parallaxX={glowX} parallaxY={glowY} translateZ={-15} />
 
-              {/* Platform Emissive Glow & Occlusion Shadow */}
-              <PlatformGlow parallaxX={glowX} parallaxY={glowY} translateZ={-15} />
+            {/* Floating Astronaut Model (Levitating above platform shadow) */}
+            <FloatingModel parallaxX={modelX} parallaxY={modelY} translateZ={20} />
 
-              {/* Floating Astronaut Model (Levitating above platform shadow) */}
-              <FloatingModel parallaxX={modelX} parallaxY={modelY} translateZ={20} />
-
-              {/* 3D Technology Orbit System with guide lines */}
-              <OrbitSystem parallaxX={orbitsX} parallaxY={orbitsY} translateZ={55} />
-            </motion.div>
-          </div>
-
-          {/* RIGHT: Interactive 3D Skill Card (~42% space) */}
-          <div className="lg:col-span-5 w-full flex items-center justify-center relative mt-8 lg:mt-0 z-[50]">
-            <SkillCard />
-          </div>
+            {/* 3D Technology Orbit System with guide lines */}
+            <OrbitSystem parallaxX={orbitsX} parallaxY={orbitsY} translateZ={55} />
+          </motion.div>
         </div>
       </div>
     </div>
