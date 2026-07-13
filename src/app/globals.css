@@ -204,5 +204,51 @@ header a {
   z-index: 10 !important;
 }
 
+/* Featured Project Redesign - Custom Hover & Loading Effects */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.6s infinite;
+}
+
+.reflection-sweep {
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.12) 50%, transparent 60%);
+  background-size: 200% 100%;
+  background-position: 150% 0;
+  transition: background-position 0.6s ease;
+}
+
+.group:hover .reflection-sweep {
+  background-position: -50% 0;
+}
+
+/* Card hover animation wrapper styling */
+.project-card-wrapper {
+  transition: transform 280ms cubic-bezier(.22,.61,.36,1), box-shadow 280ms cubic-bezier(.22,.61,.36,1), border-color 280ms cubic-bezier(.22,.61,.36,1), background 280ms cubic-bezier(.22,.61,.36,1);
+  transform: translateY(0) rotateX(0deg);
+  transform-style: preserve-3d;
+}
+
+.group:hover .project-card-wrapper {
+  transform: translateY(-6px) rotateX(1deg);
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(233, 177, 93, 0.45) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Custom Image Hover Effects */
+.project-card-image {
+  transition: transform 300ms cubic-bezier(.22,.61,.36,1), filter 300ms cubic-bezier(.22,.61,.36,1);
+}
+
+.group:hover .project-card-image {
+  transform: scale(1.03);
+  filter: brightness(1.04) contrast(1.05);
+}
+
 
 

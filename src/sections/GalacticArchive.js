@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring, useReducedMotion, useMotionValueEvent } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring, useReducedMotion, useMotionValueEvent, animate } from "framer-motion";
+import { Quaternion, Euler } from "three";
 
 // Sub-component for individual premium luxury holographic navigation beacons
 function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnter, onMouseLeave }) {
@@ -243,6 +244,17 @@ export default function GalacticArchive({ setIsPortalActive }) {
   const mapRef = useRef(null);
   const pathRef = useRef(null);
   const shipRef = useRef(null);
+  const completedPathRef = useRef(null);
+
+  // Bidirectional ping-pong variables
+  const progressRef = useRef(0);
+  const directionRef = useRef(1);
+  const lastRawProgressRef = useRef(0);
+
+  // Quaternion slerp orientation helpers
+  const currentQRef = useRef(null);
+  const targetQRef = useRef(null);
+  const tempEulerRef = useRef(null);
 
   const [hoveredPlanet, setHoveredPlanet] = useState(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -322,24 +334,27 @@ export default function GalacticArchive({ setIsPortalActive }) {
     offset: ["start end", "end start"]
   });
 
-  // Piecewise-linear decelerations (brief pausing) at each milestone
-  const rawShipProgress = useTransform(
-    scrollYProgress,
-    [0.18, 0.30, 0.34, 0.46, 0.50, 0.62, 0.66, 0.78, 0.82],
-    [0,    0.23, 0.27, 0.48, 0.52, 0.73, 0.77, 0.98, 1   ]
-  );
-  const shipProgress = useSpring(rawShipProgress, {
-    stiffness: 85,
-    damping: 24,
-    mass: 0.8
-  });
+  const shipProgress = useMotionValue(0);
+
+  // Automatic looping animation of the spaceship over time (linear progress timer)
+  useEffect(() => {
+    const controls = animate(shipProgress, 1, {
+      duration: 24, // 24 seconds for a complete loop (12s forward, 12s back)
+      ease: "linear",
+      repeat: Infinity,
+      repeatType: "loop"
+    });
+    return () => controls.stop();
+  }, [shipProgress]);
+
+  // Symmetrical forward progress for sector glows
+  const forwardProgress = useMotionValue(0);
 
   // Parallax layers transform speeds
   const bgParallaxY = useTransform(scrollYProgress, [0, 1], [30, -30]);
   const fgParallaxY = useTransform(scrollYProgress, [0, 1], [-40, 40]);
   const cameraX = useTransform(scrollYProgress, [0, 1], [-12, 12]);
   const cameraY = useTransform(scrollYProgress, [0, 1], [8, -8]);
-  const shipDashoffset = useTransform(shipProgress, [0, 1], [1000, 0]);
 
   // Premium, 5-Node Constellation Journey Navigation Sector List (Alternating above/below axis, 90% wide)
   const sectors = [
@@ -454,28 +469,116 @@ export default function GalacticArchive({ setIsPortalActive }) {
     try {
       const totalLength = path.getTotalLength();
       if (totalLength === 0) return;
-      
-      const currentLength = progressVal * totalLength;
+
+      // 1. Frame stability: Initialize static Three.js mutable math helpers in refs
+      if (!currentQRef.current) {
+        currentQRef.current = new Quaternion();
+        targetQRef.current = new Quaternion();
+        tempEulerRef.current = new Euler();
+      }
+
+      // 2. Symmetrical travel progress & direction accumulator (Handling linear timer loops)
+      let delta = progressVal - lastRawProgressRef.current;
+      if (delta < -0.5) {
+        delta += 1; // loop wrapped around from 1 to 0
+      } else if (delta > 0.5) {
+        delta -= 1;
+      }
+      lastRawProgressRef.current = progressVal;
+
+      progressRef.current += delta * directionRef.current;
+
+      // Boundary ping-pong reversal
+      if (progressRef.current >= 1) {
+        progressRef.current = 1;
+        directionRef.current = -1;
+      } else if (progressRef.current <= 0) {
+        progressRef.current = 0;
+        directionRef.current = 1;
+      }
+
+      const t = progressRef.current;
+      const isForward = directionRef.current === 1;
+
+      // Update forward progress for planet sector arrival glows
+      forwardProgress.set(t);
+
+      const currentLength = t * totalLength;
       const point = path.getPointAtLength(currentLength);
       
-      const delta = 1;
-      const nextPoint = path.getPointAtLength(Math.min(totalLength, currentLength + delta));
-      const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI);
+      // 3. Tangent vector calculation purely on horizontal movement
+      const sampleDelta = 1;
+      const nextLength = isForward 
+        ? Math.min(totalLength, currentLength + sampleDelta) 
+        : Math.max(0, currentLength - sampleDelta);
+      const nextPoint = path.getPointAtLength(nextLength);
+
+      // Horizontal travel direction (ignoring travelY for flat visual orientation)
+      const travelX = isForward ? nextPoint.x - point.x : point.x - nextPoint.x;
       
-      const nextDelta = 3;
-      const pointAhead = path.getPointAtLength(Math.min(totalLength, currentLength + nextDelta));
-      const angleAhead = Math.atan2(pointAhead.y - nextPoint.y, pointAhead.x - nextPoint.x) * (180 / Math.PI);
+      // Target Y-rotation: 0 rad (facing right) or PI rad (facing left)
+      const targetYAngle = travelX >= 0 ? 0 : Math.PI;
+
+      // 4. Orientation: Quaternion slerp for smooth Y-axis rotation (Yaw only, pitch = 0, roll = 0)
+      const targetEuler = tempEulerRef.current.set(0, targetYAngle, 0);
+      targetQRef.current.setFromEuler(targetEuler);
+
+      // Copy target directly on first frame to prevent starting spin, slerp thereafter
+      if (currentQRef.current.lengthSq() === 0) {
+        currentQRef.current.copy(targetQRef.current);
+      } else {
+        currentQRef.current.slerp(targetQRef.current, 0.12);
+      }
+
+      tempEulerRef.current.setFromQuaternion(currentQRef.current);
+      const renderYRotation = tempEulerRef.current.y * (180 / Math.PI);
+
+      // 5. Natural hover motion using continuous time bobbing and drift
+      const time = performance.now() * 0.0025;
+      const hoverX = Math.cos(time * 0.7) * 2; // subtle horizontal drift
+      const hoverY = Math.sin(time * 1.1) * 3.5; // gentle vertical bobbing
       
-      let turnRate = angleAhead - angle;
-      if (turnRate > 180) turnRate -= 360;
-      if (turnRate < -180) turnRate += 360;
-      
-      // Calculate 3D roll banking
-      const banking = Math.max(-18, Math.min(18, turnRate * 3.5));
-      const bankScale = 1 - Math.abs(banking) * 0.015;
-      
-      // Rotate ship forward matching its travel direction (nose UP in raw PNG needs +90deg rotation to point RIGHT)
-      ship.style.transform = `translate3d(${point.x}px, ${point.y}px, 0) translate(-50%, -50%) rotate(${angle + 90}deg) scaleY(${bankScale})`;
+      // Position and rotate the HTML spaceship element in DOM (60 FPS bypass)
+      // Keeps pitch (X) and roll (Z) at 0, applying only Yaw (Y) rotation and hover offsets
+      ship.style.transform = `translate3d(${point.x + hoverX}px, ${point.y + hoverY}px, 0) translate(-50%, -50%) rotateY(${renderYRotation}deg)`;
+
+      // 5. Update completed path glow symmetrically in both directions
+      if (completedPathRef.current) {
+        completedPathRef.current.style.strokeDashoffset = (1 - t) * 1000;
+        completedPathRef.current.style.opacity = 0.75; // Always show progress glow trail
+      }
+
+      // 6. Dynamic planet occlusion z-index calculation
+      let currentOccludingPlanet = null;
+      for (const sector of sectors) {
+        const planetX = (sector.x / 100) * dimensions.width;
+        const planetY = (sector.y / 100) * dimensions.height;
+        
+        const dx = point.x - planetX;
+        const dy = point.y - planetY;
+        const dist = Math.hypot(dx, dy);
+        
+        // Responsive radius threshold based on window width
+        let planetRadius = 56;
+        if (window.innerWidth >= 1024) planetRadius = 96; // lg
+        else if (window.innerWidth >= 768) planetRadius = 84;  // md
+        else if (window.innerWidth >= 640) planetRadius = 68;  // sm
+        
+        if (dist < planetRadius) {
+          currentOccludingPlanet = sector;
+          break;
+        }
+      }
+
+      // Symmetrically apply z-index layering
+      if (currentOccludingPlanet) {
+        const planetZ = (hoveredPlanet === currentOccludingPlanet.id) ? 60 : currentOccludingPlanet.depthZ;
+        ship.style.zIndex = planetZ - 1;
+      } else {
+        // Foreground layering outside planets
+        ship.style.zIndex = 40;
+      }
+
     } catch (err) {
       // Graceful error handling for layout transitions
     }
@@ -688,6 +791,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
                     />
                     {/* Dynamic gold glow path */}
                     <path
+                      id="journeySplineForward"
                       d={fullSplinePath}
                       fill="none"
                       stroke="url(#orbitGlow)"
@@ -706,17 +810,19 @@ export default function GalacticArchive({ setIsPortalActive }) {
                         animation: "pathDash 10s linear infinite"
                       }}
                     />
-                    {/* Completed portion path glowing significantly brighter based on scroll progress */}
-                    <motion.path
+                    {/* Completed portion path glowing significantly brighter based on loop progress */}
+                    <path
+                      ref={completedPathRef}
                       d={fullSplinePath}
                       fill="none"
                       stroke="#e9b15d"
                       strokeWidth="2.5"
                       strokeDasharray="1000"
+                      className="opacity-0 filter drop-shadow-[0_0_8px_#e9b15d]"
                       style={{
-                        strokeDashoffset: shipDashoffset
+                        strokeDashoffset: 1000,
+                        transition: "opacity 300ms ease"
                       }}
-                      className="opacity-75 filter drop-shadow-[0_0_8px_#e9b15d]"
                     />
                   </g>
                 )}
@@ -760,7 +866,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
                 sector={sector}
                 isHovered={hoveredPlanet === sector.id}
                 hoveredPlanet={hoveredPlanet}
-                shipProgress={shipProgress}
+                shipProgress={forwardProgress}
                 onMouseEnter={() => handleMouseEnter(sector.id)}
                 onMouseLeave={handleMouseLeave}
               />

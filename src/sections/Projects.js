@@ -175,6 +175,10 @@ export default function Projects() {
               isDraggingRef={isDraggingRef}
               selectedProject={selectedProject}
               onSelect={(proj) => {
+                if (proj.isPlaceholder) {
+                  document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                  return;
+                }
                 isPausedRef.current = true;
                 setSelectedProject(proj);
               }}

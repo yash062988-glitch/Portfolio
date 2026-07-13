@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { RoundedBox, useTexture, Html } from "@react-three/drei";
+import { ExternalLink, ArrowRight } from "lucide-react";
+import { GithubIcon } from "@/components/Icons";
 import ProjectMaterial from "./ProjectMaterial";
 import useProjectSelection, { springStep } from "./useProjectSelection";
 import useCardHover from "./useCardHover";
@@ -18,6 +20,20 @@ export default function ProjectMesh({
   const meshRef = useRef(null);
   const glassMaterialRef = useRef(null);
   const htmlContainerRef = useRef(null);
+  const lastZIndexRef = useRef(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  // Layout single source of truth constants
+  const HTML_WIDTH_PX = 700;
+  const HTML_HEIGHT_PX = 460;
+  const ASPECT_RATIO = HTML_WIDTH_PX / HTML_HEIGHT_PX; // ~1.5217
+
+  const boxWidth = 2.25;
+  const boxHeight = boxWidth / ASPECT_RATIO; // ~1.48 dynamic aspect ratio match
+  const boxThickness = 0.12;
+
+  // Named constant to visually align the HTML overlay relative to the RoundedBox face across browsers
+  const HTML_VERTICAL_OFFSET = 0;
 
   // Load project texture safely (using suspends internally)
   const texture = useTexture(project.image);
@@ -66,7 +82,8 @@ export default function ProjectMesh({
     const dt = delta * 60;
 
     // 1. Mathematically wrapped infinite belt calculations
-    const S = 2.20; // Spacing between card centers (eliminates intersections, leaves comfortable gaps)
+    const VISUAL_GAP = 1.35; // gap separating adjacent landscape cards
+    const S = boxWidth + VISUAL_GAP; // spacing is dynamically derived from card width + visual gap
     const L = N_total * S; // Total belt loop length
 
     // Convert continuous rotation angle (in degrees) to linear scroll offset (in Three.js units)
@@ -76,16 +93,18 @@ export default function ProjectMesh({
     // Wrap position modulo L into the symmetric range [-L/2, L/2]
     const xWrapped = ((xRaw + L / 2) % L + L) % L - L / 2;
 
-    // Visible window: render up to 4.80 units (allows 5-6 cards visible near margins)
-    const isRendered = Math.abs(xWrapped) <= 4.80;
+    // Visible window: render limits scale dynamically using a named multiplier
+    const VISIBLE_RANGE_MULTIPLIER = 2.11;
+    const maxRange = S * VISIBLE_RANGE_MULTIPLIER;
+    const isRendered = Math.abs(xWrapped) <= maxRange;
 
     // Recede gently in depth (Z) as cards travel to the left/right margins
     const orbitX = xWrapped;
     const orbitY = 0;
-    const orbitZ = -Math.abs(xWrapped) * 0.15; // Subtle receding depth curve
+    const orbitZ = -Math.abs(xWrapped) * 0.22; // Deeper receding curve for wider spacing
 
     // Rear card (center, x=0) is smallest; neighbouring cards gradually become larger towards the sides (hero cards)
-    const baseScale = 0.90 + Math.abs(xWrapped) * 0.12; 
+    const baseScale = 0.85 + Math.abs(xWrapped) * 0.08; 
 
     // 2. Subtle organic floating movements (X, Y, Z, and rotational tilts)
     const time = state.clock.getElapsedTime();
@@ -139,20 +158,31 @@ export default function ProjectMesh({
       groupRef.current.scale.setScalar(finalScale);
     }
 
-    // 5. Opacity transitions: dim non-selected cards to 30% when focused
+    // 5. Opacity transitions: dim non-selected cards to 30% when focused, and apply early edge fadeout
+    const baseCardOpacity = Math.max(0, 1 - Math.pow(Math.abs(xWrapped) / maxRange, 2.5));
     const targetOpacity = (selectedProject && !isSelected) ? 0.30 : 1.0;
     opacityRef.current += (targetOpacity - opacityRef.current) * (1 - Math.exp(-0.15 * dt));
+    const currentOpacity = opacityRef.current * baseCardOpacity;
 
     if (glassMaterialRef.current) {
-      glassMaterialRef.current.opacity = opacityRef.current;
+      glassMaterialRef.current.opacity = currentOpacity;
       glassMaterialRef.current.transparent = true;
     }
 
-    // Update HTML overlay opacity and visibility directly in DOM (60 FPS bypass)
+    // Update HTML overlay opacity, visibility, and dynamic DOM depth stacking directly in DOM (60 FPS bypass)
     const isCardVisible = isSelected || isRendered;
     if (htmlContainerRef.current) {
-      htmlContainerRef.current.style.opacity = opacityRef.current;
+      htmlContainerRef.current.style.opacity = currentOpacity;
       htmlContainerRef.current.style.visibility = isCardVisible ? "visible" : "hidden";
+      
+      const zIndex = Math.round((1 - Math.abs(xWrapped) / maxRange) * 100);
+      if (lastZIndexRef.current !== zIndex) {
+        lastZIndexRef.current = zIndex;
+        const rootElement = htmlContainerRef.current.parentElement || htmlContainerRef.current;
+        if (rootElement) {
+          rootElement.style.zIndex = zIndex;
+        }
+      }
     }
 
     // Control mesh visibility (only display within the render window viewport)
@@ -160,6 +190,9 @@ export default function ProjectMesh({
       meshRef.current.visible = isSelected || isRendered;
     }
   });
+
+  const accentColor = project.accentColor || "rgba(233, 177, 93, 0.15)";
+  const hoverBorderColor = project.hoverBorderColor || "rgba(233, 177, 93, 0.45)";
 
   return (
     <group ref={groupRef}>
@@ -170,10 +203,10 @@ export default function ProjectMesh({
         onPointerOver={onPointerOver}
         onPointerOut={onPointerOut}
       >
-        {/* Volumetric Glass Card body: Width 1.30, Height 1.85 (extended for bottom breathing space), Thickness 0.18, beveled glass border */}
+        {/* Volumetric Glass Card body: Width and height derived from layout constants */}
         <RoundedBox 
-          args={[1.30, 1.85, 0.18]} 
-          radius={0.10} 
+          args={[boxWidth, boxHeight, boxThickness]} 
+          radius={0.08} 
           smoothness={4}
           bevelSegments={3}
           creaseAngle={0.4}
@@ -184,66 +217,262 @@ export default function ProjectMesh({
           />
         </RoundedBox>
 
-        {/* HTML Card Face: Transparent overlay, exactly matching the RoundedBox 1.30 x 1.85 aspect ratio (390px x 555px) */}
+        {/* HTML Card Face: Dimensions derived from single source of truth layout constants */}
         <Html
           transform
-          center // Center the HTML panel directly over the front WebGL mesh coordinates
-          pointerEvents="none" // Allow R3F pointer events to pass through wrapper to WebGL mesh
-          distanceFactor={1.33} // scales the HTML panel to fit the 1.30 x 1.85 3D card face exactly
-          position={[0, 0, 0.09 - 0.003]} // offset slightly behind front face for premium glass inset look
+          center
+          pointerEvents="none"
+          distanceFactor={1.35}
+          position={[0, HTML_VERTICAL_OFFSET, boxThickness / 2 - 0.003]}
           className="pointer-events-none select-none"
           style={{
-            width: "390px",
-            height: "555px"
+            width: `${HTML_WIDTH_PX}px`,
+            height: `${HTML_HEIGHT_PX}px`
           }}
         >
           <div 
             ref={htmlContainerRef}
-            className="w-full h-full bg-transparent p-5 flex flex-col justify-between select-none border-0 shadow-none overflow-hidden transition-opacity duration-300"
+            className="bg-transparent flex flex-col overflow-hidden select-none border-0 shadow-none group"
+            style={{
+              boxSizing: "border-box",
+              width: "100%",
+              height: "100%",
+              padding: "24px",
+              display: "flex",
+              flexDirection: "column",
+              minWidth: 0,
+              minHeight: 0
+            }}
           >
-            {/* Project Image: Fixed 260px height (keeps size and position identical, respecting 20px padding) */}
-            <div className="w-full h-[260px] relative overflow-hidden rounded-[12px] bg-black/10 border border-white/20 shadow-md shadow-black/20 shrink-0">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover pointer-events-none"
-                draggable="false"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            </div>
+            {/* Wrapper for smooth card lift, tilt, and drop shadow hovers */}
+            <div 
+              className="project-card-wrapper flex flex-col relative rounded-[22px] min-w-0 min-h-0"
+              style={{
+                boxSizing: "border-box",
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+                width: "100%",
+                minWidth: 0,
+                minHeight: 0
+              }}
+            >
+              {/* Default Border Overlay: GPU optimized */}
+              <div className="absolute inset-0 rounded-[22px] border border-white/10 bg-transparent z-0 pointer-events-none" />
 
-            {/* Content Details Layout with generous empty space at the bottom (pb-4) */}
-            <div className="flex-grow flex flex-col justify-between pt-4 pb-4 overflow-hidden"> 
-              <div className="flex flex-col gap-1 w-full overflow-hidden">
-                <span className="text-[10px] font-mono tracking-widest text-[#e9b15d] uppercase block leading-none">
-                  {project.category}
-                </span>
+              {/* Hover Glow Overlay: GPU blend via opacity */}
+              <div 
+                className="absolute inset-0 rounded-[22px] border bg-white/[0.03] opacity-0 group-hover:opacity-100 transition-opacity z-0 pointer-events-none"
+                style={{
+                  borderColor: hoverBorderColor,
+                  boxShadow: `0 20px 50px ${accentColor.replace("0.2", "0.4")}`,
+                  transition: "opacity 280ms cubic-bezier(.22,.61,.36,1)"
+                }}
+              />
+
+              {/* Upper Section split: 42% Image left, 58% Details right */}
+              <div 
+                className="grid gap-6 items-stretch min-h-0 min-w-0 z-10"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "minmax(260px, 42%) 1fr",
+                  alignItems: "stretch",
+                  flex: 1,
+                  minWidth: 0,
+                  minHeight: 0
+                }}
+              >
                 
-                <h4 className="text-sm font-extrabold text-white tracking-tight uppercase leading-tight mt-1 truncate">
-                  {project.title}
-                </h4>
-                
-                <p className={`text-[11px] font-light leading-relaxed mt-1.5 line-clamp-2 transition-colors duration-300 ${
-                  isHovered && !selectedProject ? "text-white/85" : "text-white/72"
-                }`}>
-                  {project.shortDesc}
-                </p>
+                {/* Left side: Premium image media container */}
+                <div 
+                  className="relative rounded-[22px] bg-black/20 overflow-hidden shadow-lg border border-white/10 min-w-0 min-h-0"
+                  style={{
+                    boxSizing: "border-box",
+                    width: "100%",
+                    maxWidth: "100%",
+                    maxHeight: "100%"
+                  }}
+                >
+                  {project.isPlaceholder ? (
+                    <div className="w-full h-full bg-gradient-to-br from-black/40 to-[#1c120c]/60 flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-full border border-dashed border-white/20 flex items-center justify-center bg-white/[0.02]">
+                        <span className="text-2xl font-light text-white/30 font-mono">+</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Loading Shimmer Skeleton */}
+                      {!imgLoaded && (
+                        <div className="absolute inset-0 bg-white/[0.03] animate-pulse flex items-center justify-center">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shimmer" />
+                        </div>
+                      )}
+                      
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        onLoad={() => setImgLoaded(true)}
+                        loading="lazy"
+                        className={`project-card-image w-full h-full object-cover object-center transition-opacity duration-300 ${
+                          imgLoaded ? "opacity-100" : "opacity-0"
+                        }`}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          display: "block",
+                          maxWidth: "100%",
+                          maxHeight: "100%"
+                        }}
+                        draggable="false"
+                      />
+                      
+                      {/* Cinematic Vignette */}
+                      <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.6)] bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
+                      
+                      {/* Glass Sweep reflection overlay */}
+                      <div className="reflection-sweep absolute inset-0 pointer-events-none" />
+                    </>
+                  )}
+                  {/* Subtle Gold/Theme Edge Highlight */}
+                  <div 
+                    className="absolute inset-0 border rounded-[22px] pointer-events-none transition-all duration-280"
+                    style={{
+                      borderColor: isHovered ? hoverBorderColor : "rgba(255,255,255,0.1)"
+                    }}
+                  />
+                </div>
+
+                {/* Right side: Information Details */}
+                <div 
+                  className="flex flex-col pr-1 select-text overflow-hidden"
+                  style={{
+                    boxSizing: "border-box",
+                    display: "flex",
+                    flexDirection: "column",
+                    flex: 1,
+                    minWidth: 0,
+                    minHeight: 0
+                  }}
+                >
+                  <span className="text-[9px] font-mono tracking-widest text-[#e9b15d]/80 uppercase block font-bold leading-none mb-1 select-none overflow-wrap-anywhere word-break-break-word">
+                    Featured Project
+                  </span>
+                  
+                  <h4 
+                    className="text-[28px] font-extrabold text-white leading-tight uppercase select-all"
+                    style={{
+                      overflowWrap: "anywhere",
+                      wordBreak: "break-word"
+                    }}
+                  >
+                    {project.title}
+                  </h4>
+                  
+                  {/* Metadata Row: Category & Tech quick tags */}
+                  <div 
+                    className="flex flex-wrap items-center gap-1.5 mt-3 text-white/50 text-[12px] font-mono select-none min-w-0 min-h-0 overflow-hidden"
+                    style={{
+                      overflowWrap: "anywhere",
+                      wordBreak: "break-word"
+                    }}
+                  >
+                    <span className="font-bold text-[#e9b15d] uppercase">{project.category}</span>
+                    {project.tech && project.tech.length > 0 && (
+                      <>
+                        <span>•</span>
+                        <span className="truncate">{project.tech.slice(0, 3).join(" • ")}</span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Flexible Description Area: Clamped to 4 lines, no scrollbars */}
+                  <div 
+                    className="flex items-start mt-4 overflow-hidden"
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      minHeight: 0
+                    }}
+                  >
+                    <p 
+                      className="text-[16px] text-white/72 leading-[1.65] font-light line-clamp-4 select-text"
+                      style={{
+                        overflowWrap: "anywhere",
+                        wordBreak: "break-word"
+                      }}
+                    >
+                      {project.shortDesc}
+                    </p>
+                  </div>
+                </div>
+
               </div>
 
-              {/* Technologies Used Tags: Glass Pills, wrapped cleanly, never exceeding card width */}
-              <div className="flex flex-wrap gap-1.5 mt-2 w-full overflow-hidden shrink-0"> 
-                {project.tech.slice(0, 3).map((t, tIdx) => (
+              {/* Tech Stack Chips: Small Premium Rounded Pills (Height 34px, padded, centered) */}
+              <div 
+                className="flex flex-wrap gap-2 pt-4 flex-shrink-0 min-w-0 min-h-0 z-10"
+                style={{
+                  alignContent: "flex-start"
+                }}
+              >
+                {!project.isPlaceholder && project.tech.slice(0, 4).map((t, idx) => (
                   <span
-                    key={`${project.id}-${t}-${tIdx}`}
-                    className={`px-2.5 py-0.5 rounded-full border text-[9px] font-mono font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] truncate transition-all duration-300 ${
-                      isHovered && !selectedProject
-                        ? "bg-white/[0.14] border-white/20 text-white/80"
-                        : "bg-white/[0.08] border-white/10 text-white/60"
-                    }`}
+                    key={`${project.id}-${t}-${idx}`}
+                    className="h-[34px] px-[14px] flex items-center rounded-full border border-white/10 bg-white/[0.04] text-[13px] font-medium font-mono text-white/60 transition-all duration-250 select-none flex-shrink-0 min-w-0"
                   >
                     {t}
                   </span>
                 ))}
+              </div>
+
+              {/* Action Buttons Row (always bottom aligned, min 44px touch height) */}
+              <div className="w-full pt-4 flex-shrink-0 min-w-0 min-h-0 z-10">
+                {project.isPlaceholder ? (
+                  <button
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onPointerUp={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="pointer-events-auto flex items-center justify-center gap-2 h-[44px] rounded-full bg-primary hover:bg-[#FAF5EF] text-[15px] font-extrabold uppercase tracking-wider text-[#120c08] transition-all duration-300 w-full text-center shadow-[0_4px_20px_rgba(233,177,93,0.15)] hover:shadow-[0_8px_25px_rgba(233,177,93,0.3)] select-none cursor-pointer min-w-0"
+                  >
+                    Let's Build Yours
+                    <ArrowRight className="w-4 h-4 shrink-0" />
+                  </button>
+                ) : (
+                  <div 
+                    className="grid gap-3 w-full min-w-0 min-h-0"
+                    style={{
+                      gridTemplateColumns: "1fr 1fr"
+                    }}
+                  >
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onPointerUp={(e) => e.stopPropagation()}
+                      onClick={(e) => e.stopPropagation()}
+                      className="pointer-events-auto flex items-center justify-center gap-2 h-[44px] rounded-full border border-white/10 hover:border-primary bg-black/30 hover:bg-black/60 text-[15px] font-extrabold uppercase tracking-wider text-white transition-all duration-300 w-full text-center select-none min-w-0"
+                    >
+                      <GithubIcon className="w-4 h-4 shrink-0" />
+                      <span className="truncate">GitHub</span>
+                    </a>
+                    <a
+                      href={project.demo}
+                      target="_blank"
+                      rel="noreferrer"
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onPointerUp={(e) => e.stopPropagation()}
+                      onClick={(e) => e.stopPropagation()}
+                      className="pointer-events-auto flex items-center justify-center gap-2 h-[44px] rounded-full bg-primary hover:bg-[#FAF5EF] text-[15px] font-extrabold uppercase tracking-wider text-[#120c08] transition-all duration-300 w-full text-center shadow-[0_4px_20px_rgba(233,177,93,0.15)] hover:shadow-[0_8px_25px_rgba(233,177,93,0.3)] select-none min-w-0"
+                    >
+                      <ExternalLink className="w-4 h-4 shrink-0" />
+                      <span className="truncate">Live Demo</span>
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
