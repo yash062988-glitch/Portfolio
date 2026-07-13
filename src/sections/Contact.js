@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, CheckCircle, Sparkles } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/Icons";
 import SectionHeading from "@/components/design-system/SectionHeading";
@@ -18,6 +18,8 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isFormFocused, setIsFormFocused] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,11 +54,31 @@ export default function Contact() {
 
       {/* Emerging contact astronaut (partially visible, 60-70%, floats and scales on hover) */}
       <motion.div
+        animate={shouldReduceMotion ? { y: 0, rotate: 0 } : {
+          y: [0, -7, 0],
+          rotate: [0, 1.5, -1.5, 0]
+        }}
+        transition={{
+          y: {
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          },
+          rotate: {
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut"
+          },
+          scale: {
+            type: "spring",
+            stiffness: 100,
+            damping: 20
+          }
+        }}
         whileHover={{ scale: 1.04 }}
-        transition={{ type: "spring", stiffness: 100, damping: 20 }}
         className="absolute bottom-[-60px] right-[-50px] md:right-[-90px] w-[240px] h-[240px] md:w-[350px] md:h-[350px] z-10 pointer-events-auto select-none"
       >
-        <div className="relative w-full h-full animate-float-slow">
+        <div className="relative w-full h-full overflow-hidden">
           {/* Warm background halo */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(233,177,93,0.12)_0%,transparent_70%)] blur-xl pointer-events-none" />
           <Image
@@ -65,6 +87,25 @@ export default function Contact() {
             fill
             className="object-contain drop-shadow-[0_15px_30px_rgba(20,15,10,0.65)] drop-shadow-[0_30px_60px_rgba(233,177,93,0.15)] filter brightness-95 hover:brightness-100 transition-all duration-500"
             quality={90}
+          />
+          {/* Helmet reflection shimmer overlay */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none"
+            initial={{ x: "-150%", y: "-150%" }}
+            animate={shouldReduceMotion ? { x: "-150%", y: "-150%" } : {
+              x: ["150%", "-150%"],
+              y: ["150%", "-150%"]
+            }}
+            transition={{
+              duration: 2.0,
+              ease: "easeInOut",
+              repeat: Infinity,
+              repeatDelay: 8.0
+            }}
+            style={{
+              mixBlendMode: "screen",
+              opacity: shouldReduceMotion ? 0 : 0.18
+            }}
           />
         </div>
       </motion.div>
@@ -166,8 +207,16 @@ export default function Contact() {
           </div>
 
           {/* Right Column: Upgraded Glass Form (with floating labels) */}
-          <div className="lg:col-span-7">
-            <GlassCard hover={false} className="p-6 md:p-8 bg-white/[0.02] border border-white/10 shadow-2xl relative overflow-hidden">
+          <div className="lg:col-span-7 relative">
+            {/* Soft radial glow behind the form card, transition opacity on input focus */}
+            <div
+              className="absolute -inset-10 pointer-events-none z-0 rounded-full transition-opacity duration-300 ease-out"
+              style={{
+                background: "radial-gradient(circle, rgba(245,201,122,0.14), transparent 70%)",
+                opacity: isFormFocused ? 1.0 : 0.57
+              }}
+            />
+            <GlassCard hover={false} className="p-6 md:p-8 bg-white/[0.02] border border-white/10 shadow-2xl relative overflow-hidden z-10">
               
               <h3 className="text-lg font-bold text-white mb-8 tracking-tight">
                 Send a Message
@@ -188,6 +237,8 @@ export default function Contact() {
                       placeholder=" "
                       value={formState.name}
                       onChange={handleInputChange}
+                      onFocus={() => setIsFormFocused(true)}
+                      onBlur={() => setIsFormFocused(false)}
                       className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-[#0b0705]/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
                     />
                     <label
@@ -208,6 +259,8 @@ export default function Contact() {
                       placeholder=" "
                       value={formState.email}
                       onChange={handleInputChange}
+                      onFocus={() => setIsFormFocused(true)}
+                      onBlur={() => setIsFormFocused(false)}
                       className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-[#0b0705]/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
                     />
                     <label
@@ -229,6 +282,8 @@ export default function Contact() {
                     placeholder=" "
                     value={formState.subject}
                     onChange={handleInputChange}
+                    onFocus={() => setIsFormFocused(true)}
+                    onBlur={() => setIsFormFocused(false)}
                     className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-[#0b0705]/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
                   />
                   <label
@@ -249,6 +304,8 @@ export default function Contact() {
                     placeholder=" "
                     value={formState.message}
                     onChange={handleInputChange}
+                    onFocus={() => setIsFormFocused(true)}
+                    onBlur={() => setIsFormFocused(false)}
                     className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-[#0b0705]/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm resize-none"
                   />
                   <label
