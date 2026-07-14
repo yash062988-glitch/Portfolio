@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChatProvider } from "@/context/ChatContext";
 import Navbar from "@/components/Navbar";
 import Hero from "@/sections/Hero";
@@ -19,10 +19,26 @@ import LoadingScreen from "@/components/LoadingScreen";
 import GlobalStarfield from "@/components/GlobalStarfield";
 
 import ContactFooterWrapper from "@/components/ContactFooterWrapper";
+import dynamic from "next/dynamic";
+
+const CharizardCompanion = dynamic(
+  () => import("@/components/charizard/components/Viewer").then((mod) => mod.Viewer),
+  { ssr: false }
+);
 
 export default function ClientHome({ portraitImage }) {
   const [loading, setLoading] = useState(true);
   const [isPortalActive, setIsPortalActive] = useState(false);
+  const [mountCompanion, setMountCompanion] = useState(false);
+
+  useEffect(() => {
+    if (!loading) {
+      const timer = setTimeout(() => {
+        setMountCompanion(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   return (
     <ChatProvider>
@@ -70,6 +86,8 @@ export default function ClientHome({ portraitImage }) {
             <AskAISidebar />
 
             <CursorGlow />
+
+            {mountCompanion && <CharizardCompanion />}
           </div>
         </>
       )}
