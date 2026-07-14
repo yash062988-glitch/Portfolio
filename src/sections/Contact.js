@@ -239,7 +239,7 @@ export default function Contact() {
                       onChange={handleInputChange}
                       onFocus={() => setIsFormFocused(true)}
                       onBlur={() => setIsFormFocused(false)}
-                      className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-[#0b0705]/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
+                      className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-black/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
                     />
                     <label
                       htmlFor="name"
@@ -261,7 +261,7 @@ export default function Contact() {
                       onChange={handleInputChange}
                       onFocus={() => setIsFormFocused(true)}
                       onBlur={() => setIsFormFocused(false)}
-                      className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-[#0b0705]/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
+                      className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-black/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
                     />
                     <label
                       htmlFor="email"
@@ -284,7 +284,7 @@ export default function Contact() {
                     onChange={handleInputChange}
                     onFocus={() => setIsFormFocused(true)}
                     onBlur={() => setIsFormFocused(false)}
-                    className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-[#0b0705]/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
+                    className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-black/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
                   />
                   <label
                     htmlFor="subject"
@@ -306,7 +306,7 @@ export default function Contact() {
                     onChange={handleInputChange}
                     onFocus={() => setIsFormFocused(true)}
                     onBlur={() => setIsFormFocused(false)}
-                    className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-[#0b0705]/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm resize-none"
+                    className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-black/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm resize-none"
                   />
                   <label
                     htmlFor="message"

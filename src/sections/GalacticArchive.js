@@ -692,22 +692,22 @@ export default function GalacticArchive({ setIsPortalActive }) {
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0b0705]/20 via-[#0b0705]/85 to-[#0b0705]" />
+        {/* <div className="absolute inset-0 bg-gradient-to-b from-[#0b0705]/20 via-[#0b0705]/85 to-[#0b0705]" /> */}
       </div>
 
       {/* Volumetric spot lights and dark vignette overlay */}
       <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
-        <div className="absolute top-0 left-0 right-0 h-44 bg-gradient-to-b from-[#0b0705] via-[#0b0705]/40 to-transparent opacity-90" />
-        <div className="absolute bottom-0 left-0 right-0 h-80 bg-gradient-to-t from-[#0b0705] via-[#0b0705]/75 to-transparent opacity-95" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent,30%,rgba(11,7,5,0.95)_95%)]" />
-        <div className="absolute top-0 left-0 w-[45%] h-[80%] bg-gradient-to-br from-[#e9b15d]/[0.035] via-transparent to-transparent blur-2xl transform origin-top-left rotate-12" />
-        <div className="absolute top-0 right-0 w-[45%] h-[80%] bg-gradient-to-bl from-[#e9b15d]/[0.035] via-transparent to-transparent blur-2xl transform origin-top-right -rotate-12" />
+        {/* <div className="absolute top-0 left-0 right-0 h-44 bg-gradient-to-b from-[#0b0705] via-[#0b0705]/40 to-transparent opacity-90" /> */}
+        {/* <div className="absolute bottom-0 left-0 right-0 h-80 bg-gradient-to-t from-[#0b0705] via-[#0b0705]/75 to-transparent opacity-95" /> */}
+        {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(11,7,5,0.95)_95%)]" /> */}
+        {/* <div className="absolute top-0 left-0 w-[45%] h-[80%] bg-gradient-to-br from-[#e9b15d]/[0.035] via-transparent to-transparent blur-2xl transform origin-top-left rotate-12" /> */}
+        {/* <div className="absolute top-0 right-0 w-[45%] h-[80%] bg-gradient-to-bl from-[#e9b15d]/[0.035] via-transparent to-transparent blur-2xl transform origin-top-right -rotate-12" /> */}
         
         {/* Darkening veil sits in z-10 layer (behind map container at z-30) */}
         <motion.div
           animate={{ opacity: hoveredPlanet ? 0.72 : 0 }}
           transition={{ duration: 0.5 }}
-          className="absolute inset-0 bg-[#0b0705] pointer-events-none"
+          className="absolute inset-0 bg-black pointer-events-none"
         />
         <div className="absolute inset-0 bg-noise opacity-[0.015]" />
       </div>

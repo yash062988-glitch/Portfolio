@@ -546,7 +546,7 @@ export default function OrbitSystem({ parallaxY, parallaxX, translateZ = 0 }) {
             <div
               className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border backdrop-blur-md relative cursor-pointer transition-all duration-300 ${
                 isHovered
-                  ? "border-primary/60 scale-120 -translate-y-1 shadow-[0_0_30px_var(--glow-color)] bg-[#0b0705]/50"
+                  ? "border-primary/60 scale-120 -translate-y-1 shadow-[0_0_30px_var(--glow-color)] bg-black/50"
                   : "border-white/10 bg-white/[0.03] hover:border-primary/30"
               }`}
               style={{

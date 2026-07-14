@@ -62,7 +62,7 @@ export default function About({ portraitImage = "/images/astronaut.png" }) {
 
   const transitionConfig = { duration: 0.3, ease: [0.16, 1, 0.3, 1] };
 
-  const outlineFocusClasses = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0705]";
+  const outlineFocusClasses = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black";
 
   return (
     <section id="about" className="relative w-full py-28 md:py-32 bg-transparent overflow-hidden">

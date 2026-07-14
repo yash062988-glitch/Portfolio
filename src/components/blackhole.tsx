@@ -164,12 +164,12 @@ export default function BlackHole(props: Props) {
                 const radius =
                     horizonRad +
                     Math.pow(Math.random(), 2) * (outerRad - horizonRad)
-                
+
                 // Determine size class: 72% small (<= 0.72), 22% medium (0.72-0.94), 5% large (0.94-0.99), 1% hero (> 0.99)
                 const randSize = Math.random()
                 let sizeClass = 1
                 let speedOffset = 1.1 + Math.random() * 0.4 // Small particles: fast
-                
+
                 if (randSize > 0.99) {
                     sizeClass = 4 // Hero
                     speedOffset = 0.2 + Math.random() * 0.2 // Very slow
@@ -486,10 +486,10 @@ export default function BlackHole(props: Props) {
                     voidCy,
                     voidRadius * 1.80
                 )
-                shadowGrad.addColorStop(0, `rgba(11, 7, 5, 0.95)`) // matching page bg #0b0705
-                shadowGrad.addColorStop(0.3, `rgba(11, 7, 5, 0.70)`)
-                shadowGrad.addColorStop(0.7, `rgba(11, 7, 5, 0.20)`)
-                shadowGrad.addColorStop(1, `rgba(11, 7, 5, 0)`)
+                shadowGrad.addColorStop(0, `rgba(0, 0, 0, 0.95)`) // matching page bg #000000
+                shadowGrad.addColorStop(0.3, `rgba(0, 0, 0, 0.70)`)
+                shadowGrad.addColorStop(0.7, `rgba(0, 0, 0, 0.20)`)
+                shadowGrad.addColorStop(1, `rgba(0, 0, 0, 0)`)
                 ctx.globalAlpha = 1.0
                 ctx.fillStyle = shadowGrad
                 ctx.beginPath()

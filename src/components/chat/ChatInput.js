@@ -9,7 +9,7 @@ export default function ChatInput({ inputVal, setInputVal, onSend, disabled }) {
         value={inputVal}
         onChange={(e) => setInputVal(e.target.value)}
         disabled={disabled}
-        className="flex-grow px-5 py-3 rounded-xl border border-white/10 bg-[#0b0705]/80 text-sm text-white placeholder-white/30 focus:outline-none focus:border-primary/50 transition-all duration-300 disabled:opacity-50"
+        className="flex-grow px-5 py-3 rounded-xl border border-white/10 bg-black/80 text-sm text-white placeholder-white/30 focus:outline-none focus:border-primary/50 transition-all duration-300 disabled:opacity-50"
       />
       <button
         type="submit"

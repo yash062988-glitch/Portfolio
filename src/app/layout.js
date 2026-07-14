@@ -17,7 +17,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${spaceGrotesk.variable} font-sans text-white bg-[#0b0705] antialiased`}>
+      <body className={`${spaceGrotesk.variable} font-sans text-white bg-black antialiased`}>
         {children}
       </body>
     </html>

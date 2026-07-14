@@ -72,13 +72,13 @@ export default function Hero() {
       </motion.div>
 
       {/* Cinematic Dark Overlay */}
-      <div 
+      {/* <div 
         className="absolute inset-0 z-10 pointer-events-none bg-layer-overlay"
         style={{
           background: "radial-gradient(circle at 50% 50%, rgba(20, 15, 10, 0.35) 0%, rgba(11, 7, 5, 0.85) 80%)"
         }}
-      />
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0b0705] via-transparent to-transparent pointer-events-none bg-layer-overlay" />
+      /> */}
+      {/* <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0b0705] via-transparent to-transparent pointer-events-none bg-layer-overlay" /> */}
 
       {/* Main Hero Grid Content */}
       <div className="relative z-20 w-full max-w-7xl mx-auto px-6 flex-grow flex flex-col justify-center gap-12 lg:gap-0 lg:grid lg:grid-cols-12 lg:items-center bg-layer-content">

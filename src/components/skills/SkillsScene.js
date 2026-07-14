@@ -58,7 +58,7 @@ export default function SkillsScene() {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={() => console.log("SKILLS SCENE CLICKED")}
-      className="relative w-full py-28 md:py-32 overflow-hidden flex flex-col items-center justify-center cursor-default select-none bg-[#0b0705]"
+      className="relative w-full py-28 md:py-32 overflow-hidden flex flex-col items-center justify-center cursor-default select-none bg-black"
       style={{
         perspective: 1500, // Essential for 3D room tilt transforms
       }}
@@ -78,10 +78,10 @@ export default function SkillsScene() {
         </div>
 
         {/* Seamless Edge Blending Overlays (fades image top, bottom, and sides into page bg) */}
-        <div className="absolute top-0 left-0 right-0 h-[220px] bg-gradient-to-b from-[#0b0705] to-transparent z-2 pointer-events-none bg-layer-overlay" />
-        <div className="absolute bottom-0 left-0 right-0 h-[220px] bg-gradient-to-t from-[#0b0705] to-transparent z-2 pointer-events-none bg-layer-overlay" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#0b0705_95%)] z-2 pointer-events-none bg-layer-overlay" />
-        <div className="absolute inset-0 bg-[#0b0705]/50 z-1 pointer-events-none bg-layer-overlay" />
+        <div className="absolute top-0 left-0 right-0 h-[220px] bg-gradient-to-b from-black to-transparent z-2 pointer-events-none bg-layer-overlay" />
+        <div className="absolute bottom-0 left-0 right-0 h-[220px] bg-gradient-to-t from-black to-transparent z-2 pointer-events-none bg-layer-overlay" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#000000_95%)] z-2 pointer-events-none bg-layer-overlay" />
+        <div className="absolute inset-0 bg-black/50 z-1 pointer-events-none bg-layer-overlay" />
       </div>
 
       {/* Grid line overlay to match portfolio vibe */}

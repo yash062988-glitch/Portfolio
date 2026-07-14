@@ -68,7 +68,7 @@ const containerVariants = {
 
 export default function PlaygroundV2() {
   return (
-    <div className="w-full bg-[#0b0705] flex flex-col relative z-10 py-6 select-none">
+    <div className="w-full bg-black flex flex-col relative z-10 py-6 select-none">
       {GRID_SECTIONS.map((sec) => (
         <div 
           key={sec.id} 

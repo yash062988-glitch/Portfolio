@@ -279,7 +279,7 @@ function StarfieldScene({ isPausedRef, reducedMotion, debugEnabled, setDebugStat
     if (midFarRef.current) midFarRef.current.geometry.setDrawRange(0, Math.floor(layerRanges.midFar.count * targetScale));
     if (midNearRef.current) midNearRef.current.geometry.setDrawRange(0, Math.floor(layerRanges.midNear.count * targetScale));
     if (nearRef.current) nearRef.current.geometry.setDrawRange(0, Math.floor(layerRanges.near.count * targetScale));
-    if (dustRef.current) dustRef.current.geometry.setDrawRange(0, activeDust);
+    // if (dustRef.current) dustRef.current.geometry.setDrawRange(0, activeDust);
 
     // 5b. Update Debug logs
     if (debugEnabled && setDebugStats) {
@@ -295,9 +295,9 @@ function StarfieldScene({ isPausedRef, reducedMotion, debugEnabled, setDebugStat
     }
 
     // Update Nebula time uniform
-    if (nebulaMaterial) {
-      nebulaMaterial.uniforms.uTime.value = time;
-    }
+    // if (nebulaMaterial) {
+    //   nebulaMaterial.uniforms.uTime.value = time;
+    // }
 
     // 5c. Layer rotation & Organic drifts (disabled or minimized under prefers-reduced-motion)
     const driftMult = reducedMotion ? 0.05 : 1.0;
@@ -340,59 +340,59 @@ function StarfieldScene({ isPausedRef, reducedMotion, debugEnabled, setDebugStat
     }
 
     // 5f. Shooting Star Simulation (disabled during low performance or prefers-reduced-motion)
-    const ss = shootingStarState.current;
-    if (reducedMotion || p.qualityLevel === 2) {
-      ss.active = false;
-      if (shootingStarRef.current) shootingStarRef.current.visible = false;
-    } else {
-      if (ss.active) {
-        ss.progress += delta / ss.duration;
-        if (ss.progress >= 1.0) {
-          ss.active = false;
-          if (shootingStarRef.current) shootingStarRef.current.visible = false;
-          
-          // Schedule next shooting star
-          const nextWait = STARFIELD_CONFIG.shootingStars.minInterval + 
-            Math.random() * (STARFIELD_CONFIG.shootingStars.maxInterval - STARFIELD_CONFIG.shootingStars.minInterval);
-          ss.nextTriggerTime = time + nextWait;
-        } else {
-          // Update shooting star coordinates
-          if (shootingStarRef.current) {
-            shootingStarRef.current.visible = true;
-            const currentPos = new THREE.Vector3().lerpVectors(ss.start, ss.end, ss.progress);
-            shootingStarRef.current.position.copy(currentPos);
-            
-            // Fading trail opacity
-            const opacity = Math.sin(ss.progress * Math.PI) * STARFIELD_CONFIG.shootingStars.maxOpacity;
-            shootingStarRef.current.material.opacity = opacity;
-          }
-        }
-      } else {
-        // Trigger shooting star check
-        if (time >= ss.nextTriggerTime) {
-          ss.active = true;
-          ss.progress = 0;
-          
-          // Pick randomized start and end paths in camera coordinates
-          const randomSideY = (Math.random() * 2 - 1) * 3;
-          const randomSideX = (Math.random() * 2 - 1) * 4;
-          
-          ss.start.set(randomSideX - 3.5, randomSideY + 1.5, -8);
-          ss.end.set(randomSideX + 3.5, randomSideY - 1.5, -8);
-          
-          ss.nextTriggerTime = time + 99999; // Prevent multiple fires
-        }
-      }
-    }
+    // const ss = shootingStarState.current;
+    // if (reducedMotion || p.qualityLevel === 2) {
+    //   ss.active = false;
+    //   if (shootingStarRef.current) shootingStarRef.current.visible = false;
+    // } else {
+    //   if (ss.active) {
+    //     ss.progress += delta / ss.duration;
+    //     if (ss.progress >= 1.0) {
+    //       ss.active = false;
+    //       if (shootingStarRef.current) shootingStarRef.current.visible = false;
+    //       
+    //       // Schedule next shooting star
+    //       const nextWait = STARFIELD_CONFIG.shootingStars.minInterval + 
+    //         Math.random() * (STARFIELD_CONFIG.shootingStars.maxInterval - STARFIELD_CONFIG.shootingStars.minInterval);
+    //       ss.nextTriggerTime = time + nextWait;
+    //     } else {
+    //       // Update shooting star coordinates
+    //       if (shootingStarRef.current) {
+    //         shootingStarRef.current.visible = true;
+    //         const currentPos = new THREE.Vector3().lerpVectors(ss.start, ss.end, ss.progress);
+    //         shootingStarRef.current.position.copy(currentPos);
+    //         
+    //         // Fading trail opacity
+    //         const opacity = Math.sin(ss.progress * Math.PI) * STARFIELD_CONFIG.shootingStars.maxOpacity;
+    //         shootingStarRef.current.material.opacity = opacity;
+    //       }
+    //     }
+    //   } else {
+    //     // Trigger shooting star check
+    //     if (time >= ss.nextTriggerTime) {
+    //       ss.active = true;
+    //       ss.progress = 0;
+    //       
+    //       // Pick randomized start and end paths in camera coordinates
+    //       const randomSideY = (Math.random() * 2 - 1) * 3;
+    //       const randomSideX = (Math.random() * 2 - 1) * 4;
+    //       
+    //       ss.start.set(randomSideX - 3.5, randomSideY + 1.5, -8);
+    //       ss.end.set(randomSideX + 3.5, randomSideY - 1.5, -8);
+    //       
+    //       ss.nextTriggerTime = time + 99999; // Prevent multiple fires
+    //     }
+    //   }
+    // }
   });
 
   return (
     <group ref={groupRef}>
       {/* Procedural Shader-based Nebula Cloud Plane */}
-      <mesh position={[0, 0, -25]} scale={[STARFIELD_CONFIG.nebula.scale, STARFIELD_CONFIG.nebula.scale, 1]}>
+      {/* <mesh position={[0, 0, -25]} scale={[STARFIELD_CONFIG.nebula.scale, STARFIELD_CONFIG.nebula.scale, 1]}>
         <planeGeometry args={[1, 1]} />
         <primitive object={nebulaMaterial} attach="material" />
-      </mesh>
+      </mesh> */}
 
       {/* Layer 2: Global Star layers */}
       {/* 1. Far Stars */}
@@ -472,7 +472,7 @@ function StarfieldScene({ isPausedRef, reducedMotion, debugEnabled, setDebugStat
       </Points>
 
       {/* 5. Galaxy Dust Layer (Between nebula and far stars) */}
-      <Points
+      {/* <Points
         ref={dustRef}
         positions={dustPositions}
         stride={3}
@@ -488,10 +488,10 @@ function StarfieldScene({ isPausedRef, reducedMotion, debugEnabled, setDebugStat
           depthTest={true}
           blending={THREE.AdditiveBlending}
         />
-      </Points>
+      </Points> */}
 
       {/* 6. Active Shooting Star mesh */}
-      <mesh ref={shootingStarRef} visible={false}>
+      {/* <mesh ref={shootingStarRef} visible={false}>
         <sphereGeometry args={[0.035, 6, 6]} />
         <meshBasicMaterial
           color={STARFIELD_CONFIG.shootingStars.color}
@@ -499,7 +499,7 @@ function StarfieldScene({ isPausedRef, reducedMotion, debugEnabled, setDebugStat
           depthWrite={false}
           depthTest={true}
         />
-      </mesh>
+      </mesh> */}
     </group>
   );
 }
@@ -587,7 +587,7 @@ export default function GlobalStarfield() {
       {/* Development Debug Overlay (Excluded in production builds) */}
       {DEBUG_STARFIELD && debugStats && (
         <div 
-          className="fixed top-20 left-4 z-[99] bg-[#0b0705]/95 border border-primary/20 p-4 rounded-[16px] font-mono text-[10px] text-primary/80 leading-normal flex flex-col gap-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.85)] pointer-events-none select-none max-w-[240px]"
+          className="fixed top-20 left-4 z-[99] bg-black/95 border border-primary/20 p-4 rounded-[16px] font-mono text-[10px] text-primary/80 leading-normal flex flex-col gap-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.85)] pointer-events-none select-none max-w-[240px]"
         >
           <div className="font-bold text-white border-b border-primary/10 pb-1 mb-1 text-[11px] tracking-wide">
             STARFIELD STATUS

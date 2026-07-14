@@ -56,13 +56,13 @@ export default function Footer() {
       />
 
       {/* Top Fade */}
-      <div 
+      {/* <div 
         className="absolute inset-x-0 top-0 h-[80px] bg-gradient-to-b from-[#0b0705] to-transparent z-2 pointer-events-none"
         style={{
           backdropFilter: "none",
           filter: "none"
         }}
-      />
+      /> */}
 
       {/* Content wrapper */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-10">

@@ -276,7 +276,7 @@ export default function Navbar({ isPortalActive }) {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className={`w-full max-w-7xl flex items-center justify-between px-6 py-3 rounded-full border transition-all duration-500 ${
             isScrolled
-              ? "bg-[#0b0705]/85 border-white/15 backdrop-blur-2xl shadow-[0_16px_48px_-12px_rgba(0,0,0,0.85),0_0_24px_rgba(233,177,93,0.04)]"
+              ? "bg-black/85 border-white/15 backdrop-blur-2xl shadow-[0_16px_48px_-12px_rgba(0,0,0,0.85),0_0_24px_rgba(233,177,93,0.04)]"
               : "bg-white/5 border-white/8 backdrop-blur-lg shadow-[0_4px_24px_rgba(0,0,0,0.2)]"
           }`}
         >

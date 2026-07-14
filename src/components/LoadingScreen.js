@@ -339,7 +339,7 @@ export default function LoadingScreen({ onComplete }) {
           onAnimationComplete={() => {
             if (onComplete) onComplete();
           }}
-          className="fixed inset-0 z-[9999] select-none overflow-hidden bg-[#0b0705]"
+          className="fixed inset-0 z-[9999] select-none overflow-hidden bg-black"
         >
           {/* Faint gold center glow in background */}
           <div className="absolute w-[600px] h-[600px] rounded-full bg-[#E9B15D]/3 blur-[100px] pointer-events-none top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 z-0 animate-[pulseGlow_8s_ease-in-out_infinite]" />

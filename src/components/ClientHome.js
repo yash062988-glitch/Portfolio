@@ -39,7 +39,7 @@ export default function ClientHome({ portraitImage }) {
           {/* Mount the background only after the loader finishes */}
           <GlobalStarfield />
 
-          <div className="relative min-h-screen bg-[#0b0705] overflow-x-hidden">
+          <div className="relative min-h-screen bg-black overflow-x-hidden">
 
             <ScrollRestoration />
 

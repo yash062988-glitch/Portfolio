@@ -39,7 +39,7 @@ export default function AskAISidebar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={closeSidebar}
-            className="absolute inset-0 bg-[#0b0705]/80 backdrop-blur-sm cursor-pointer"
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
           />
 
           {/* Slide-over Panel (420px on desktop, 100% on mobile) */}

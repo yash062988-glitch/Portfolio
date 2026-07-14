@@ -180,37 +180,37 @@ export default function GlobalParticles() {
         ctx.fill();
 
         // Soft glow for front-depth particles
-        if (p.depth > 0.7) {
-          ctx.shadowColor = "rgba(233, 177, 93, 0.1)";
-          ctx.shadowBlur = 4;
-        } else {
-          ctx.shadowBlur = 0;
-        }
+        // if (p.depth > 0.7) {
+        //   ctx.shadowColor = "rgba(233, 177, 93, 0.1)";
+        //   ctx.shadowBlur = 4;
+        // } else {
+        //   ctx.shadowBlur = 0;
+        // }
       }
 
       // 2. Draw Distance-Based Connecting Lines (O(N) optimized connection mesh)
-      ctx.shadowBlur = 0; // Turn off shadows for line rendering to keep draw cycle light
-      for (let i = 0; i < particleCount; i += 2) { // Step by 2 to halve computation, maintaining connection mesh look
-        const p1 = particles[i];
-        for (let j = i + 1; j < particleCount; j += 4) { // Step by 4 to optimize loops
-          const p2 = particles[j];
-          const dx = p1.x - p2.x;
-          const dy = p1.yRendered - p2.yRendered;
-          const distSq = dx * dx + dy * dy;
-
-          if (distSq < maxConnectDistSq) {
-            const dist = Math.sqrt(distSq);
-            // Alpha scales down as distance increases and is dimmer for deeper (slower) particles
-            const lineAlpha = (1 - dist / maxConnectDist) * 0.07 * p1.depth;
-            ctx.strokeStyle = `rgba(233, 177, 93, ${lineAlpha})`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.yRendered);
-            ctx.lineTo(p2.x, p2.yRendered);
-            ctx.stroke();
-          }
-        }
-      }
+      // ctx.shadowBlur = 0; // Turn off shadows for line rendering to keep draw cycle light
+      // for (let i = 0; i < particleCount; i += 2) { // Step by 2 to halve computation, maintaining connection mesh look
+      //   const p1 = particles[i];
+      //   for (let j = i + 1; j < particleCount; j += 4) { // Step by 4 to optimize loops
+      //     const p2 = particles[j];
+      //     const dx = p1.x - p2.x;
+      //     const dy = p1.yRendered - p2.yRendered;
+      //     const distSq = dx * dx + dy * dy;
+      // 
+      //     if (distSq < maxConnectDistSq) {
+      //       const dist = Math.sqrt(distSq);
+      //       // Alpha scales down as distance increases and is dimmer for deeper (slower) particles
+      //       const lineAlpha = (1 - dist / maxConnectDist) * 0.07 * p1.depth;
+      //       ctx.strokeStyle = `rgba(233, 177, 93, ${lineAlpha})`;
+      //       ctx.lineWidth = 0.5;
+      //       ctx.beginPath();
+      //       ctx.moveTo(p1.x, p1.yRendered);
+      //       ctx.lineTo(p2.x, p2.yRendered);
+      //       ctx.stroke();
+      //     }
+      //   }
+      // }
 
       animationFrameId = requestAnimationFrame(tick);
     };
