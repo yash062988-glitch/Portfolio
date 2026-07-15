@@ -83,11 +83,12 @@ export default function ContactFooterWrapper({ children }) {
             inset: "-200px",
             transform: "translate3d(0px, 0px, 0px) scale(1.12)",
             willChange: "transform",
-            zIndex: 0
+            zIndex: 0,
+            pointerEvents: "none"
           }}
         >
           <BlackHole
-            centre={{ voidRadius: 76, voidX: 70, voidY: 50 }} // positioned behind right side of contact form
+            centre={{ voidRadius: 76, voidX: 25, voidY: 30 }} // positioned behind left side (upper-left quadrant)
             particleCount={particleCount}
             particleSize={4}
             colors={["#FAF5EF", "#FAF5EF", "#FAF5EF", "#F3E5D8", "#F3E5D8", "#EADBC8", "#EADBC8", "#FFE4B5", "#F5C97A", "#FFD27A"]} // Champagne/Ivory palette
@@ -96,7 +97,7 @@ export default function ContactFooterWrapper({ children }) {
             pullSpeed={0}
             trail={48}
             tilt={18}
-            tiltSideway={145}
+            tiltSideway={35} // mirrored angle
             style={{
               position: "absolute",
               inset: 0,

@@ -25,7 +25,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full relative bg-transparent border-t border-white/10 py-12 md:py-16 overflow-hidden">
+    <footer className="w-full relative bg-transparent border-t border-white/10 py-6 md:py-8 overflow-hidden">
       {/* Background Video */}
       <video
         autoPlay
@@ -65,7 +65,7 @@ export default function Footer() {
       /> */}
 
       {/* Content wrapper */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
         
         {/* Left: Branding & Tech details */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4">
@@ -94,7 +94,7 @@ export default function Footer() {
           </span>
           <div className="flex items-center gap-6 text-sm text-white/70">
             <a
-              href="https://github.com"
+              href="https://github.com/yash062988-glitch"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors duration-300 flex items-center gap-1.5"
@@ -103,7 +103,7 @@ export default function Footer() {
               GitHub
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/yash-jain-40581736a?utm_source=share_via&utm_content=profile&utm_medium=member_android"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors duration-300 flex items-center gap-1.5"
@@ -112,7 +112,7 @@ export default function Footer() {
               LinkedIn
             </a>
             <a
-              href="mailto:contact@yashjain.com"
+              href="mailto:yash062988@gmail.com"
               className="hover:text-primary transition-colors duration-300 flex items-center gap-1.5"
             >
               <Mail className="w-4 h-4" />

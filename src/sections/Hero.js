@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Mail, ChevronDown, MapPin, GraduationCap, Heart, Clock } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/Icons";
+import MeshText from "@/components/design-system/MeshText";
 
 export default function Hero() {
   // Parallax Motion Values
@@ -98,8 +99,9 @@ export default function Hero() {
             </span>
 
             {/* Large Heading */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.05] font-sans">
-              Yash <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">Jain</span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.05] font-sans flex flex-wrap gap-x-4">
+              <MeshText text="Yash" className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.05] font-sans" as="span" />
+              <MeshText text="Jain" className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-primary leading-[1.05] font-sans" color="#e9b15d" as="span" />
             </h1>
 
             {/* Subtitle */}
@@ -135,7 +137,7 @@ export default function Hero() {
             {/* Social Icons */}
             <div className="flex items-center gap-5 mt-4 text-white/60">
               <a
-                href="https://github.com"
+                href="https://github.com/yash062988-glitch"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-primary transition-colors duration-300"
@@ -144,7 +146,7 @@ export default function Hero() {
                 <GithubIcon className="w-5 h-5" />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/yash-jain-40581736a?utm_source=share_via&utm_content=profile&utm_medium=member_android"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-primary transition-colors duration-300"
@@ -153,7 +155,7 @@ export default function Hero() {
                 <LinkedinIcon className="w-5 h-5" />
               </a>
               <a
-                href="mailto:contact@yashjain.com"
+                href="mailto:yash062988@gmail.com"
                 className="hover:text-primary transition-colors duration-300"
                 aria-label="Email Me"
               >

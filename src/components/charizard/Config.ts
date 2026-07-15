@@ -25,7 +25,7 @@ export const MovementConfig = {
 export const FlightConfig = {
   flightDistanceThreshold: 15,
   flySpeed: 9,
-  flightHeight: 4,
+  flightHeight: 1.6,
   landingDistance: 1.5,
   climbSpeed: 2.5,
   turnSpeed: 3.2,

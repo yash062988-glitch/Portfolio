@@ -1,3 +1,5 @@
+import MeshText from "./MeshText";
+
 export default function SectionHeading({ label, title, description, align = "left", className = "" }) {
   const isCenter = align === "center";
   return (
@@ -7,9 +9,11 @@ export default function SectionHeading({ label, title, description, align = "lef
           {label}
         </span>
       )}
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-none">
-        {title}
-      </h2>
+      <MeshText
+        text={title}
+        className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-none"
+        as="h2"
+      />
       {description && (
         <p className="text-white/60 text-xs md:text-sm lg:text-base font-light leading-relaxed mt-2">
           {description}

@@ -661,6 +661,7 @@ export default function BlackHole(props: Props) {
                 width: "100%",
                 height: "100%",
                 background: "transparent",
+                pointerEvents: "none",
                 ...style,
                 position: "relative",
                 overflow: "hidden",
@@ -674,6 +675,7 @@ export default function BlackHole(props: Props) {
                     left: 0,
                     width: "100%",
                     height: "100%",
+                    pointerEvents: "none",
                 }}
             />
             <canvas

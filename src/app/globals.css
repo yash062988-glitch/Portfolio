@@ -258,5 +258,11 @@ header a {
   filter: brightness(1.04) contrast(1.05);
 }
 
+.click-through-canvas,
+.click-through-canvas canvas,
+.click-through-canvas > div {
+  pointer-events: none !important;
+}
+
 
 

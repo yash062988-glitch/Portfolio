@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Award, ExternalLink, ShieldCheck, Calendar } from "lucide-react";
 import { CERTIFICATIONS_DATA } from "@/constants/data";
+import MeshText from "@/components/design-system/MeshText";
 
 export default function Certifications() {
   const [activeFilter, setActiveFilter] = useState("All");
@@ -30,9 +31,11 @@ export default function Certifications() {
           <span className="text-xs font-bold tracking-[0.25em] text-primary uppercase">
             CERTIFICATIONS
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-            Certifications
-          </h2>
+          <MeshText
+            text="Certifications"
+            className="text-4xl md:text-5xl font-bold text-white tracking-tight"
+            as="h2"
+          />
           <p className="text-white/72 text-base md:text-lg font-light leading-relaxed">
             Professional specializations and technical credentials issued by industry-leading organizations.
           </p>

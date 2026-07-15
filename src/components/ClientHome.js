@@ -19,6 +19,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import GlobalStarfield from "@/components/GlobalStarfield";
 
 import ContactFooterWrapper from "@/components/ContactFooterWrapper";
+import FluidTrail from "@/components/FluidTrail";
 import dynamic from "next/dynamic";
 
 const CharizardCompanion = dynamic(
@@ -84,6 +85,8 @@ export default function ClientHome({ portraitImage }) {
             </ContactFooterWrapper>
 
             <AskAISidebar />
+
+            <FluidTrail />
 
             <CursorGlow />
 

@@ -1,6 +1,6 @@
 "use client";
 import { Suspense, useState, useRef, useEffect, useCallback } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, Center, Bounds, useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
 import { Loading } from './Loading';
@@ -44,6 +44,15 @@ export function Viewer() {
   const [animationDuration, setAnimationDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Add a 1.5s initialization delay to let R3F and camera state settle
+  const [initDelayPassed, setInitDelayPassed] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setInitDelayPassed(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Flight mode state — manual toggle via debug toolbar
   const [flightMode, setFlightMode] = useState<'Ground' | 'Flight'>('Ground');
@@ -796,6 +805,8 @@ export function Viewer() {
         camera={{ position: [5, 3, 5], fov: 50 }}
         gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1, alpha: true }}
         onError={(e) => setError(String(e))}
+        style={{ pointerEvents: 'none' }}
+        className="click-through-canvas pointer-events-none"
       >
         <fog attach="fog" args={['#000000', 10, 30]} />
 
@@ -815,6 +826,7 @@ export function Viewer() {
 
         <Suspense fallback={null}>
           <ModelWithControls
+            initDelayPassed={initDelayPassed}
             onAnimationsLoaded={handleAnimationsLoaded}
             onMixerReady={handleMixerReady}
             onInteractionReady={handleInteractionReady}
@@ -959,6 +971,7 @@ export function Viewer() {
 
 
 interface ModelWithControlsProps {
+  initDelayPassed: boolean;
   onAnimationsLoaded: (animations: THREE.AnimationClip[]) => void;
   onMixerReady: (mixer: THREE.AnimationMixer, actions: Record<string, THREE.AnimationAction>) => void;
   onInteractionReady: (
@@ -1007,6 +1020,7 @@ interface ModelWithControlsProps {
 }
 
 function ModelWithControls({
+  initDelayPassed,
   onAnimationsLoaded,
   onMixerReady,
   onInteractionReady,
@@ -1035,6 +1049,8 @@ function ModelWithControls({
   const group = groupRef; // Use shared ref so Viewer buttons can access position
   const { scene, animations } = useGLTF(MODEL_URL);
   const { actions, mixer } = useAnimations(animations, group);
+  const { camera } = useThree();
+  const isOverInteractive = useRef(false);
 
   // Local mixer/actions refs — sync from useAnimations into the passed-in refs
   // so the parent (Viewer) and its controllers can access them.
@@ -1074,10 +1090,42 @@ function ModelWithControls({
     const handleMouseMove = (event: MouseEvent) => {
       mousePosition.current.x = (event.clientX / window.innerWidth) * 2 - 1;
       mousePosition.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      
+      isOverInteractive.current = isInteractiveElement(event.target as HTMLElement);
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  // Raycast on global click to handle Charizard clicks/double clicks passively
+  useEffect(() => {
+    const handleGlobalClick = (event: MouseEvent) => {
+      if (isInteractiveElement(event.target as HTMLElement)) {
+        return;
+      }
+
+      const x = (event.clientX / window.innerWidth) * 2 - 1;
+      const y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      if (group.current && camera) {
+        const tempRaycaster = new THREE.Raycaster();
+        tempRaycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+        const intersects = tempRaycaster.intersectObject(group.current, true);
+        if (intersects.length > 0) {
+          const screenX = event.clientX;
+          const screenY = event.clientY;
+          if (event.detail === 2) {
+            onCharizardDoubleClick(screenX, screenY);
+          } else {
+            onCharizardClick(screenX, screenY);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, [camera, onCharizardClick, onCharizardDoubleClick]);
 
   // Detect animation names and initialize FSM
   useEffect(() => {
@@ -1172,12 +1220,29 @@ function ModelWithControls({
   const targetInitialized = useRef(false);
 
   useFrame((state, delta) => {
-    if (!group.current) return;
+    if (!group.current || !initDelayPassed) return;
 
     // Clamp delta to avoid huge jumps after tab switch / pause
     const dt = Math.min(delta, 0.05);
 
     const { camera } = state;
+
+    // Guard against uninitialized camera position [0, 0, 0] in the first frame
+    if (camera.position.lengthSq() < 0.01) {
+      return;
+    }
+
+    // Reset position if it ever becomes NaN (failsafe to prevent permanent invisibility)
+    const position = group.current.position;
+    if (isNaN(position.x) || isNaN(position.y) || isNaN(position.z)) {
+      position.set(0, 0, 0);
+    }
+
+    // Dynamically update groundPlane to be a camera-facing plane at the origin [0, 0, 0]
+    const normal = new THREE.Vector3().copy(camera.position).normalize();
+    if (!isNaN(normal.x) && !isNaN(normal.y) && !isNaN(normal.z)) {
+      groundPlane.current.set(normal, 0);
+    }
 
     const flight = flightControllerRef.current!;
     const isNavbarOrbit = flight.isActive() && flight.getTriggerSource() === 'Button';
@@ -1195,17 +1260,37 @@ function ModelWithControls({
 
       raycaster.current.setFromCamera(new THREE.Vector2(ndcX, ndcY), camera);
       const hit = raycaster.current.ray.intersectPlane(groundPlane.current, intersectPoint.current);
-      if (hit) {
-        targetPosition.current.set(intersectPoint.current.x, 0, intersectPoint.current.z);
+      if (hit && !isNaN(intersectPoint.current.x) && !isNaN(intersectPoint.current.z)) {
+        // Clamp the horizontal target position to a max radius from the origin to stay on screen
+        const targetX = intersectPoint.current.x;
+        const targetZ = intersectPoint.current.z;
+        const maxRadius = 3.2;
+        const dist = Math.sqrt(targetX * targetX + targetZ * targetZ);
+        if (dist > maxRadius) {
+          targetPosition.current.set((targetX / dist) * maxRadius, 0, (targetZ / dist) * maxRadius);
+        } else {
+          targetPosition.current.set(targetX, 0, targetZ);
+        }
         targetInitialized.current = true;
       }
     } else {
-      // Get world target from mouse — only update when ray actually hits the plane
-      raycaster.current.setFromCamera(mousePosition.current, camera);
-      const hit = raycaster.current.ray.intersectPlane(groundPlane.current, intersectPoint.current);
-      if (hit) {
-        targetPosition.current.set(intersectPoint.current.x, 0, intersectPoint.current.z);
-        targetInitialized.current = true;
+      // Get world target from mouse — only update when ray actually hits the plane and not hovering over UI
+      if (!isOverInteractive.current) {
+        raycaster.current.setFromCamera(mousePosition.current, camera);
+        const hit = raycaster.current.ray.intersectPlane(groundPlane.current, intersectPoint.current);
+        if (hit && !isNaN(intersectPoint.current.x) && !isNaN(intersectPoint.current.z)) {
+          // Clamp the horizontal target position to a max radius from the origin to stay on screen
+          const targetX = intersectPoint.current.x;
+          const targetZ = intersectPoint.current.z;
+          const maxRadius = 3.2;
+          const dist = Math.sqrt(targetX * targetX + targetZ * targetZ);
+          if (dist > maxRadius) {
+            targetPosition.current.set((targetX / dist) * maxRadius, 0, (targetZ / dist) * maxRadius);
+          } else {
+            targetPosition.current.set(targetX, 0, targetZ);
+          }
+          targetInitialized.current = true;
+        }
       }
     }
 
@@ -1226,7 +1311,6 @@ function ModelWithControls({
       }
     }
 
-    const position = group.current.position;
     const quaternion = group.current.quaternion;
 
     const mixer = mixerRef.current;
@@ -1462,24 +1546,6 @@ function ModelWithControls({
     <group 
       ref={group} 
       scale={0.45}
-      onClick={(e) => {
-        e.stopPropagation();
-        const charizardScreenPos = group.current?.position.clone() || new THREE.Vector3();
-        charizardScreenPos.y += flightControllerRef.current.isActive() ? 0.8 : 1.6;
-        const screenPos = charizardScreenPos.clone().project(e.camera);
-        const x = ((screenPos.x + 1) / 2) * window.innerWidth;
-        const y = ((1 - screenPos.y) / 2) * window.innerHeight;
-        onCharizardClick(x, y);
-      }}
-      onDoubleClick={(e) => {
-        e.stopPropagation();
-        const charizardScreenPos = group.current?.position.clone() || new THREE.Vector3();
-        charizardScreenPos.y += flightControllerRef.current.isActive() ? 0.8 : 1.6;
-        const screenPos = charizardScreenPos.clone().project(e.camera);
-        const x = ((screenPos.x + 1) / 2) * window.innerWidth;
-        const y = ((1 - screenPos.y) / 2) * window.innerHeight;
-        onCharizardDoubleClick(x, y);
-      }}
     >
       <primitive object={scene} />
     </group>
@@ -1487,3 +1553,43 @@ function ModelWithControls({
 }
 
 useGLTF.preload(MODEL_URL);
+
+function isInteractiveElement(el: HTMLElement | null): boolean {
+  if (!el) return false;
+  const interactiveTags = ['BUTTON', 'A', 'INPUT', 'TEXTAREA', 'SELECT', 'LABEL', 'OPTION'];
+  let current: HTMLElement | null = el;
+  while (current && current !== document.documentElement) {
+    const tag = (current.tagName || current.nodeName || '').toUpperCase();
+    if (interactiveTags.includes(tag)) {
+      return true;
+    }
+    if (typeof current.getAttribute === 'function' && current.getAttribute('role')?.toLowerCase() === 'button') {
+      return true;
+    }
+    if (typeof current.hasAttribute === 'function' && (current.hasAttribute('data-interactive') || current.hasAttribute('onClick'))) {
+      return true;
+    }
+    
+    let className = '';
+    if (current.className) {
+      if (typeof current.className === 'string') {
+        className = current.className;
+      } else if (typeof current.className === 'object' && 'baseVal' in current.className) {
+        className = (current.className as any).baseVal || '';
+      }
+    }
+    
+    if (className && (
+      className.includes('project-card') || 
+      className.includes('interactive') ||
+      className.includes('cursor-pointer') ||
+      className.includes('btn') ||
+      className.includes('button')
+    )) {
+      return true;
+    }
+    
+    current = (current.parentElement || current.parentNode) as HTMLElement | null;
+  }
+  return false;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { SkillIcons } from "./icons";
 
@@ -21,10 +21,23 @@ const cardVariants = {
   }
 };
 
+const SPACE_EMOJIS = ["🚀", "🛸", "⭐", "✨", "🪐", "☄️", "🌌", "👨‍🚀", "👾", "🛰️"];
+const burstCount = 8;
+const power = 10;
+const spread = 65; // degrees of spread
+const gravityVal = 3.5 * 0.15; // gravity * 0.15
+const emojiSize = 16;
+
 export default function SimpleSkillCard({ skill, categoryLabel }) {
   const shouldReduceMotion = useReducedMotion();
   const [isPopping, setIsPopping] = useState(false);
   const [ripples, setRipples] = useState([]);
+  
+  const containerRef = useRef(null);
+  const layerRef = useRef(null);
+  const particlesRef = useRef([]);
+  const rafRef = useRef(0);
+  const lastTsRef = useRef(0);
   
   // Randomize float duration and click rotation direction to create natural grid movement
   const floatDuration = useMemo(() => 3.2 + Math.random() * 1.8, []);
@@ -37,6 +50,103 @@ export default function SimpleSkillCard({ skill, categoryLabel }) {
     </svg>
   ));
 
+  const step = useCallback((ts) => {
+    const cont = containerRef.current;
+    const arr = particlesRef.current;
+    if (!cont) {
+      rafRef.current = 0;
+      return;
+    }
+    let dt = lastTsRef.current ? (ts - lastTsRef.current) / 16.6667 : 1;
+    lastTsRef.current = ts;
+    if (dt > 3) dt = 3;
+    
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const p = arr[i];
+      p.vy += gravityVal * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.rot += p.vrot * dt;
+      p.life -= dt;
+      
+      if (p.life <= 0) {
+        p.el.remove();
+        arr.splice(i, 1);
+        continue;
+      }
+      
+      const fade = p.life < 22 ? Math.max(0, p.life / 22) : 1;
+      p.el.style.opacity = String(fade);
+      p.el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) rotate(${p.rot}deg)`;
+    }
+    
+    if (arr.length > 0) {
+      rafRef.current = requestAnimationFrame(step);
+    } else {
+      rafRef.current = 0;
+      lastTsRef.current = 0;
+    }
+  }, []);
+
+  const burst = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const cont = containerRef.current;
+    const layer = layerRef.current;
+    if (!cont || !layer) return;
+
+    const ox = cont.clientWidth / 2;
+    const oy = cont.clientHeight / 2;
+    
+    const arr = particlesRef.current;
+    const MAX = 40; // Maintain solid performance by capping particles per card
+    
+    for (let k = 0; k < burstCount; k++) {
+      if (arr.length >= MAX) break;
+      const el = document.createElement("span");
+      el.textContent = SPACE_EMOJIS[Math.floor(Math.random() * SPACE_EMOJIS.length)];
+      el.style.position = "absolute";
+      el.style.left = "0px";
+      el.style.top = "0px";
+      el.style.fontSize = `${emojiSize}px`;
+      el.style.lineHeight = "1";
+      el.style.willChange = "transform, opacity";
+      el.style.pointerEvents = "none";
+      el.style.userSelect = "none";
+      el.style.display = "inline-block";
+      el.setAttribute("aria-hidden", "true");
+      layer.appendChild(el);
+      
+      const ang = ((-90 + (Math.random() * 2 - 1) * spread) * Math.PI) / 180;
+      const speed = power * (0.65 + Math.random() * 0.7);
+      
+      arr.push({
+        el,
+        x: ox - emojiSize / 2,
+        y: oy - emojiSize / 2,
+        vx: Math.cos(ang) * speed,
+        vy: Math.sin(ang) * speed,
+        rot: Math.random() * 360,
+        vrot: (Math.random() * 2 - 1) * 12,
+        life: 180 + Math.random() * 60,
+      });
+    }
+    
+    if (!rafRef.current) {
+      lastTsRef.current = 0;
+      rafRef.current = requestAnimationFrame(step);
+    }
+  }, [step]);
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      for (const p of particlesRef.current) {
+        if (p.el) p.el.remove();
+      }
+      particlesRef.current = [];
+    };
+  }, []);
+
   const triggerPop = (e) => {
     if (isPopping) return;
     setIsPopping(true);
@@ -44,6 +154,9 @@ export default function SimpleSkillCard({ skill, categoryLabel }) {
     // Spawn a golden click ripple
     const id = Date.now();
     setRipples((prev) => [...prev, { id }]);
+    
+    // Trigger space emoji explosion burst!
+    burst();
 
     // Trigger hover cursor style updates
     document.body.style.cursor = "grabbing";
@@ -70,6 +183,7 @@ export default function SimpleSkillCard({ skill, categoryLabel }) {
 
   return (
     <motion.div
+      ref={containerRef}
       variants={cardVariants}
       whileHover={shouldReduceMotion ? {} : { 
         y: -6, 
@@ -78,6 +192,17 @@ export default function SimpleSkillCard({ skill, categoryLabel }) {
       }}
       className="relative select-none group w-[160px] h-[64px]"
     >
+      {/* Particle Overlay Layer */}
+      <div
+        ref={layerRef}
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 50,
+          pointerEvents: "none",
+        }}
+      />
       {/* Middle Div: Controls subtle float wave */}
       <motion.div
         animate={shouldReduceMotion ? {} : { y: [0, -3.5, 0] }}

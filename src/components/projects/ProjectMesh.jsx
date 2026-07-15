@@ -18,7 +18,6 @@ export default function ProjectMesh({
 }) {
   const groupRef = useRef(null);
   const meshRef = useRef(null);
-  const glassMaterialRef = useRef(null);
   const htmlContainerRef = useRef(null);
   const lastZIndexRef = useRef(null);
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -164,11 +163,6 @@ export default function ProjectMesh({
     opacityRef.current += (targetOpacity - opacityRef.current) * (1 - Math.exp(-0.15 * dt));
     const currentOpacity = opacityRef.current * baseCardOpacity;
 
-    if (glassMaterialRef.current) {
-      glassMaterialRef.current.opacity = currentOpacity;
-      glassMaterialRef.current.transparent = true;
-    }
-
     // Update HTML overlay opacity, visibility, and dynamic DOM depth stacking directly in DOM (60 FPS bypass)
     const isCardVisible = isSelected || isRendered;
     if (htmlContainerRef.current) {
@@ -211,9 +205,10 @@ export default function ProjectMesh({
           bevelSegments={3}
           creaseAngle={0.4}
         >
-          <ProjectMaterial 
-            ref={glassMaterialRef} 
-            isHovered={isHovered && !selectedProject} 
+          <meshBasicMaterial 
+            transparent 
+            opacity={0} 
+            depthWrite={false} 
           />
         </RoundedBox>
 
@@ -254,7 +249,10 @@ export default function ProjectMesh({
                 flex: 1,
                 width: "100%",
                 minWidth: 0,
-                minHeight: 0
+                minHeight: 0,
+                background: "rgba(255, 255, 255, 0.03)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)"
               }}
             >
               {/* Default Border Overlay: GPU optimized */}

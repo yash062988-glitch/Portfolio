@@ -8,6 +8,7 @@ import AuraRings from "./AuraRings";
 import PlatformGlow from "./PlatformGlow";
 import SkillCard from "./SkillCard";
 import dynamic from "next/dynamic";
+import MeshText from "@/components/design-system/MeshText";
 
 export default function SkillsScene() {
   const containerRef = useRef(null);
@@ -96,9 +97,11 @@ export default function SkillsScene() {
           <span className="text-[12px] font-bold tracking-[0.25em] text-primary uppercase select-none">
             SKILLS
           </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-none">
-            Skills & Stack
-          </h2>
+          <MeshText
+            text="Skills & Stack"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-none"
+            as="h2"
+          />
           <p className="text-white/60 text-xs md:text-sm lg:text-base font-light leading-relaxed mt-2">
             Technologies I use to build modern digital experiences.
           </p>

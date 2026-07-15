@@ -574,6 +574,7 @@ export default function GlobalStarfield() {
           }}
           camera={{ position: [0, 0, 1], fov: 60 }}
           style={{ width: "100%", height: "100%" }}
+          className="click-through-canvas"
         >
           <StarfieldScene 
             isPausedRef={isPausedRef} 

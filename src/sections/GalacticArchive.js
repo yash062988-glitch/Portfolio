@@ -4,14 +4,15 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring, useReducedMotion, useMotionValueEvent, animate } from "framer-motion";
 import { Quaternion, Euler } from "three";
+import MeshText from "@/components/design-system/MeshText";
 
 // Sub-component for individual premium luxury holographic navigation beacons
 function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnter, onMouseLeave }) {
   const shouldReduceMotion = useReducedMotion();
-  
+
   // Randomize floating & breathing durations per node so they animate independently
   const breathingDuration = useMemo(() => 4.5 + Math.random() * 1.5, []);
-  
+
   // Orbiting satellites parameters
   const satelliteRotation1 = "spinClockwise 12s linear infinite";
   const satelliteRotation2 = "spinCounterClockwise 18s linear infinite";
@@ -29,8 +30,8 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
 
   // Compute scale and dimming opacity when another portal is hovered
   const finalScale = isHovered ? sector.baseScale * 1.06 : sector.baseScale;
-  const targetOpacity = isHovered 
-    ? 1.0 
+  const targetOpacity = isHovered
+    ? 1.0
     : (hoveredPlanet && hoveredPlanet !== sector.id ? 0.25 : sector.baseOpacity);
 
   return (
@@ -66,10 +67,9 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
       )}
 
       {/* Transparent HUD intersecting guide circle */}
-      <div 
-        className={`absolute rounded-full border border-dashed pointer-events-none transition-all duration-700 ${
-          isHovered ? "w-44 h-44 opacity-45 border-[#e9b15d]" : "w-32 h-32 opacity-12 border-white/40"
-        }`}
+      <div
+        className={`absolute rounded-full border border-dashed pointer-events-none transition-all duration-700 ${isHovered ? "w-44 h-44 opacity-45 border-[#e9b15d]" : "w-32 h-32 opacity-12 border-white/40"
+          }`}
       />
 
       {/* Two miniature orbiting satellites at distinct speeds and radii (Responsive percentage-based widths) */}
@@ -113,10 +113,10 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
           shouldReduceMotion
             ? {}
             : {
-                scale: finalScale,
-                y: isHovered ? -8 : 0,
-                opacity: targetOpacity
-              }
+              scale: finalScale,
+              y: isHovered ? -8 : 0,
+              opacity: targetOpacity
+            }
         }
         style={{
           scale: isHovered ? undefined : arrivalScaleBoost
@@ -129,33 +129,30 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         className="relative cursor-pointer z-10 flex items-center justify-center w-28 h-28 sm:w-34 sm:h-34 md:w-42 md:h-42 lg:w-48 lg:h-48"
       >
         {/* Floating coordinate sector number identifier */}
-        <div 
-          className={`absolute -top-1.5 -right-1.5 z-30 pointer-events-none px-2 py-0.5 rounded text-[8.5px] font-mono tracking-widest border transition-all duration-500 bg-[#0d0908]/95 ${
-            isHovered 
-              ? "text-[#e9b15d] border-[#e9b15d]/50 shadow-[0_0_12px_rgba(233,177,93,0.3)]" 
+        <div
+          className={`absolute -top-1.5 -right-1.5 z-30 pointer-events-none px-2 py-0.5 rounded text-[8.5px] font-mono tracking-widest border transition-all duration-500 bg-[#0d0908]/95 ${isHovered
+              ? "text-[#e9b15d] border-[#e9b15d]/50 shadow-[0_0_12px_rgba(233,177,93,0.3)]"
               : "text-white/45 border-white/10"
-          }`}
+            }`}
         >
           {sector.num}
         </div>
 
         {/* Outer glass refraction ring */}
-        <div 
-          className={`absolute inset-0 rounded-full border transition-all duration-700 bg-gradient-to-b from-white/[0.04] to-white/[0.01] backdrop-blur-[4px] ${
-            isHovered 
-              ? "border-[#e9b15d]/60 shadow-[inset_0_1px_4px_rgba(233,177,93,0.3),0_16px_36px_rgba(0,0,0,0.75)]" 
+        <div
+          className={`absolute inset-0 rounded-full border transition-all duration-700 bg-gradient-to-b from-white/[0.04] to-white/[0.01] backdrop-blur-[4px] ${isHovered
+              ? "border-[#e9b15d]/60 shadow-[inset_0_1px_4px_rgba(233,177,93,0.3),0_16px_36px_rgba(0,0,0,0.75)]"
               : "border-white/15 shadow-[inset_0_1px_3px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.55)]"
-          }`} 
+            }`}
         />
 
         {/* Rotating outer segmented HUD ring */}
         <div
           style={{ transform: "translateZ(15px)" }}
-          className={`absolute inset-[-10px] rounded-full pointer-events-none transition-all duration-700 ${
-            isHovered 
-              ? "animate-spin-fast opacity-95 scale-105" 
+          className={`absolute inset-[-10px] rounded-full pointer-events-none transition-all duration-700 ${isHovered
+              ? "animate-spin-fast opacity-95 scale-105"
               : "animate-spin-slow opacity-40"
-          }`}
+            }`}
         >
           <svg viewBox="0 0 120 120" className="w-full h-full">
             <circle
@@ -173,11 +170,10 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
 
         {/* Rotating middle segmented HUD ring */}
         <div
-          className={`absolute inset-[3px] rounded-full pointer-events-none transition-all duration-700 ${
-            isHovered 
-              ? "animate-spin-reverse-fast opacity-85" 
+          className={`absolute inset-[3px] rounded-full pointer-events-none transition-all duration-700 ${isHovered
+              ? "animate-spin-reverse-fast opacity-85"
               : "animate-spin-reverse-slow opacity-25"
-          }`}
+            }`}
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <circle
@@ -193,10 +189,9 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         </div>
 
         {/* Emissive energy ring */}
-        <div 
-          className={`absolute inset-[10px] rounded-full border transition-all duration-700 pointer-events-none z-10 ${
-            isHovered ? "border-[#e9b15d]/40 scale-102" : "border-white/5"
-          }`}
+        <div
+          className={`absolute inset-[10px] rounded-full border transition-all duration-700 pointer-events-none z-10 ${isHovered ? "border-[#e9b15d]/40 scale-102" : "border-white/5"
+            }`}
           style={{
             boxShadow: isHovered ? `0 0 16px ${sector.color}35` : "none"
           }}
@@ -211,9 +206,8 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
             className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />
           {/* Ambient tint overlay */}
-          <div className={`absolute inset-0 transition-colors duration-500 ${
-            isHovered ? "bg-transparent" : "bg-black/30"
-          }`} />
+          <div className={`absolute inset-0 transition-colors duration-500 ${isHovered ? "bg-transparent" : "bg-black/30"
+            }`} />
 
           {/* Premium diagonal reflection sheen sweep */}
           <div className="absolute inset-0 overflow-hidden rounded-full pointer-events-none z-20">
@@ -223,10 +217,9 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
 
         {/* Node Name Label Beneath */}
         <div className="absolute top-[106%] flex flex-col items-center pointer-events-none whitespace-nowrap transition-all duration-500">
-          <span 
-            className={`text-[10px] uppercase font-extrabold tracking-[0.25em] transition-colors duration-500 ${
-              isHovered ? "text-[#e9b15d]" : "text-white/80"
-            }`}
+          <span
+            className={`text-[10px] uppercase font-extrabold tracking-[0.25em] transition-colors duration-500 ${isHovered ? "text-[#e9b15d]" : "text-white/80"
+              }`}
             style={{
               textShadow: isHovered ? "0 0 12px rgba(233,177,93,0.5)" : "none"
             }}
@@ -465,7 +458,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
     const path = pathRef.current;
     const ship = shipRef.current;
     if (!path || !ship) return;
-    
+
     try {
       const totalLength = path.getTotalLength();
       if (totalLength === 0) return;
@@ -505,17 +498,17 @@ export default function GalacticArchive({ setIsPortalActive }) {
 
       const currentLength = t * totalLength;
       const point = path.getPointAtLength(currentLength);
-      
+
       // 3. Tangent vector calculation purely on horizontal movement
       const sampleDelta = 1;
-      const nextLength = isForward 
-        ? Math.min(totalLength, currentLength + sampleDelta) 
+      const nextLength = isForward
+        ? Math.min(totalLength, currentLength + sampleDelta)
         : Math.max(0, currentLength - sampleDelta);
       const nextPoint = path.getPointAtLength(nextLength);
 
       // Horizontal travel direction (ignoring travelY for flat visual orientation)
       const travelX = isForward ? nextPoint.x - point.x : point.x - nextPoint.x;
-      
+
       // Target Y-rotation: 0 rad (facing right) or PI rad (facing left)
       const targetYAngle = travelX >= 0 ? 0 : Math.PI;
 
@@ -537,7 +530,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
       const time = performance.now() * 0.0025;
       const hoverX = Math.cos(time * 0.7) * 2; // subtle horizontal drift
       const hoverY = Math.sin(time * 1.1) * 3.5; // gentle vertical bobbing
-      
+
       // Position and rotate the HTML spaceship element in DOM (60 FPS bypass)
       // Keeps pitch (X) and roll (Z) at 0, applying only Yaw (Y) rotation and hover offsets
       ship.style.transform = `translate3d(${point.x + hoverX}px, ${point.y + hoverY}px, 0) translate(-50%, -50%) rotateY(${renderYRotation}deg)`;
@@ -553,17 +546,17 @@ export default function GalacticArchive({ setIsPortalActive }) {
       for (const sector of sectors) {
         const planetX = (sector.x / 100) * dimensions.width;
         const planetY = (sector.y / 100) * dimensions.height;
-        
+
         const dx = point.x - planetX;
         const dy = point.y - planetY;
         const dist = Math.hypot(dx, dy);
-        
+
         // Responsive radius threshold based on window width
         let planetRadius = 56;
         if (window.innerWidth >= 1024) planetRadius = 96; // lg
         else if (window.innerWidth >= 768) planetRadius = 84;  // md
         else if (window.innerWidth >= 640) planetRadius = 68;  // sm
-        
+
         if (dist < planetRadius) {
           currentOccludingPlanet = sector;
           break;
@@ -609,7 +602,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
       const y1 = dimensions.height * (s1.y / 100);
       const x2 = dimensions.width * (s2.x / 100);
       const y2 = dimensions.height * (s2.y / 100);
-      
+
       const dx = Math.abs(x2 - x1) * 0.45;
       if (i === 0) {
         path += `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
@@ -632,7 +625,8 @@ export default function GalacticArchive({ setIsPortalActive }) {
       onMouseLeave={handleContainerMouseLeave}
       className="relative w-full h-[900px] lg:h-[950px] bg-transparent select-none overflow-hidden flex flex-col justify-between py-12 md:py-16 border-b border-white/5"
     >
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes spinClockwise { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes spinCounterClockwise { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
         @keyframes floatZeroG { 0%, 100% { transform: translate(0px, 0px); } 50% { transform: translate(-3px, 4px); } }
@@ -690,7 +684,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
           alt="Cinematic Cosmic Star Chart Background"
           fill
           priority
-          className="object-cover"
+          className="object-cover opacity-50"
         />
         {/* <div className="absolute inset-0 bg-gradient-to-b from-[#0b0705]/20 via-[#0b0705]/85 to-[#0b0705]" /> */}
       </div>
@@ -702,7 +696,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
         {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(11,7,5,0.95)_95%)]" /> */}
         {/* <div className="absolute top-0 left-0 w-[45%] h-[80%] bg-gradient-to-br from-[#e9b15d]/[0.035] via-transparent to-transparent blur-2xl transform origin-top-left rotate-12" /> */}
         {/* <div className="absolute top-0 right-0 w-[45%] h-[80%] bg-gradient-to-bl from-[#e9b15d]/[0.035] via-transparent to-transparent blur-2xl transform origin-top-right -rotate-12" /> */}
-        
+
         {/* Darkening veil sits in z-10 layer (behind map container at z-30) */}
         <motion.div
           animate={{ opacity: hoveredPlanet ? 0.72 : 0 }}
@@ -721,17 +715,37 @@ export default function GalacticArchive({ setIsPortalActive }) {
         ))}
       </div>
 
+      {/* Cinematic Black Hole Video Overlay behind Heading */}
+      <div className="absolute top-0 left-0 right-0 h-0 overflow-visible z-25 pointer-events-none select-none flex justify-center mix-blend-screen">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute pointer-events-none select-none object-cover w-[550px] h-[550px] top-[-260px] md:w-[750px] md:h-[750px] md:top-[-360px] lg:w-[1000px] lg:h-[1000px] lg:top-[-480px] left-1/2 -translate-x-1/2"
+          style={{
+            maskImage: "radial-gradient(circle at 50% 50%, black 40%, transparent 68%)",
+            WebkitMaskImage: "radial-gradient(circle at 50% 50%, black 40%, transparent 68%)"
+          }}
+        >
+          <source src="/videos/blackhole.webm" type="video/webm" />
+        </video>
+      </div>
+
       {/* Main Viewport Container */}
       <div className="relative z-40 w-full max-w-7xl mx-auto px-6 h-full flex flex-col justify-between py-8 pointer-events-none">
-        
+
         {/* Header HUD Readout Title (Fixed at the top center with premium spacing) */}
         <div className="flex flex-col items-center text-center w-full pt-6 pb-4 pointer-events-none">
           <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-[#e9b15d] uppercase select-none mb-3">
             SYSTEM LOG // NAV MODULE
           </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-[0.22em] leading-none uppercase">
-            ORBITAL NEXUS
-          </h2>
+          <MeshText
+            text="ORBITAL NEXUS"
+            className="text-4xl md:text-5xl font-extrabold text-white tracking-[0.22em] leading-none uppercase"
+            as="h2"
+          />
           <p className="text-white/45 text-[10px] tracking-[0.2em] uppercase font-light mt-5">
             MAPPING MY JOURNEY THROUGH INNOVATION
           </p>
@@ -753,13 +767,13 @@ export default function GalacticArchive({ setIsPortalActive }) {
                   {sectors.slice(0, -1).map((s1, idx) => {
                     const s2 = sectors[idx + 1];
                     return (
-                      <linearGradient 
-                        key={`grad-${idx}`} 
-                        id={`grad-${idx}`} 
-                        x1={`${s1.x}%`} 
-                        y1={`${s1.y}%`} 
-                        x2={`${s2.x}%`} 
-                        y2={`${s2.y}%`} 
+                      <linearGradient
+                        key={`grad-${idx}`}
+                        id={`grad-${idx}`}
+                        x1={`${s1.x}%`}
+                        y1={`${s1.y}%`}
+                        x2={`${s2.x}%`}
+                        y2={`${s2.y}%`}
                         gradientUnits="userSpaceOnUse"
                       >
                         <stop offset="0%" stopColor={s1.color} stopOpacity="0.15" />
