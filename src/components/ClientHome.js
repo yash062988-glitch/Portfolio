@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChatProvider } from "@/context/ChatContext";
 import Navbar from "@/components/Navbar";
 import Hero from "@/sections/Hero";
@@ -20,26 +20,10 @@ import GlobalStarfield from "@/components/GlobalStarfield";
 
 import ContactFooterWrapper from "@/components/ContactFooterWrapper";
 import FluidTrail from "@/components/FluidTrail";
-import dynamic from "next/dynamic";
-
-const CharizardCompanion = dynamic(
-  () => import("@/components/charizard/components/Viewer").then((mod) => mod.Viewer),
-  { ssr: false }
-);
 
 export default function ClientHome({ portraitImage }) {
   const [loading, setLoading] = useState(true);
   const [isPortalActive, setIsPortalActive] = useState(false);
-  const [mountCompanion, setMountCompanion] = useState(false);
-
-  useEffect(() => {
-    if (!loading) {
-      const timer = setTimeout(() => {
-        setMountCompanion(true);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
 
   return (
     <ChatProvider>
@@ -71,7 +55,9 @@ export default function ClientHome({ portraitImage }) {
 
               <Skills />
 
-              <Projects />
+              <div id="projects-section-container">
+                <Projects />
+              </div>
 
               <GalacticArchive setIsPortalActive={setIsPortalActive} />
 
@@ -90,7 +76,7 @@ export default function ClientHome({ portraitImage }) {
 
             <CursorGlow />
 
-            {mountCompanion && <CharizardCompanion />}
+            {/* {mountCompanion && <CharizardCompanion />} */}
           </div>
         </>
       )}

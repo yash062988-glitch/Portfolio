@@ -263,12 +263,20 @@ export default function SimpleSkillCard({ skill, categoryLabel }) {
                   borderColor: "rgba(255,255,255,0.05)"
                 }
           }
-          transition={{
-            type: "spring",
-            stiffness: 450,
-            damping: 18,
-            mass: 0.6
-          }}
+          transition={
+            isPopping
+              ? {
+                  type: "tween",
+                  duration: 0.6,
+                  ease: "easeOut"
+                }
+              : {
+                  type: "spring",
+                  stiffness: 450,
+                  damping: 18,
+                  mass: 0.6
+                }
+          }
           className="relative z-10 w-full h-full flex items-center gap-3 px-3 py-2 text-left bg-[#130f0d]/55 border rounded-xl backdrop-blur-md outline-none transition-colors duration-300 hover:border-[#e9b15d]/40 group-hover:bg-[#1c1613]/60 focus:border-[#e9b15d]/60 cursor-pointer"
         >
           {/* Outlined Icon Container */}

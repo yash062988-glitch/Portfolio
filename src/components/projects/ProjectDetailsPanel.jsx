@@ -9,7 +9,7 @@ export default function ProjectDetailsPanel({ selectedProject, onClose }) {
 
   return (
     <div
-      className="absolute inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50 pointer-events-auto"
+      className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-[95] pointer-events-auto"
       onClick={onClose}
     >
       <motion.div
@@ -35,7 +35,7 @@ export default function ProjectDetailsPanel({ selectedProject, onClose }) {
             src={selectedProject.image}
             alt={selectedProject.title}
             fill
-            className="object-cover"
+            className="object-contain"
           />
         </div>
 

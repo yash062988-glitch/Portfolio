@@ -715,23 +715,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
         ))}
       </div>
 
-      {/* Cinematic Black Hole Video Overlay behind Heading */}
-      <div className="absolute top-0 left-0 right-0 h-0 overflow-visible z-25 pointer-events-none select-none flex justify-center mix-blend-screen">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="absolute pointer-events-none select-none object-cover w-[550px] h-[550px] top-[-260px] md:w-[750px] md:h-[750px] md:top-[-360px] lg:w-[1000px] lg:h-[1000px] lg:top-[-480px] left-1/2 -translate-x-1/2"
-          style={{
-            maskImage: "radial-gradient(circle at 50% 50%, black 40%, transparent 68%)",
-            WebkitMaskImage: "radial-gradient(circle at 50% 50%, black 40%, transparent 68%)"
-          }}
-        >
-          <source src="/videos/blackhole.webm" type="video/webm" />
-        </video>
-      </div>
+
 
       {/* Main Viewport Container */}
       <div className="relative z-40 w-full max-w-7xl mx-auto px-6 h-full flex flex-col justify-between py-8 pointer-events-none">

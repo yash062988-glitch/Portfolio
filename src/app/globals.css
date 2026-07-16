@@ -4,10 +4,6 @@
 @source "../sections/**/*.{js,jsx,ts,tsx}";
 @source "./**/*.{js,jsx,ts,tsx}";
 
-@source not "../components/charizard/fsm/**";
-@source not "../components/charizard/controllers/**";
-@source not "../components/charizard/*.ts";
-
 @theme {
   --font-sans: var(--font-space-grotesk), sans-serif;
   --color-primary: #E9B15D;

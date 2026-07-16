@@ -71,7 +71,7 @@ export const PROJECTS_DATA = [
     tech: ["React", "Tailwind CSS", "Framer Motion", "Vercel"],
     github: "https://github.com/ka0-0/Soundwave_AI",
     demo: "https://soundwave-ai-ioik.vercel.app",
-    image: "/images/hero-bg.png",
+    image: "/images/soundwave-ai-project.png",
     accentColor: "rgba(168, 85, 247, 0.2)", // Purple accent glow
     hoverBorderColor: "rgba(168, 85, 247, 0.6)"
   },
@@ -87,7 +87,7 @@ export const PROJECTS_DATA = [
     tech: ["React", "Tailwind CSS", "Framer Motion", "Vercel"],
     github: "https://github.com/Jitarth-web/DOMIQ-AI",
     demo: "https://domiq-ai-seven.vercel.app",
-    image: "/images/hero-bg.png",
+    image: "/images/domiq-ai-project.png",
     accentColor: "rgba(233, 177, 93, 0.25)", // Warm architectural gold glow
     hoverBorderColor: "rgba(233, 177, 93, 0.65)"
   },
@@ -103,7 +103,7 @@ export const PROJECTS_DATA = [
     tech: ["React", "Tailwind CSS", "Framer Motion", "Vercel"],
     github: "https://github.com/yash062988-glitch/shagun_fashion",
     demo: "https://shagun-fashion.vercel.app",
-    image: "/images/hero-bg.png",
+    image: "/images/shagun-fashion-project.png",
     accentColor: "rgba(59, 130, 246, 0.2)", // Premium navy glow
     hoverBorderColor: "rgba(233, 177, 93, 0.5)" // Gold border
   },

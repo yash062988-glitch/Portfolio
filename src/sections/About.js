@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { 
@@ -15,7 +15,16 @@ export default function About({ portraitImage = "/images/about section image.png
   const springConfig = { stiffness: 120, damping: 20 };
   const smoothX = useSpring(portraitX, springConfig);
   const smoothY = useSpring(portraitY, springConfig);
+  const [activeTab, setActiveTab] = useState(0);
+  const [resetTimer, setResetTimer] = useState(0);
+  const tabs = ["Education", "Interests", "Goals", "Mission"];
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveTab((prev) => (prev + 1) % tabs.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [resetTimer]);
   const handlePortraitMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
@@ -186,9 +195,9 @@ export default function About({ portraitImage = "/images/about section image.png
                 </motion.div>
               </div>
 
-              {/* Bottom floating badge (overlapping the bottom edge exactly) */}
-              <div className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 z-30">
-                <span className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#120c08]/85 border border-[#E9B15D]/25 text-[10px] font-bold uppercase tracking-[0.25em] text-primary shadow-lg backdrop-blur-md transition-all duration-300 group-hover:border-[#E9B15D]/40">
+              {/* Bottom floating badge */}
+              <div className="absolute bottom-8 left-8 z-30">
+                <span className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#120c08]/50 border border-[#E9B15D]/20 text-[10px] font-bold uppercase tracking-[0.2em] text-primary shadow-lg backdrop-blur-md transition-all duration-300 group-hover:border-[#E9B15D]/40 whitespace-nowrap">
                   Explorer • Builder • Learner
                 </span>
               </div>
@@ -230,40 +239,161 @@ export default function About({ portraitImage = "/images/about section image.png
             </div>
           </motion.div>
 
-          {/* 3. TOP RIGHT: EDUCATION CARD (Column 3 - Row 1) */}
+          {/* 3. TOP RIGHT: DYNAMIC MULTI-TAB CARD (Column 3 - Row 1) */}
           <motion.div
             variants={cardVariants}
             whileHover={hoverConfig}
             transition={transitionConfig}
             tabIndex={0}
-            aria-label="Education background details"
-            className={`col-span-12 lg:col-span-7 lg:col-start-18 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[260px] order-3 ${outlineFocusClasses}`}
+            aria-label="Education, Interests, Goals, and Mission details"
+            className={`col-span-12 lg:col-span-7 lg:col-start-18 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[385px] order-3 ${outlineFocusClasses}`}
           >
-            <div className="flex items-center justify-between mb-8">
-              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-white/40">EDUCATION</span>
-              <GraduationCap className="w-4 h-4 text-primary/40" />
-            </div>
-            <div>
-              <div className="mb-4">
-                <span className="inline-flex items-center gap-1.5 h-6 px-3.5 rounded-full bg-primary/10 border border-primary/25 text-[9px] font-bold uppercase tracking-wider text-primary shadow-sm backdrop-blur-md select-none">
-                  Currently Pursuing
-                </span>
-              </div>
-              <h4 className="text-[15px] font-bold text-white mb-2 leading-relaxed tracking-wide">
-                Bachelor's in Physical Science with Computer Science
-              </h4>
-              <p className="text-white/40 text-[11px] mb-6 font-mono uppercase tracking-wider">Delhi University</p>
-              
-              <div className="flex flex-wrap gap-2 pt-6 border-t border-white/5">
-                {["AI", "Machine Learning", "Software Development", "Web Technologies"].map((tag, idx) => (
-                  <span 
-                    key={`${tag}-${idx}`} 
-                    className="text-[9px] font-bold uppercase tracking-wider bg-white/[0.02] border border-white/10 px-3 py-1.5 rounded-full text-white/50 transition-colors duration-300 hover:border-primary/20 hover:text-white/70 select-none"
+            {/* Tab Navigation header */}
+            <div className="flex items-center justify-between mb-6 gap-2">
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1 w-full">
+                {tabs.map((tab, idx) => (
+                  <button
+                    key={tab}
+                    onClick={() => {
+                      setActiveTab(idx);
+                      setResetTimer(prev => prev + 1);
+                    }}
+                    className={`text-[9px] uppercase tracking-[0.2em] font-bold px-2.5 py-1 rounded transition-all duration-300 ${
+                      activeTab === idx
+                        ? "border border-primary/30 text-primary bg-primary/10 shadow-[0_0_8px_rgba(233,177,93,0.1)]"
+                        : "text-white/40 border border-transparent hover:text-white/60 hover:bg-white/[0.01]"
+                    }`}
                   >
-                    {tag}
-                  </span>
+                    {tab}
+                  </button>
                 ))}
               </div>
+              <GraduationCap className="w-4 h-4 text-primary/45 flex-shrink-0 ml-2" />
+            </div>
+
+            {/* Dynamic Content Panel */}
+            <div className="flex-grow flex flex-col justify-start">
+              {activeTab === 0 && (
+                <div className="flex flex-col gap-5">
+                  {/* Item 1: Bachelors */}
+                  <div className="relative pl-5 border-l border-primary/30 pb-1">
+                    <div className="absolute left-[-5.5px] top-[5px] w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_6px_rgba(233,177,93,0.8)] animate-pulse" />
+                    <div className="flex flex-col mb-1">
+                      <span className="text-[11px] font-bold text-white leading-tight uppercase tracking-wide">
+                        Bachelors in Physical Science with Computer Science
+                      </span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[9px] font-mono text-white/45 uppercase tracking-wider">
+                          2024 - 2027 // Delhi University
+                        </span>
+                        <span className="text-[8px] font-mono font-bold text-primary border border-primary/20 px-1.5 py-0.5 rounded bg-primary/5 uppercase select-none leading-none">
+                          Current
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Item 2: Class 12 */}
+                  <div className="relative pl-5 border-l border-white/10 pb-1">
+                    <div className="absolute left-[-4.5px] top-[6px] w-2 h-2 rounded-full border border-primary/45 bg-[#120c08]" />
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-[10px] font-bold text-white/80 uppercase tracking-wide leading-tight">
+                        Class 12 (Higher Secondary)
+                      </span>
+                      <span className="text-[8px] font-mono text-white/35 flex-shrink-0">2024</span>
+                    </div>
+                    <span className="text-[9px] font-mono text-white/45 uppercase tracking-wider block mb-2 leading-none">
+                      Vivekanand International School
+                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {["Physics", "Chemistry", "Mathematics", "Computer Science"].map((tag) => (
+                        <span key={tag} className="text-[7.5px] font-semibold bg-white/[0.02] border border-white/5 px-2 py-0.5 rounded text-white/40">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Item 3: Class 10 */}
+                  <div className="relative pl-5">
+                    <div className="absolute left-[-4.5px] top-[6px] w-2 h-2 rounded-full border border-primary/45 bg-[#120c08]" />
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-[10px] font-bold text-white/80 uppercase tracking-wide leading-tight">
+                        Class 10 (Secondary)
+                      </span>
+                      <span className="text-[8px] font-mono text-white/35 flex-shrink-0">2022</span>
+                    </div>
+                    <span className="text-[9px] font-mono text-white/45 uppercase tracking-wider block mb-1.5 leading-none">
+                      Vivekanand International School
+                    </span>
+                    <p className="text-[9px] text-white/35 font-light leading-relaxed">
+                      Strong academic foundation in Mathematics and Science.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 1 && (
+                <div className="flex flex-col gap-4">
+                  <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-primary/85 block mb-1">
+                    SKILL PATHWAYS & INTERESTS
+                  </span>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { name: "Generative AI", desc: "LLMs, RAG, Agents" },
+                      { name: "Web Development", desc: "Next.js, Canvas, WebGL" },
+                      { name: "Graphic Designing", desc: "UI/UX, 3D Assets" },
+                      { name: "Data Analysis", desc: "Python, Visual Models" },
+                      { name: "Interactive UI", desc: "Physics simulations" },
+                      { name: "Space Cosmology", desc: "Astrophysics mapping" }
+                    ].map((item) => (
+                      <div key={item.name} className="p-3 rounded-xl bg-white/[0.01] border border-white/5 hover:border-primary/10 transition-colors duration-300">
+                        <span className="text-[10px] font-bold text-white/80 block uppercase tracking-wide mb-0.5">{item.name}</span>
+                        <span className="text-[8px] text-white/45 block font-light leading-none">{item.desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 2 && (
+                <div className="flex flex-col gap-4">
+                  <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-primary/85 block mb-1">
+                    SHORT & LONG TERM GOALS
+                  </span>
+                  <ul className="flex flex-col gap-3">
+                    {[
+                      "Continuously learning and developing new technologies.",
+                      "Architecting highly scalable AI-human hybrid software solutions.",
+                      "Designing futuristic, interactive 3D web interfaces.",
+                      "Mastering real-time rendering technologies and high-fidelity animations.",
+                      "Contributing to open-source developer tooling and graphics engines."
+                    ].map((goal, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5">
+                        <span className="text-primary font-bold text-[10px] mt-0.5">→</span>
+                        <p className="text-[10px] text-white/70 font-light leading-relaxed">{goal}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {activeTab === 3 && (
+                <div className="flex flex-col gap-4 justify-center h-full pt-2">
+                  <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-primary/85 block mb-1">
+                    CORE MISSION STATEMENT
+                  </span>
+                  <div className="relative pl-6 py-2 border-l-2 border-primary/20">
+                    <Quote className="absolute left-2 top-0 w-3 h-3 text-primary/30 transform -scale-x-100" />
+                    <p className="text-[11px] text-white/80 font-light leading-relaxed italic mb-4">
+                      "To bridge the gap between creative visual artistry and complex backend/AI architecture, crafting interactive digital universes that inspire curiosity."
+                    </p>
+                    <p className="text-[10px] text-white/60 font-light leading-relaxed">
+                      Building applications that are not just functional, but visually spectacular and emotionally engaging.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
 
@@ -451,10 +581,7 @@ export default function About({ portraitImage = "/images/about section image.png
             aria-label="Philosophy quote card"
             className={`col-span-12 lg:col-span-17 lg:col-start-8 lg:row-start-3 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[130px] relative overflow-hidden order-6 ${outlineFocusClasses}`}
           >
-            {/* Giant Background Quotation Marks */}
-            <span className="absolute -bottom-8 -right-4 text-primary/[0.03] text-[180px] font-serif select-none pointer-events-none leading-none font-bold">
-              ”
-            </span>
+
             
             {/* Background Artwork Masked */}
             <div className="absolute right-0 bottom-0 top-0 w-[40%] opacity-70 pointer-events-none select-none z-0">

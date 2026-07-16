@@ -1,128 +1,26 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useId } from "react";
 
-const GRID_W = 96;
-const GRID_H = 40;
-const DRAG = 1.8;
-const SPRING_K = 0.08;
-const DAMPING = 0.9;
-const DT = 0.1;
-const CHROMA = 0.005;
 const PADDING_X = 60;
 const PADDING_Y = 30;
+const ALPHA_THR = 50;
 
-const VERT_SRC = `#version 300 es
-in vec2 aPos;
-in vec2 aUv;
-in vec2 aDisp;
-out vec2 vUv;
-out float vMag;
-void main() {
-    gl_Position = vec4(aPos + aDisp, 0.0, 1.0);
-    vUv = aUv;
-    vMag = length(aDisp);
-}`;
-
-const FRAG_SRC = `#version 300 es
-precision highp float;
-in vec2 vUv;
-in float vMag;
-out vec4 outColor;
-uniform sampler2D uTex;
-uniform float uChroma;
-uniform vec3 uColorA;
-uniform vec3 uColorB;
-void main() {
-    vec4 base = texture(uTex, vUv);
-    if (uChroma > 0.0) {
-        float o = uChroma * ${CHROMA.toFixed(5)} * clamp(vMag * 8.0, 0.0, 1.0);
-        float aOff = texture(uTex, vUv + vec2(o, 0.0)).a;
-        float bOff = texture(uTex, vUv - vec2(o, 0.0)).a;
-        vec3 col = base.rgb * base.a;
-        col += uColorA * max(0.0, aOff - base.a);
-        col += uColorB * max(0.0, bOff - base.a);
-        float aMax = max(base.a, max(aOff, bOff));
-        outColor = vec4(col, aMax);
-    } else {
-        outColor = base;
-    }
-}`;
-
-function compile(gl, type, src) {
-    const sh = gl.createShader(type);
-    if (!sh) return null;
-    gl.shaderSource(sh, src);
-    gl.compileShader(sh);
-    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-        console.error("Shader compile error:", gl.getShaderInfoLog(sh));
-        gl.deleteShader(sh);
-        return null;
-    }
-    return sh;
-}
-
-function linkProgram(gl, vs, fs) {
-    const p = gl.createProgram();
-    if (!p) return null;
-    gl.attachShader(p, vs);
-    gl.attachShader(p, fs);
-    gl.linkProgram(p);
-    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
-        console.error("Program link error:", gl.getProgramInfoLog(p));
-        gl.deleteProgram(p);
-        return null;
-    }
-    return p;
-}
-
-const VARIANT_WEIGHTS = {
-    Thin: 100,
-    Hairline: 100,
-    ExtraLight: 200,
-    UltraLight: 200,
-    Light: 300,
-    Regular: 400,
-    Normal: 400,
-    Book: 400,
-    Medium: 500,
-    SemiBold: 600,
-    DemiBold: 600,
-    Bold: 700,
-    ExtraBold: 800,
-    UltraBold: 800,
-    Black: 900,
-    Heavy: 900,
-};
-
-function variantToWeight(variant) {
-    if (!variant) return 400;
-    const base = variant
-        .replace(/\s*Italic\s*/i, "")
-        .trim()
-        .replace(/\s+/g, "");
-    return VARIANT_WEIGHTS[base] ?? 400;
-}
-
-function variantIsItalic(variant) {
-    return !!variant && /italic/i.test(variant);
-}
-
-function parseColor(v) {
-    if (typeof v !== "string") return [1, 1, 1];
-    const s = v.trim();
+function parseColor(c) {
+    if (!c) return [1, 1, 1];
+    const s = c.trim();
     if (s.startsWith("#")) {
         let h = s.slice(1);
         if (h.length === 3)
             h = h
                 .split("")
-                .map((c) => c + c)
+                .map((x) => x + x)
                 .join("");
         if (h.length >= 6) {
             const r = parseInt(h.slice(0, 2), 16) / 255;
             const g = parseInt(h.slice(2, 4), 16) / 255;
             const b = parseInt(h.slice(4, 6), 16) / 255;
-            if (isFinite(r) && isFinite(g) && isFinite(b)) return [r, g, b];
+            return [r || 0, g || 0, b || 0];
         }
     }
     const m = s.match(/rgba?\s*\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/i);
@@ -136,30 +34,6 @@ function parseColor(v) {
     return [1, 1, 1];
 }
 
-function renderTextToCanvas(
-    text,
-    color,
-    fontFamily,
-    fontWeight,
-    fontStyle,
-    fontSize,
-    width,
-    height
-) {
-    const c = document.createElement("canvas");
-    c.width = width;
-    c.height = height;
-    const ctx = c.getContext("2d");
-    if (!ctx) return c;
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = color;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}, sans-serif`;
-    ctx.fillText(text, width / 2, height / 2);
-    return c;
-}
-
 export default function MeshText({
     text = "MESH",
     color = "#ffffff",
@@ -169,309 +43,343 @@ export default function MeshText({
     force = 18,
     as: Component = "h2"
 }) {
-    const colorSplitRef = useRef(!!colorSplit);
-    colorSplitRef.current = !!colorSplit;
-    
-    const customColorsRef = useRef([]);
-    customColorsRef.current = Array.isArray(customColors)
-        ? customColors.map(parseColor)
-        : [];
-        
-    const forceRef = useRef(typeof force === "number" ? force / 10 : DRAG);
-    forceRef.current = typeof force === "number" ? force / 10 : DRAG;
-
     const canvasRef = useRef(null);
     const wrapperRef = useRef(null);
+    const particlesRef = useRef([]);
+    const distRef = useRef(null);
+    const mouseRef = useRef({
+        x: -9999,
+        y: -9999,
+        prevX: -9999,
+        prevY: -9999,
+        speed: 0,
+        active: false,
+    });
+
+    const [blurValue, setBlurValue] = useState(2.2);
+    const reactId = useId().replace(/[^a-zA-Z0-9_-]/g, "-");
+    const filterId = `liquid-goo-${reactId}`;
 
     useEffect(() => {
         const canvas = canvasRef.current;
         const wrapper = wrapperRef.current;
         if (!canvas || !wrapper) return;
 
-        const gl = canvas.getContext("webgl2", {
-            alpha: true,
-            premultipliedAlpha: true,
-            antialias: true,
-        });
-        if (!gl) {
-            console.error("WebGL2 not available");
-            return;
-        }
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
 
-        // ── Get styles from computed CSS styles of wrapper ────────────────
+        // styles fromcomputed css
         const styles = window.getComputedStyle(wrapper);
         const fontFamily = styles.fontFamily || "Inter";
         const fontSizeVal = parseFloat(styles.fontSize) || 40;
         const fontWeight = styles.fontWeight || "700";
         const fontStyle = styles.fontStyle || "normal";
 
-        // ── Grid geometry ───────────────────────────────────────────────
-        const vertCount = (GRID_W + 1) * (GRID_H + 1);
-        const positions = new Float32Array(vertCount * 2);
-        const uvs = new Float32Array(vertCount * 2);
-        for (let y = 0; y <= GRID_H; y++) {
-            for (let x = 0; x <= GRID_W; x++) {
-                const i = y * (GRID_W + 1) + x;
-                const u = x / GRID_W;
-                const v = y / GRID_H;
-                positions[i * 2] = u * 2 - 1;
-                positions[i * 2 + 1] = 1 - v * 2;
-                uvs[i * 2] = u;
-                uvs[i * 2 + 1] = v;
-            }
-        }
-        const indexCount = GRID_W * GRID_H * 6;
-        const indices = new Uint32Array(indexCount);
-        let idx = 0;
-        for (let y = 0; y < GRID_H; y++) {
-            for (let x = 0; x < GRID_W; x++) {
-                const a = y * (GRID_W + 1) + x;
-                const b = a + 1;
-                const c = a + (GRID_W + 1);
-                const d = c + 1;
-                indices[idx++] = a;
-                indices[idx++] = c;
-                indices[idx++] = b;
-                indices[idx++] = b;
-                indices[idx++] = c;
-                indices[idx++] = d;
-            }
-        }
-
-        const disp = new Float32Array(vertCount * 2);
-        const vel = new Float32Array(vertCount * 2);
-
-        // ── GL setup ────────────────────────────────────────────────────
-        const vs = compile(gl, gl.VERTEX_SHADER, VERT_SRC);
-        const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG_SRC);
-        if (!vs || !fs) return;
-        const program = linkProgram(gl, vs, fs);
-        if (!program) return;
-
-        const aPos = gl.getAttribLocation(program, "aPos");
-        const aUv = gl.getAttribLocation(program, "aUv");
-        const aDisp = gl.getAttribLocation(program, "aDisp");
-        const uTex = gl.getUniformLocation(program, "uTex");
-        const uChroma = gl.getUniformLocation(program, "uChroma");
-        const uColorA = gl.getUniformLocation(program, "uColorA");
-        const uColorB = gl.getUniformLocation(program, "uColorB");
-
-        const vao = gl.createVertexArray();
-        gl.bindVertexArray(vao);
-
-        const posBuf = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
-        gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(aPos);
-        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-        const uvBuf = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, uvBuf);
-        gl.bufferData(gl.ARRAY_BUFFER, uvs, gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(aUv);
-        gl.vertexAttribPointer(aUv, 2, gl.FLOAT, false, 0, 0);
-
-        const dispBuf = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, dispBuf);
-        gl.bufferData(gl.ARRAY_BUFFER, disp, gl.DYNAMIC_DRAW);
-        gl.enableVertexAttribArray(aDisp);
-        gl.vertexAttribPointer(aDisp, 2, gl.FLOAT, false, 0, 0);
-
-        const idxBuf = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-
-        const tex = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, tex);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
         let cancelled = false;
+        let lastWidth = 0;
+        let lastHeight = 0;
+        let textCanvas = null;
 
-        const rebuildTex = async () => {
-            const w = Math.max(2, canvas.width);
-            const h = Math.max(2, canvas.height);
-            const dpr = window.devicePixelRatio || 1;
-            const realSize = fontSizeVal * dpr;
-
-            try {
-                if (typeof document !== "undefined") {
-                    const fontStr = `${fontStyle} ${fontWeight} ${realSize}px ${fontFamily}`;
-                    if (document.fonts?.load) {
-                        await document.fonts.load(fontStr);
-                    }
-                    if (document.fonts?.ready) {
-                        await document.fonts.ready;
-                    }
+        const sampleSpawnPoint = (distMap, w, h) => {
+            if (!distMap) return { x: Math.random() * w, y: Math.random() * h };
+            for (let attempt = 0; attempt < 150; attempt++) {
+                const rx = Math.floor(Math.random() * w);
+                const ry = Math.floor(Math.random() * h);
+                if (distMap[ry * w + rx] > 5) {
+                    return { x: rx, y: ry };
                 }
-            } catch (e) {
-                /* ignore */
             }
-            if (cancelled) return;
-            const c2 = renderTextToCanvas(
-                String(text ?? ""),
-                color ?? "#ffffff",
-                fontFamily,
-                fontWeight,
-                fontStyle,
-                realSize,
-                w,
-                h
-            );
-            gl.bindTexture(gl.TEXTURE_2D, tex);
-            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-            gl.texImage2D(
-                gl.TEXTURE_2D,
-                0,
-                gl.RGBA,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE,
-                c2
-            );
+            return { x: Math.random() * w, y: Math.random() * h };
         };
 
-        // ── Resize ──────────────────────────────────────────────────────
+        const spawnAtBottom = (p, distMap, w, h) => {
+            const pt = sampleSpawnPoint(distMap, w, h);
+            p.x = pt.x;
+            p.y = pt.y;
+            p.vx = (Math.random() - 0.5) * 0.25;
+            p.vy = -(0.9 + Math.random() * 0.3);
+            p.baseSize = 0.75 + Math.random() * 0.75;
+            p.jitterPhase = Math.random() * Math.PI * 2;
+            p.jitterAmp = 0.015 + Math.random() * 0.035;
+            p.direction = "up";
+        };
+
+        const spawnAtTop = (p, distMap, w, h) => {
+            const pt = sampleSpawnPoint(distMap, w, h);
+            p.x = pt.x;
+            p.y = pt.y;
+            p.vx = (Math.random() - 0.5) * 0.25;
+            p.vy = 0.9 + Math.random() * 0.3;
+            p.baseSize = 0.75 + Math.random() * 0.75;
+            p.jitterPhase = Math.random() * Math.PI * 2;
+            p.jitterAmp = 0.015 + Math.random() * 0.035;
+            p.direction = "down";
+        };
+
+        const buildDistanceFieldAndCache = (w, h, dpr) => {
+            textCanvas = document.createElement("canvas");
+            textCanvas.width = w;
+            textCanvas.height = h;
+            const tCtx = textCanvas.getContext("2d", { willReadFrequently: true });
+            if (!tCtx) return;
+
+            tCtx.clearRect(0, 0, w, h);
+            tCtx.fillStyle = color || "#ffffff"; // Draw text mask in heading color
+            tCtx.textAlign = "center";
+            tCtx.textBaseline = "middle";
+            tCtx.font = `${fontStyle} ${fontWeight} ${fontSizeVal * dpr}px ${fontFamily}, sans-serif`;
+            tCtx.fillText(text, w / 2, h / 2);
+
+            let data;
+            try {
+                data = tCtx.getImageData(0, 0, w, h).data;
+            } catch (e) {
+                return;
+            }
+
+            const dist = new Float32Array(w * h);
+            const INF = 1e9;
+            for (let i = 0; i < w * h; i++) {
+                dist[i] = data[i * 4 + 3] < ALPHA_THR ? 0 : INF;
+            }
+
+            const D1 = 1;
+            const D2 = 1.4142;
+            for (let y = 1; y < h; y++) {
+                for (let x = 1; x < w - 1; x++) {
+                    const i = y * w + x;
+                    let v = dist[i];
+                    if (dist[i - w] + D1 < v) v = dist[i - w] + D1;
+                    if (dist[i - 1] + D1 < v) v = dist[i - 1] + D1;
+                    if (dist[i - w - 1] + D2 < v) v = dist[i - w - 1] + D2;
+                    if (dist[i - w + 1] + D2 < v) v = dist[i - w + 1] + D2;
+                    dist[i] = v;
+                }
+            }
+            for (let y = h - 2; y >= 0; y--) {
+                for (let x = w - 2; x >= 1; x--) {
+                    const i = y * w + x;
+                    let v = dist[i];
+                    if (dist[i + w] + D1 < v) v = dist[i + w] + D1;
+                    if (dist[i + 1] + D1 < v) v = dist[i + 1] + D1;
+                    if (dist[i + w + 1] + D2 < v) v = dist[i + w + 1] + D2;
+                    if (dist[i + w - 1] + D2 < v) v = dist[i + w - 1] + D2;
+                    dist[i] = v;
+                }
+            }
+            distRef.current = dist;
+
+            // Pre-spawn particles inside text mask area
+            const list = [];
+            const count = Math.min(600, Math.max(80, String(text).length * 15));
+            for (let i = 0; i < count; i++) {
+                const p = {};
+                if (i % 2 === 0) spawnAtBottom(p, dist, w, h);
+                else spawnAtTop(p, dist, w, h);
+                // Stagger initial positions vertically
+                p.y = Math.random() * h;
+                list.push(p);
+            }
+            particlesRef.current = list;
+        };
+
         const resize = () => {
-            const dpr = window.devicePixelRatio || 1;
+            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
             const rect = wrapper.getBoundingClientRect();
             const padX = PADDING_X * dpr;
             const padY = PADDING_Y * dpr;
-            const w = Math.max(2, Math.round(rect.width * dpr + padX * 2));
-            const h = Math.max(2, Math.round(rect.height * dpr + padY * 2));
-            if (canvas.width !== w || canvas.height !== h) {
+            const w = Math.max(10, Math.round(rect.width * dpr + padX * 2));
+            const h = Math.max(10, Math.round(rect.height * dpr + padY * 2));
+
+            if (lastWidth !== w || lastHeight !== h) {
                 canvas.width = w;
                 canvas.height = h;
-                gl.viewport(0, 0, w, h);
-                rebuildTex();
+                canvas.style.width = `${rect.width + PADDING_X * 2}px`;
+                canvas.style.height = `${rect.height + PADDING_Y * 2}px`;
+
+                lastWidth = w;
+                lastHeight = h;
+
+                buildDistanceFieldAndCache(w, h, dpr);
+
+                const pSize = Math.max(2.0, fontSizeVal * dpr * 0.08);
+                const computedBlur = Math.max(0.3, Math.min(pSize * 0.35, 4 * 0.35));
+                setBlurValue(computedBlur);
             }
         };
+
         const ro = new ResizeObserver(resize);
         ro.observe(wrapper);
         resize();
-        rebuildTex();
 
-        // ── Mouse tracking ──────────────────────────────────────────────
-        const cursor = {
-            x: 99,
-            y: 99,
-            px: 99,
-            py: 99,
-            vx: 0,
-            vy: 0,
-            inside: false,
-        };
-        const onMove = (e) => {
+        const updatePointer = (clientX, clientY) => {
             const rect = canvas.getBoundingClientRect();
-            const nx = (e.clientX - rect.left) / rect.width;
-            const ny = (e.clientY - rect.top) / rect.height;
-            const x = nx * 2 - 1;
-            const y = 1 - ny * 2;
-            if (!cursor.inside) {
-                cursor.px = x;
-                cursor.py = y;
-                cursor.inside = true;
+            const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+            const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+            const mx = (clientX - rect.left) * scaleX;
+            const my = (clientY - rect.top) * scaleY;
+            const m = mouseRef.current;
+            if (m.prevX > -9999) {
+                const ddx = mx - m.prevX;
+                const ddy = my - m.prevY;
+                m.speed = Math.sqrt(ddx * ddx + ddy * ddy);
             }
-            cursor.x = x;
-            cursor.y = y;
+            m.prevX = mx;
+            m.prevY = my;
+            m.x = mx;
+            m.y = my;
+            m.active = true;
         };
+
+        const onMove = (e) => updatePointer(e.clientX, e.clientY);
         const onLeave = () => {
-            cursor.inside = false;
-            cursor.x = 99;
-            cursor.y = 99;
-            cursor.vx = 0;
-            cursor.vy = 0;
+            const m = mouseRef.current;
+            m.active = false;
+            m.x = -9999;
+            m.y = -9999;
+            m.prevX = -9999;
+            m.prevY = -9999;
+            m.speed = 0;
         };
+
         wrapper.addEventListener("pointermove", onMove);
         wrapper.addEventListener("pointerleave", onLeave);
 
-        // ── Animation loop ──────────────────────────────────────────────
+        // Simulation parameters
+        const speed = 4;
+        const speedMul = 0.05 + Math.pow((speed - 1) / 9, 1.3) * 2.35;
+        const hoverRadius = 90;
+        const breakChance = 50;
+
         let rafId = 0;
-        const tick = () => {
-            cursor.vx = cursor.x - cursor.px;
-            cursor.vy = cursor.y - cursor.py;
-            const vmag = Math.hypot(cursor.vx, cursor.vy);
-            if (vmag > 0.3) {
-                cursor.vx = 0;
-                cursor.vy = 0;
-            }
-            cursor.px = cursor.x;
-            cursor.py = cursor.y;
+        let last = performance.now();
 
-            for (let i = 0; i < vertCount; i++) {
-                const i2 = i * 2;
-                const px = positions[i2];
-                const py = positions[i2 + 1];
-                const dx = disp[i2];
-                const dy = disp[i2 + 1];
+        const tick = (now) => {
+            if (cancelled) return;
+            const dt = Math.min((now - last) / 1000, 0.05);
+            last = now;
 
-                const cx = cursor.x - (px + dx);
-                const cy = cursor.y - (py + dy);
-                const cd = Math.hypot(cx, cy);
-                const proximity = Math.max(0, 1 / (1 + cd / 0.05) - 0.1);
-
-                let vx = vel[i2];
-                let vy = vel[i2 + 1];
-
-                const fpull = forceRef.current;
-                vx += cursor.vx * fpull * proximity;
-                vy += cursor.vy * fpull * proximity;
-
-                vx -= dx * SPRING_K;
-                vy -= dy * SPRING_K;
-
-                vx *= DAMPING;
-                vy *= DAMPING;
-
-                vel[i2] = vx;
-                vel[i2 + 1] = vy;
-
-                let ndx = dx + vx * DT;
-                let ndy = dy + vy * DT;
-                if (ndx > 1) ndx = 1;
-                else if (ndx < -1) ndx = -1;
-                if (ndy > 1) ndy = 1;
-                else if (ndy < -1) ndy = -1;
-                disp[i2] = ndx;
-                disp[i2 + 1] = ndy;
+            const w = canvas.width;
+            const h = canvas.height;
+            if (!w || !h) {
+                rafId = requestAnimationFrame(tick);
+                return;
             }
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, dispBuf);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, disp);
+            ctx.globalCompositeOperation = "source-over";
+            ctx.clearRect(0, 0, w, h);
 
-            gl.clearColor(0, 0, 0, 0);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-
-            gl.useProgram(program);
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, tex);
-            gl.uniform1i(uTex, 0);
-            gl.uniform1f(uChroma, colorSplitRef.current ? 1.0 : 0.0);
-
-            let cA = [1, 0, 0];
-            let cB = [0, 0, 1];
-            const cols = customColorsRef.current;
-            if (cols.length === 1) {
-                cA = cols[0];
-                cB = cols[0];
-            } else if (cols.length > 1) {
-                const cycleMs = 400;
-                const idx = Math.floor(performance.now() / cycleMs) % cols.length;
-                cA = cols[idx];
-                cB = cols[(idx + 1) % cols.length];
+            // 1. Draw solid text first as the base for 100% legibility
+            if (textCanvas) {
+                ctx.drawImage(textCanvas, 0, 0);
             }
-            gl.uniform3f(uColorA, cA[0], cA[1], cA[2]);
-            gl.uniform3f(uColorB, cB[0], cB[1], cB[2]);
 
-            gl.enable(gl.BLEND);
-            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            const particles = particlesRef.current;
+            const mouse = mouseRef.current;
+            mouse.speed *= 0.88;
+            const breakProb = (breakChance / 100) * dt;
+            const hovering = mouse.active && hoverRadius > 0;
 
-            gl.bindVertexArray(vao);
-            gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_INT, 0);
+            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            const pSize = Math.max(2.0, fontSizeVal * dpr * 0.08);
+
+            ctx.fillStyle = color;
+
+            // 2. Draw smaller bubbling particles on top
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+
+                if (p.direction === "down") {
+                    if (p.vy > 1.6) p.vy = 1.6;
+                } else {
+                    if (p.vy < -1.6) p.vy = -1.6;
+                }
+
+                p.vx += Math.sin(p.jitterPhase + now * 0.0015) * p.jitterAmp;
+                p.vx *= 0.96;
+
+                if (Math.random() < breakProb) {
+                    p.vx += (Math.random() - 0.5) * 1.8;
+                    p.vy += (Math.random() - 0.5) * 0.6;
+                }
+
+                if (p.repX === undefined) p.repX = 0;
+                if (p.repY === undefined) p.repY = 0;
+                let inZone = false;
+                if (hovering) {
+                    const dx = p.x - mouse.x;
+                    const dy = p.y - mouse.y;
+                    const distSq = dx * dx + dy * dy;
+                    const cutoff = hoverRadius * dpr;
+                    if (distSq > 0 && distSq < cutoff * cutoff) {
+                        const dist = Math.sqrt(distSq);
+                        const nx = dx / dist;
+                        const ny = dy / dist;
+                        const falloff = 1 - dist / cutoff;
+                        const push = falloff * mouse.speed * 0.07;
+                        p.repX += nx * push;
+                        p.repY += ny * push;
+                        const targetRepX = nx * (cutoff - dist);
+                        const targetRepY = ny * (cutoff - dist);
+                        p.repX += (targetRepX - p.repX) * 0.06;
+                        p.repY += (targetRepY - p.repY) * 0.06;
+                        inZone = true;
+                    }
+                }
+                if (!inZone) {
+                    p.repX *= 0.97;
+                    p.repY *= 0.97;
+                }
+                const hoverOX = p.repX;
+                const hoverOY = p.repY;
+
+                p.x += p.vx * speedMul * 60 * dt;
+                p.y += p.vy * speedMul * 60 * dt;
+
+                const distMap = distRef.current;
+                const margin = pSize * 2;
+
+                const resetParticle = (pt) => {
+                    const spawn = sampleSpawnPoint(distMap, w, h);
+                    pt.x = spawn.x;
+                    pt.y = spawn.y;
+                    pt.vx = (Math.random() - 0.5) * 0.25;
+                    pt.vy = pt.direction === "down" ? (0.9 + Math.random() * 0.3) : -(0.9 + Math.random() * 0.3);
+                };
+
+                if (p.direction === "down") {
+                    if (p.y > h + margin) resetParticle(p);
+                } else {
+                    if (p.y < -margin) resetParticle(p);
+                }
+                if (p.x < -margin || p.x > w + margin) resetParticle(p);
+
+                let alphaFactor = 1;
+                if (distMap) {
+                    const ix = Math.max(0, Math.min(w - 1, Math.floor(p.x)));
+                    const iy = Math.max(0, Math.min(h - 1, Math.floor(p.y)));
+                    const d = distMap[iy * w + ix];
+                    const band = pSize * 1.5;
+                    alphaFactor = Math.max(0.25, Math.min(1, d / band));
+                }
+
+                const edgeBand = h * 0.15;
+                const distFromEdge = Math.min(p.y, h - p.y);
+                const vertFactor = distFromEdge >= edgeBand ? 1 : Math.max(0.25, distFromEdge / edgeBand);
+                const sizeFactor = Math.min(vertFactor, alphaFactor);
+
+                const drawX = p.x + hoverOX;
+                const drawY = p.y + hoverOY;
+                const finalRadius = pSize * p.baseSize * sizeFactor;
+
+                ctx.beginPath();
+                ctx.arc(drawX, drawY, finalRadius, 0, Math.PI * 2);
+                ctx.fill();
+            }
 
             rafId = requestAnimationFrame(tick);
         };
+
         rafId = requestAnimationFrame(tick);
 
         return () => {
@@ -480,17 +388,11 @@ export default function MeshText({
             ro.disconnect();
             wrapper.removeEventListener("pointermove", onMove);
             wrapper.removeEventListener("pointerleave", onLeave);
-            gl.deleteBuffer(posBuf);
-            gl.deleteBuffer(uvBuf);
-            gl.deleteBuffer(dispBuf);
-            gl.deleteBuffer(idxBuf);
-            gl.deleteTexture(tex);
-            gl.deleteVertexArray(vao);
-            gl.deleteProgram(program);
-            gl.deleteShader(vs);
-            gl.deleteShader(fs);
         };
     }, [text, color]);
+
+    const filterActive = true;
+    const matrix = `1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7`;
 
     return (
         <div
@@ -504,7 +406,7 @@ export default function MeshText({
             }}
             className={className}
         >
-            {/* Invisible heading for SEO, screen readers, and sizing */}
+            {/* Invisible native heading for layout & accessibility */}
             <Component
                 style={{
                     visibility: "hidden",
@@ -517,18 +419,44 @@ export default function MeshText({
             >
                 {text}
             </Component>
-            
-            {/* WebGL Overlay */}
+
+            {/* Gooey SVG Filter */}
+            <svg
+                aria-hidden
+                style={{
+                    position: "absolute",
+                    width: 0,
+                    height: 0,
+                    pointerEvents: "none",
+                }}
+            >
+                <defs>
+                    <filter id={filterId} colorInterpolationFilters="sRGB">
+                        <feGaussianBlur
+                            in="SourceGraphic"
+                            stdDeviation={blurValue}
+                            result="blur"
+                        />
+                        <feColorMatrix in="blur" values={matrix} result="goo" />
+                        <feComposite
+                            in="SourceGraphic"
+                            in2="goo"
+                            operator="atop"
+                        />
+                    </filter>
+                </defs>
+            </svg>
+
+            {/* Liquid 2D Canvas */}
             <canvas
                 ref={canvasRef}
                 style={{
                     position: "absolute",
                     top: `-${PADDING_Y}px`,
                     left: `-${PADDING_X}px`,
-                    width: `calc(100% + ${PADDING_X * 2}px)`,
-                    height: `calc(100% + ${PADDING_Y * 2}px)`,
                     display: "block",
-                    pointerEvents: "none"
+                    pointerEvents: "none",
+                    filter: filterActive ? `url(#${filterId})` : "none",
                 }}
             />
         </div>

@@ -221,13 +221,13 @@ export default function Hero() {
           <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
             <div>
               <span className="text-white/50 block text-[11px] uppercase tracking-wider">Age</span>
-              <span className="text-white font-medium">21 Years</span>
+              <span className="text-white font-medium">19 Years</span>
             </div>
             <div>
               <span className="text-white/50 block text-[11px] uppercase tracking-wider">Education</span>
               <span className="text-white font-medium flex items-center gap-1">
                 <GraduationCap className="w-3 h-3 text-primary/70" />
-                B.Tech CSE
+                BSC in CS
               </span>
             </div>
             <div>

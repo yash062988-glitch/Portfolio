@@ -27,8 +27,8 @@ export default function ProjectMesh({
   const HTML_HEIGHT_PX = 460;
   const ASPECT_RATIO = HTML_WIDTH_PX / HTML_HEIGHT_PX; // ~1.5217
 
-  const boxWidth = 2.25;
-  const boxHeight = boxWidth / ASPECT_RATIO; // ~1.48 dynamic aspect ratio match
+  const boxWidth = N_total > 0 && typeof window !== "undefined" && window.innerWidth < 768 ? 1.7 : 2.8;
+  const boxHeight = boxWidth / ASPECT_RATIO; // dynamic aspect ratio match
   const boxThickness = 0.12;
 
   // Named constant to visually align the HTML overlay relative to the RoundedBox face across browsers
@@ -86,7 +86,8 @@ export default function ProjectMesh({
     const L = N_total * S; // Total belt loop length
 
     // Convert continuous rotation angle (in degrees) to linear scroll offset (in Three.js units)
-    const scrollOffset = angleRef.current * (L / 360);
+    // Scaled by (3.60 / S) to ensure the linear travel speed is identical to the original design speed
+    const scrollOffset = angleRef.current * (L / 360) * (3.60 / S);
     const xRaw = idx * S + scrollOffset;
 
     // Wrap position modulo L into the symmetric range [-L/2, L/2]
@@ -311,7 +312,7 @@ export default function ProjectMesh({
                         alt={project.title}
                         onLoad={() => setImgLoaded(true)}
                         loading="lazy"
-                        className={`project-card-image w-full h-full object-cover object-center transition-opacity duration-300 ${
+                        className={`project-card-image w-full h-full object-contain object-center transition-opacity duration-300 ${
                           imgLoaded ? "opacity-100" : "opacity-0"
                         }`}
                         style={{

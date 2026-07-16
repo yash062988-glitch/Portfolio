@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { PROJECTS_DATA } from "@/constants/data";
 import SectionHeading from "@/components/design-system/SectionHeading";
 import ProjectScene from "@/components/projects/ProjectScene";
@@ -14,6 +14,19 @@ export default function Projects() {
   const [searchQuery, setSearchQuery] = useState("");
   const [dimensions, setDimensions] = useState({ width: 1200, height: 600 });
   const [selectedProject, setSelectedProject] = useState(null);
+
+  const [inView, setInView] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setInView(entry.isIntersecting);
+    }, { threshold: 0.05 });
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
 
   // Filters categories list
   const categories = ["All", "AI", "Web", "Machine Learning", "Data Analysis", "UI Design"];
@@ -157,6 +170,7 @@ export default function Projects() {
 
         {/* Viewport container with R3F canvas Scene */}
         <div 
+          ref={sectionRef}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -165,7 +179,7 @@ export default function Projects() {
         >
           {N === 0 ? (
             <div className="text-center text-white/40 text-sm">No missions found matching query criteria.</div>
-          ) : (
+          ) : inView ? (
             <ProjectScene
               repeatedProjects={repeatedProjects}
               angleRef={angleRef}
@@ -184,6 +198,10 @@ export default function Projects() {
               }}
               R={R}
             />
+          ) : (
+            <div className="w-full h-full min-h-[400px] flex items-center justify-center text-white/20 text-xs">
+              Loading interactive orbit...
+            </div>
           )}
         </div>
 

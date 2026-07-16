@@ -269,7 +269,7 @@ export default function Navbar({ isPortalActive }) {
         className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary to-secondary origin-left z-[100]"
         style={{ scaleX }}
       />
-      <header className={`fixed top-0 left-0 right-0 z-50 flex justify-center p-4 md:p-6 transition-all duration-300 ${isPortalActive ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+      <header className={`fixed top-0 left-0 right-0 z-[90] flex justify-center p-4 md:p-6 transition-all duration-300 ${isPortalActive ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

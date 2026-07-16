@@ -366,13 +366,13 @@ export default function Contact() {
       {/* Yash Jain Contact Number Popup Modal */}
       <AnimatePresence>
         {showContactPopup && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/75 backdrop-blur-md">
+          <div className="fixed inset-0 z-[95] flex items-center justify-center p-6 bg-black/75 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 15 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="relative max-w-sm w-full p-8 rounded-[28px] bg-[#120c08]/95 border border-[#E9B15D]/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-center flex flex-col items-center z-50"
+              className="relative max-w-sm w-full p-8 rounded-[28px] bg-[#120c08]/95 border border-[#E9B15D]/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-center flex flex-col items-center z-[95]"
             >
               {/* Close button */}
               <button 
