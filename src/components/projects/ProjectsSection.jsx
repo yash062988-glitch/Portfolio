@@ -98,12 +98,7 @@ export default function ProjectsSection() {
 
     // Staggered active state, scale, blur, border glows, and text entrances per slide card
     PROJECTS_DATA.forEach((proj, idx) => {
-      // Setup image vertical parallax tween inside fixed frame
-      tl.fromTo(`.slide-image-${idx}`, 
-        { yPercent: 0 }, 
-        { yPercent: -12, ease: "none", duration: 0.84 }, 
-        0.08
-      );
+
 
       // Trigger timeline events as cards scroll past center
       const centerTime = 0.08 + (idx / (N - 1)) * 0.84;
@@ -307,7 +302,7 @@ export default function ProjectsSection() {
                     <img
                       src={project.image}
                       alt={project.title}
-                      className={`slide-image-${idx} absolute -top-[12.5%] left-0 w-full h-[125%] object-cover object-center pointer-events-none select-none will-change-transform`}
+                      className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
                     />
                     {/* Dark gradient overlay left 0% -> 75% for readable typography */}
                     <div 
