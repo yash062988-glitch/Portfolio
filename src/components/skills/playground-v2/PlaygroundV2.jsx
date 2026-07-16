@@ -72,6 +72,7 @@ export default function PlaygroundV2() {
       {GRID_SECTIONS.map((sec) => (
         <div 
           key={sec.id} 
+          id={sec.id}
           className="w-full flex flex-col items-center py-10 md:py-14 border-b border-white/[0.02] last:border-b-0"
         >
           {/* Elegant Centered Section Heading */}

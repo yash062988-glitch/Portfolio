@@ -59,6 +59,20 @@ export default function ProjectsSection() {
         start: "top top",
         end: () => `+=${horizontalTravelDistance}`,
         invalidateOnRefresh: true,
+        id: "projects-pin",
+        onUpdate: (self) => {
+          const skipBtn = document.querySelector(".skip-up-floating-btn");
+          if (skipBtn) {
+            // Show only when scrolling up inside the active pinned horizontal track
+            if (self.direction === -1 && self.progress > 0.05 && self.progress < 0.98) {
+              skipBtn.classList.remove("opacity-0", "pointer-events-none", "translate-y-4");
+              skipBtn.classList.add("opacity-100", "translate-y-0");
+            } else {
+              skipBtn.classList.add("opacity-0", "pointer-events-none", "translate-y-4");
+              skipBtn.classList.remove("opacity-100", "translate-y-0");
+            }
+          }
+        }
       },
     });
 
@@ -80,12 +94,7 @@ export default function ProjectsSection() {
       duration: 0.84,
     }, 0.08);
 
-    // Background title parallax translation (moves slower at 40% speed)
-    tl.to(titlesRef.current, {
-      x: -horizontalTravelDistance * 0.4,
-      ease: "none",
-      duration: 0.84,
-    }, 0.08);
+
 
     // Progress line indicator filling
     tl.to(progressBarRef.current, {
@@ -203,6 +212,67 @@ export default function ProjectsSection() {
     });
   };
 
+  const scrollToSlide = (idx) => {
+    const trigger = ScrollTrigger.getById("projects-pin");
+    if (!trigger) return;
+    
+    // Force enable if disabled by onEnterBack
+    if (!trigger.enabled) {
+      trigger.enable();
+    }
+    
+    const start = trigger.start;
+    const end = trigger.end;
+    const total = end - start;
+    
+    const N = PROJECTS_DATA.length;
+    let progress = 0;
+    if (idx === 0) {
+      progress = 0.04;
+    } else if (idx === N - 1) {
+      progress = 0.96;
+    } else {
+      progress = 0.08 + (idx / (N - 1)) * 0.84;
+    }
+    
+    const targetScroll = start + progress * total;
+    window.scrollTo({
+      top: targetScroll,
+      behavior: "smooth"
+    });
+  };
+
+  const navigateSlide = (direction) => {
+    const trigger = ScrollTrigger.getById("projects-pin");
+    if (!trigger) return;
+    
+    // Force enable if disabled by onEnterBack
+    if (!trigger.enabled) {
+      trigger.enable();
+    }
+    
+    const total = trigger.end - trigger.start;
+    const currentProgress = trigger.scroll() - trigger.start;
+    const percent = currentProgress / total;
+    
+    const N = PROJECTS_DATA.length;
+    let currentIdx = 0;
+    if (percent < 0.08) {
+      currentIdx = 0;
+    } else if (percent > 0.92) {
+      currentIdx = N - 1;
+    } else {
+      const travelProgress = (percent - 0.08) / 0.84;
+      currentIdx = Math.round(travelProgress * (N - 1));
+    }
+    
+    let targetIdx = currentIdx + direction;
+    if (targetIdx < 0) targetIdx = 0;
+    if (targetIdx >= N) targetIdx = N - 1;
+    
+    scrollToSlide(targetIdx);
+  };
+
   return (
     <div ref={containerRef} className="relative w-full overflow-visible z-10 bg-black">
       {/* Pinned Visual Viewport */}
@@ -233,23 +303,17 @@ export default function ProjectsSection() {
           />
         </div>
 
-        {/* Layer 1: Giant Background Typography Parallax (40% Speed) */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-10 flex items-center">
+        {/* Layer 1: Infinite Background Marquee (Independent Loop) */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-10 flex items-center select-none">
           <div 
-            ref={titlesRef} 
-            className="flex flex-row items-center gap-[50vw] pl-[25vw] select-none will-change-transform opacity-[0.08]"
+            className="flex flex-row items-center whitespace-nowrap opacity-[0.06] select-none text-[18vw] md:text-[22vw] font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-primary to-white gap-8 animate-[marquee_45s_linear_infinite] animate-[colorCycle_20s_linear_infinite] select-none"
+            style={{
+              width: "max-content",
+              willChange: "transform"
+            }}
           >
-            {PROJECTS_DATA.map((proj, idx) => {
-              const backdropTexts = ["PROJECTS", "CREATIONS", "MISSIONS", "GALLERY"];
-              return (
-                <div 
-                  key={proj.id} 
-                  className="text-[18vw] md:text-[22vw] font-black uppercase tracking-widest whitespace-nowrap leading-none text-white select-none"
-                >
-                  {backdropTexts[idx] || "PROJECTS"}
-                </div>
-              );
-            })}
+            <span>PROJECTS  •  CREATIONS  •  MISSIONS  •  GALLERY  •  </span>
+            <span>PROJECTS  •  CREATIONS  •  MISSIONS  •  GALLERY  •  </span>
           </div>
         </div>
 
@@ -360,12 +424,48 @@ export default function ProjectsSection() {
 
         {/* HUD Progress Indicator HUD Bottom Centre */}
         <div className="w-full flex justify-center relative z-30 select-none">
-          <div className="flex items-center gap-6 font-mono text-xs md:text-sm tracking-widest text-white/50">
-            <span ref={counterRef} className="text-primary font-bold">01</span>
-            <div className="w-[120px] md:w-[180px] h-[2px] bg-white/10 relative rounded-full overflow-hidden">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 font-mono text-xs md:text-sm tracking-widest text-white/50 bg-black/40 px-6 py-3.5 rounded-full border border-white/5 backdrop-blur-md">
+            <button 
+              onClick={() => {
+                const target = document.getElementById("projects");
+                if (target) target.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="hover:text-primary transition-colors cursor-pointer text-[10px] md:text-xs uppercase font-extrabold tracking-wider border-r border-white/10 pr-4 md:pr-6 mr-1"
+            >
+              Skip Up ↑
+            </button>
+            
+            <button 
+              onClick={() => navigateSlide(-1)}
+              className="hover:text-primary transition-all cursor-pointer font-bold text-base px-1 active:scale-95"
+              aria-label="Previous Project"
+            >
+              ←
+            </button>
+
+            <span ref={counterRef} className="text-primary font-bold min-w-[20px] text-center">01</span>
+            <div className="w-[80px] md:w-[150px] h-[2px] bg-white/10 relative rounded-full overflow-hidden">
               <div ref={progressBarRef} className="h-full bg-primary absolute top-0 left-0 w-0" />
             </div>
             <span>{String(PROJECTS_DATA.length).padStart(2, "0")}</span>
+
+            <button 
+              onClick={() => navigateSlide(1)}
+              className="hover:text-primary transition-all cursor-pointer font-bold text-base px-1 active:scale-95"
+              aria-label="Next Project"
+            >
+              →
+            </button>
+
+            <button 
+              onClick={() => {
+                const target = document.getElementById("galactic-archive");
+                if (target) target.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="hover:text-primary transition-colors cursor-pointer text-[10px] md:text-xs uppercase font-extrabold tracking-wider border-l border-white/10 pl-4 md:pl-6 ml-1"
+            >
+              Skip Down ↓
+            </button>
           </div>
         </div>
       </div>
@@ -378,6 +478,22 @@ export default function ProjectsSection() {
         />
       )}
 
+      {/* Floating Skip-Up Button (visible only when scrolling up inside the projects gallery) */}
+      <button 
+        onClick={() => {
+          const target = document.getElementById("tools");
+          if (target) {
+            const yOffset = -100; // scroll 100px above the tools heading
+            const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }}
+        className="skip-up-floating-btn fixed bottom-8 right-8 z-[9999] opacity-0 pointer-events-none translate-y-4 bg-[#0a0705]/95 hover:bg-primary border border-primary/30 hover:border-primary text-primary hover:text-black shadow-[0_0_20px_rgba(233,177,93,0.15)] hover:shadow-[0_0_30px_rgba(233,177,93,0.4)] px-5 py-3 rounded-full font-mono text-[10px] md:text-xs font-bold uppercase tracking-widest flex items-center gap-2 cursor-pointer transition-all duration-300 transform select-none"
+      >
+        <span>Skip to Tools</span>
+        <ArrowRight className="w-4 h-4 -rotate-90 transition-transform duration-300" />
+      </button>
+
       {/* Styled animation Keyframes */}
       <style jsx global>{`
         @keyframes starsFloat {
@@ -387,6 +503,14 @@ export default function ProjectsSection() {
         @keyframes lightSweep {
           0% { transform: translate3d(-150%, 0, 0) rotate(30deg); }
           100% { transform: translate3d(250%, 0, 0) rotate(30deg); }
+        }
+        @keyframes marquee {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
+        }
+        @keyframes colorCycle {
+          0% { filter: hue-rotate(0deg); }
+          100% { filter: hue-rotate(360deg); }
         }
       `}</style>
     </div>
