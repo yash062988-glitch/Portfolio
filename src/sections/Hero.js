@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Mail, ChevronDown, MapPin, GraduationCap, Heart, Clock } from "lucide-react";
@@ -10,6 +10,51 @@ import { useAccentColors } from "@/hooks/useAccentColors";
 
 export default function Hero() {
   const { primary } = useAccentColors();
+  const [v1Opacity, setV1Opacity] = useState(1);
+  const [v2Opacity, setV2Opacity] = useState(0);
+  const video1Ref = useRef(null);
+  const video2Ref = useRef(null);
+  const crossfadeTriggeredRef = useRef(false);
+
+  const handleTimeUpdate = (e) => {
+    const video = e.target;
+    const duration = video.duration;
+    const currentTime = video.currentTime;
+    if (!duration || crossfadeTriggeredRef.current) return;
+
+    // Start crossfade 1.5 seconds before the current video ends
+    if (currentTime > duration - 1.5) {
+      crossfadeTriggeredRef.current = true;
+      
+      const isV1 = video === video1Ref.current;
+      const nextVideo = isV1 ? video2Ref.current : video1Ref.current;
+      const currentVideo = isV1 ? video1Ref.current : video2Ref.current;
+
+      if (nextVideo) {
+        nextVideo.currentTime = 0;
+        nextVideo.play().then(() => {
+          // Switch opacities
+          if (isV1) {
+            setV1Opacity(0);
+            setV2Opacity(1);
+          } else {
+            setV1Opacity(1);
+            setV2Opacity(0);
+          }
+
+          // Pause old video after crossfade duration completes (1.5s)
+          setTimeout(() => {
+            if (currentVideo) {
+              currentVideo.pause();
+            }
+            crossfadeTriggeredRef.current = false;
+          }, 1500);
+        }).catch(() => {
+          crossfadeTriggeredRef.current = false;
+        });
+      }
+    }
+  };
   
   // Parallax Motion Values
   const mouseX = useMotionValue(0);
@@ -60,19 +105,37 @@ export default function Hero() {
       id="home"
       className="relative w-full min-h-screen overflow-hidden flex flex-col justify-between pt-24 md:pt-28 pb-12"
     >
-      {/* Background Image Container */}
+      {/* Background Video Container */}
       <motion.div 
         style={{ x: bgX, y: bgY, scale: 1.05 }}
-        className="absolute inset-0 z-0 bg-layer-artwork-behind"
+        className="absolute inset-0 z-0 bg-layer-artwork-behind overflow-hidden"
       >
-        <Image
-          src="/images/hero-bg.png"
-          alt="Cinematic Sunset Background"
-          fill
-          priority
-          quality={100}
-          className="object-cover object-center pointer-events-none"
-        />
+        {/* Video 1 (Main/Initial Player) */}
+        <video
+          ref={video1Ref}
+          autoPlay
+          muted
+          playsInline
+          onTimeUpdate={handleTimeUpdate}
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-[1200ms] ease-in-out"
+          style={{ opacity: v1Opacity }}
+        >
+          <source src="/hero-page-video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        {/* Video 2 (Background Double Buffer) */}
+        <video
+          ref={video2Ref}
+          muted
+          playsInline
+          onTimeUpdate={handleTimeUpdate}
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-[1200ms] ease-in-out"
+          style={{ opacity: v2Opacity }}
+        >
+          <source src="/hero-page-video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </motion.div>
 
       {/* Cinematic Dark Overlay */}
