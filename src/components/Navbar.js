@@ -90,15 +90,29 @@ function NavItem({
       {showBubble && (
         <motion.span
           layoutId="navBubble"
-          className={`absolute inset-0 rounded-full z-0 pointer-events-none transition-all duration-300
-            ${
-              isActive
-                ? isHovered
-                  ? "bg-white/[0.12] border border-white/20 shadow-[0_4px_16px_rgba(233,177,93,0.18),inset_0_1px_2px_rgba(255,255,255,0.2)] backdrop-blur-[8px]"
-                  : "bg-white/[0.06] border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-[6px]"
-                : "bg-white/[0.02] border border-white/5 shadow-[0_2px_8px_rgba(0,0,0,0.1)] backdrop-blur-[4px]"
-            }
-          `}
+          className="absolute inset-0 rounded-full z-0 pointer-events-none transition-all duration-300"
+          style={{
+            borderColor: isActive
+              ? "var(--accent-primary)"
+              : isHovered
+                ? "rgba(var(--accent-glow-raw), 0.5)"
+                : "rgba(255, 255, 255, 0.1)",
+            backgroundColor: isActive
+              ? isHovered
+                ? "rgba(var(--accent-glow-raw), 0.2)"
+                : "rgba(var(--accent-glow-raw), 0.1)"
+              : "rgba(255, 255, 255, 0.02)",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            boxShadow: isActive
+              ? isHovered
+                ? "0 4px 20px var(--accent-glow), 0 0 15px var(--accent-glow)"
+                : "0 4px 15px var(--accent-glow)"
+              : isHovered
+                ? "0 2px 10px var(--accent-glow)"
+                : "none",
+            backdropFilter: isActive ? "blur(8px)" : "blur(4px)"
+          }}
           animate={{
             x: coords.x * 0.5, // Parallax depth: bubble moves 50% slower than text
             y: coords.y * 0.5
@@ -178,7 +192,7 @@ export default function Navbar({ isPortalActive }) {
     }
 
     // High performance IntersectionObserver for section highlighting (avoiding layout thrashing)
-    const sections = ["home", "about", "projects", "certifications", "skills", "contact"];
+    const sections = ["home", "about", "skills", "projects", "certifications", "contact"];
 
     const observerCallback = (entries) => {
       entries.forEach((entry) => {
@@ -226,9 +240,9 @@ export default function Navbar({ isPortalActive }) {
   const navItems = [
     { label: "Home", href: "#home", id: "home" },
     { label: "About Me", href: "#about", id: "about" },
+    { label: "Skills", href: "#skills", id: "skills" },
     { label: "Projects", href: "#projects", id: "projects" },
     { label: "Certifications", href: "#certifications", id: "certifications" },
-    { label: "Skills", href: "#skills", id: "skills" },
     { label: "Contact", href: "#contact", id: "contact" }
   ];
 
@@ -276,9 +290,14 @@ export default function Navbar({ isPortalActive }) {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className={`w-full max-w-7xl flex items-center justify-between px-6 py-3 rounded-full border transition-all duration-500 ${
             isScrolled
-              ? "bg-black/85 border-white/15 backdrop-blur-2xl shadow-[0_16px_48px_-12px_rgba(0,0,0,0.85),0_0_24px_rgba(233,177,93,0.04)]"
+              ? "bg-black/85 border-white/15 backdrop-blur-2xl"
               : "bg-white/5 border-white/8 backdrop-blur-lg shadow-[0_4px_24px_rgba(0,0,0,0.2)]"
           }`}
+          style={{
+            boxShadow: isScrolled
+              ? "0 16px 48px -12px rgba(0,0,0,0.85), 0 0 24px var(--accent-glow)"
+              : "0 4px 24px rgba(0,0,0,0.2)"
+          }}
         >
           {/* Logo */}
           <a
@@ -321,7 +340,7 @@ export default function Navbar({ isPortalActive }) {
                     ? "border-white/10 bg-white/[0.03] text-white hover:text-primary hover:border-primary/30"
                     : "border-black/10 bg-black/[0.03] text-[#120c08] hover:text-primary hover:border-primary/30"
                 }
-                ${themePulse ? "ring-4 ring-primary/30 shadow-[0_0_15px_rgba(233,177,93,0.6)]" : "shadow-sm"}
+                ${themePulse ? "ring-4 ring-primary/30 shadow-[0_0_15px_var(--accent-primary)]" : "shadow-sm"}
               `}
               aria-label="Toggle theme"
             >
@@ -354,7 +373,7 @@ export default function Navbar({ isPortalActive }) {
             </button>
             <button
               onClick={scrollToChat}
-              className="h-10 flex items-center gap-1.5 px-4 rounded-full bg-gradient-to-r from-primary to-secondary text-[#120c08] text-xs font-bold hover:shadow-[0_0_15px_rgba(233,177,93,0.35)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
+              className="h-10 flex items-center gap-1.5 px-4 rounded-full bg-gradient-to-r from-primary to-secondary text-[#120c08] text-xs font-bold hover:shadow-[0_0_15px_var(--accent-glow)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               Ask Yash AI
@@ -372,7 +391,7 @@ export default function Navbar({ isPortalActive }) {
                     ? "border-white/10 bg-white/[0.03] text-white hover:text-primary hover:border-primary/30"
                     : "border-black/10 bg-black/[0.03] text-[#120c08] hover:text-primary hover:border-primary/30"
                 }
-                ${themePulse ? "ring-4 ring-primary/30 shadow-[0_0_15px_rgba(233,177,93,0.6)]" : "shadow-sm"}
+                ${themePulse ? "ring-4 ring-primary/30 shadow-[0_0_15px_var(--accent-primary)]" : "shadow-sm"}
               `}
               aria-label="Toggle theme"
             >

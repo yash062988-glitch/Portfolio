@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Check } from "lucide-react";
 
@@ -74,6 +74,7 @@ export const THEME_PRESETS = [
 export default function ThemeController() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTheme, setActiveTheme] = useState("Solar Gold");
+  const containerRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -87,6 +88,23 @@ export default function ThemeController() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleOutsideClick = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+    };
+  }, [isOpen]);
+
   const applyTheme = (theme) => {
     const root = document.documentElement;
     root.style.setProperty("--accent-primary", theme.primary);
@@ -99,10 +117,14 @@ export default function ThemeController() {
   const handleSelect = (theme) => {
     setActiveTheme(theme.name);
     applyTheme(theme);
+    // Auto minimize after click selection
+    setTimeout(() => {
+      setIsOpen(false);
+    }, 300);
   };
 
   return (
-    <div className="fixed bottom-32 left-6 z-[999] select-none">
+    <div ref={containerRef} className="fixed bottom-32 left-6 z-[999] select-none">
       <AnimatePresence>
         {isOpen && (
           <motion.div

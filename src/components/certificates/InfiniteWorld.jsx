@@ -215,7 +215,7 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
             onClick={() => setActiveFilter(provider)}
             className={`px-5 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 cursor-pointer ${
               activeFilter === provider
-                ? "bg-[#E9B15D] text-[#120c08] shadow-[0_0_15px_rgba(233,177,93,0.25)]"
+                ? "bg-primary text-[#120c08] shadow-primary/25"
                 : "bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >

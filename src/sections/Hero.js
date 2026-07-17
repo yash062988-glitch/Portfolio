@@ -6,8 +6,11 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Mail, ChevronDown, MapPin, GraduationCap, Heart, Clock } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/Icons";
 import MeshText from "@/components/design-system/MeshText";
+import { useAccentColors } from "@/hooks/useAccentColors";
 
 export default function Hero() {
+  const { primary } = useAccentColors();
+  
   // Parallax Motion Values
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -101,7 +104,7 @@ export default function Hero() {
             {/* Large Heading */}
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.05] font-sans flex flex-wrap gap-x-4">
               <MeshText text="Yash" className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.05] font-sans" as="span" />
-              <MeshText text="Jain" className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-primary leading-[1.05] font-sans" color="#e9b15d" as="span" />
+              <MeshText text="Jain" className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-primary leading-[1.05] font-sans" color={primary} as="span" />
             </h1>
 
             {/* Subtitle */}

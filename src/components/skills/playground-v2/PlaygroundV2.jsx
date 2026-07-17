@@ -210,6 +210,8 @@ export default function PlaygroundV2() {
         const cardEl = cardRefs.current[`${sec.id}-${skill.name}`];
         if (cardEl) {
           cardEl.style.transform = "none";
+          // Trigger synchronous layout reflow to flush transform reset
+          const _ = cardEl.offsetHeight;
         }
       });
     });
@@ -220,6 +222,7 @@ export default function PlaygroundV2() {
       const containerEl = categoryRefs.current[sec.id];
       if (!containerEl) return;
 
+      const sectionCards = [];
       sec.skills.forEach((skill) => {
         const cardEl = cardRefs.current[`${sec.id}-${skill.name}`];
         if (cardEl) {
@@ -227,15 +230,63 @@ export default function PlaygroundV2() {
           const startX = cardRect.left - mainRect.left + cardRect.width / 2;
           const startY = cardRect.top - mainRect.top + cardRect.height / 2;
 
-          initialPlacements.push({
+          sectionCards.push({
             id: `${sec.id}-${skill.name}`,
             secId: sec.id,
             skillName: skill.name,
             el: cardEl,
             x: startX,
-            y: startY
+            y: startY,
+            width: cardRect.width,
+            height: cardRect.height
           });
         }
+      });
+
+      // Group cards by Column (startX) with a tolerance of 15px
+      const columns = [];
+      sectionCards.forEach((card) => {
+        let placed = false;
+        for (let col of columns) {
+          if (Math.abs(col[0].x - card.x) < 15) {
+            col.push(card);
+            placed = true;
+            break;
+          }
+        }
+        if (!placed) {
+          columns.push([card]);
+        }
+      });
+
+      // For each column, if there are multiple cards, sort and space them out vertically by height + 20px gap (84px)
+      columns.forEach((col) => {
+        col.sort((a, b) => {
+          const idxA = sec.skills.findIndex(s => s.name === a.skillName);
+          const idxB = sec.skills.findIndex(s => s.name === b.skillName);
+          return idxA - idxB;
+        });
+
+        for (let r = 1; r < col.length; r++) {
+          const prevCard = col[r - 1];
+          const currCard = col[r];
+          const minSpacing = prevCard.height + 20; // 64px card height + 20px gap
+
+          if (currCard.y < prevCard.y + minSpacing - 5) {
+            currCard.y = prevCard.y + minSpacing;
+          }
+        }
+
+        col.forEach((card) => {
+          initialPlacements.push({
+            id: card.id,
+            secId: card.secId,
+            skillName: card.skillName,
+            el: card.el,
+            x: card.x,
+            y: card.y
+          });
+        });
       });
     });
 
@@ -297,6 +348,26 @@ export default function PlaygroundV2() {
       body.plugin = { el: p.el, secId: p.secId, originX: p.x, originY: p.y, width: w, height: h };
       tempBodies.push(body);
 
+      // Create an invisible dummy physics card directly below the visible card for Frontend/Backend rows
+      if (p.secId === "frontend" || p.secId === "backend") {
+        const dummyY = p.y + h + 20; // exactly 1 row vertical spacing down
+        const dummyBody = M.Bodies.rectangle(p.x, dummyY, w, h, {
+          friction: 0.12,
+          frictionAir: 0.04,
+          restitution: 0.15,
+          density: 0.001
+        });
+        dummyBody.plugin = {
+          el: null, // invisible dummy
+          secId: p.secId,
+          originX: p.x,
+          originY: dummyY,
+          width: w,
+          height: h
+        };
+        tempBodies.push(dummyBody);
+      }
+
       // Register custom mouse hover listeners to enable smooth Javascript-driven card lift and scale zoom offsets
       const cardEl = p.el;
       const onEnter = () => cardEl.classList.add("is-hovered");
@@ -314,7 +385,7 @@ export default function PlaygroundV2() {
     // Run overlap separation pass statically so no two bodies in the same category start overlapping
     let overlapsResolved = false;
     let iterations = 0;
-    const maxIterations = 10;
+    const maxIterations = 150;
 
     while (!overlapsResolved && iterations < maxIterations) {
       overlapsResolved = true;
@@ -330,10 +401,11 @@ export default function PlaygroundV2() {
           const wB = bB.plugin.width;
           const hB = bB.plugin.height;
 
-          // Check for bounding box overlap with a tiny safety padding (4px)
-          const padding = 4;
-          const overlapX = (wA + wB) / 2 + padding - Math.abs(bA.position.x - bB.position.x);
-          const overlapY = (hA + hB) / 2 + padding - Math.abs(bA.position.y - bB.position.y);
+          // Check for bounding box overlap with a safe margin
+          const paddingX = 24;
+          const paddingY = 24;
+          const overlapX = (wA + wB) / 2 + paddingX - Math.abs(bA.position.x - bB.position.x);
+          const overlapY = (hA + hB) / 2 + paddingY - Math.abs(bA.position.y - bB.position.y);
 
           if (overlapX > 0 && overlapY > 0) {
             overlapsResolved = false;
@@ -557,7 +629,7 @@ export default function PlaygroundV2() {
             isPausedRef.current = false;
             // Initialize or resume
             if (!engineRef.current) {
-              initPhysics();
+              setTimeout(initPhysics, 200);
             } else {
               if (updateRef.current && !rafRef.current) {
                 rafRef.current = requestAnimationFrame(updateRef.current);
@@ -622,8 +694,13 @@ export default function PlaygroundV2() {
             <h3 className="text-lg md:text-xl font-bold text-white tracking-[0.25em] text-center uppercase font-sans">
               {sec.title}
             </h3>
-            {/* Subtle Gold Stage Accent Line */}
-            <div className="w-10 h-[2px] bg-gradient-to-r from-transparent via-[#e9b15d] to-transparent mt-2.5" />
+            {/* Subtle Glowing Theme Stage Accent Line */}
+            <div 
+              className="w-10 h-[2px] mt-2.5 transition-all duration-300" 
+              style={{
+                background: "linear-gradient(to right, transparent, var(--accent-primary), transparent)"
+              }}
+            />
           </div>
 
           {/* Cards Grid Grid Wrapper (Maintains natural layout and responsive spacing) */}
