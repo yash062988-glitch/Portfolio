@@ -69,9 +69,11 @@ export default function PlaygroundV2() {
   const bodiesRef = useRef([]);
   const particlesRef = useRef([]);
   const categoryAwakeStatesRef = useRef({ frontend: false, backend: false, tools: false });
+  const hoverCleanupsRef = useRef([]);
   const rafRef = useRef(null);
   const observerRef = useRef(null);
   const isPausedRef = useRef(false);
+  const updateRef = useRef(null);
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -184,6 +186,10 @@ export default function PlaygroundV2() {
       if (p.el) p.el.remove();
     });
     particlesRef.current = [];
+
+    // Clear hover triggers
+    hoverCleanupsRef.current.forEach((cleanup) => cleanup());
+    hoverCleanupsRef.current = [];
   };
 
   const initPhysics = () => {
@@ -290,6 +296,19 @@ export default function PlaygroundV2() {
 
       body.plugin = { el: p.el, secId: p.secId, originX: p.x, originY: p.y, width: w, height: h };
       tempBodies.push(body);
+
+      // Register custom mouse hover listeners to enable smooth Javascript-driven card lift and scale zoom offsets
+      const cardEl = p.el;
+      const onEnter = () => cardEl.classList.add("is-hovered");
+      const onLeave = () => cardEl.classList.remove("is-hovered");
+      cardEl.addEventListener("mouseenter", onEnter);
+      cardEl.addEventListener("mouseleave", onLeave);
+
+      hoverCleanupsRef.current.push(() => {
+        cardEl.removeEventListener("mouseenter", onEnter);
+        cardEl.removeEventListener("mouseleave", onLeave);
+        cardEl.classList.remove("is-hovered");
+      });
     });
 
     // Run overlap separation pass statically so no two bodies in the same category start overlapping
@@ -356,6 +375,8 @@ export default function PlaygroundV2() {
     const mouse = M.Mouse.create(dummyElement);
     
     // Explicitly configure container pointer reference for coordinate translation offsets
+    mainContainer.width = mainRect.width;
+    mainContainer.height = mainRect.height;
     mouse.element = mainContainer;
 
     const mouseConstraint = M.MouseConstraint.create(engine, {
@@ -391,7 +412,7 @@ export default function PlaygroundV2() {
       isDraggingCard = true;
 
       // Feed mousedown/touchstart event manually to Matter.js mouse controller
-      mouse.mousedown(e);
+      mouse.mousedown(e.nativeEvent || e);
 
       window.addEventListener("mousemove", handleMove);
       window.addEventListener("mouseup", handleEnd);
@@ -408,12 +429,12 @@ export default function PlaygroundV2() {
           e.preventDefault();
         }
       }
-      mouse.mousemove(e);
+      mouse.mousemove(e.nativeEvent || e);
     };
 
     const handleEnd = (e) => {
       isDraggingCard = false;
-      mouse.mouseup(e);
+      mouse.mouseup(e.nativeEvent || e);
       window.removeEventListener("mousemove", handleMove);
       window.removeEventListener("mouseup", handleEnd);
       window.removeEventListener("touchmove", handleMove);
@@ -486,13 +507,16 @@ export default function PlaygroundV2() {
         if (!el) return;
         const { position, angle } = body;
         
+        const isHovered = el.classList.contains("is-hovered");
+        const isDragging = el.classList.contains("is-dragging");
+        
+        const scale = isDragging ? 1.05 : (isHovered ? 1.025 : 1.0);
+        const liftY = (isHovered && !isDragging) ? -8 : 0; // -8px pop-up lift on hover
+
         const dx = position.x - originX;
         const dy = position.y - originY;
-
-        const isDragging = el.classList.contains("is-dragging");
-        const scale = isDragging ? 1.03 : 1.0;
         
-        el.style.transform = `translate3d(${dx}px, ${dy}px, 0) rotate(${angle}rad) scale(${scale})`;
+        el.style.transform = `translate3d(${dx}px, ${dy + liftY}px, 0) rotate(${angle}rad) scale(${scale})`;
       });
 
       // Update particle physics
@@ -517,6 +541,7 @@ export default function PlaygroundV2() {
       }
     };
 
+    updateRef.current = update;
     rafRef.current = requestAnimationFrame(update);
   };
 
@@ -534,28 +559,8 @@ export default function PlaygroundV2() {
             if (!engineRef.current) {
               initPhysics();
             } else {
-              // Restart requestAnimationFrame loop
-              const update = () => {
-                if (isPausedRef.current) return;
-                rafRef.current = requestAnimationFrame(update);
-                if (engineRef.current) {
-                  M.Engine.update(engineRef.current);
-                  
-                  bodiesRef.current.forEach(({ body, el, originX, originY }) => {
-                    if (!el) return;
-                    const { position, angle } = body;
-                    
-                    const dx = position.x - originX;
-                    const dy = position.y - originY;
-
-                    const isDragging = el.classList.contains("is-dragging");
-                    const scale = isDragging ? 1.03 : 1.0;
-                    el.style.transform = `translate3d(${dx}px, ${dy}px, 0) rotate(${angle}rad) scale(${scale})`;
-                  });
-                }
-              };
-              if (!rafRef.current) {
-                rafRef.current = requestAnimationFrame(update);
+              if (updateRef.current && !rafRef.current) {
+                rafRef.current = requestAnimationFrame(updateRef.current);
               }
             }
           } else {
@@ -637,23 +642,23 @@ export default function PlaygroundV2() {
         </div>
       ))}
 
-      {/* Styled animation CSS and overrides */}
       <style jsx global>{`
         .skill-card-physics {
           will-change: transform;
           transition: border-color 0.25s ease, box-shadow 0.25s ease;
         }
-        .skill-card-physics:hover {
-          border-color: rgba(233, 177, 93, 0.45) !important;
-          box-shadow: 0 0 20px rgba(233, 177, 93, 0.2) !important;
+        .skill-card-physics:hover,
+        .skill-card-physics.is-hovered {
+          border-color: rgba(var(--accent-glow-raw), 0.6) !important;
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.85), 0 0 25px rgba(var(--accent-glow-raw), 0.22) !important;
           cursor: grab;
         }
         .skill-card-physics:active {
           cursor: grabbing;
         }
         .skill-card-physics.is-dragging {
-          border-color: rgba(233, 177, 93, 0.8) !important;
-          box-shadow: 0 0 35px rgba(233, 177, 93, 0.4) !important;
+          border-color: rgba(var(--accent-glow-raw), 0.85) !important;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 35px rgba(var(--accent-glow-raw), 0.35) !important;
           cursor: grabbing !important;
           z-index: 99999 !important;
         }

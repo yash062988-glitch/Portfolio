@@ -123,8 +123,14 @@ export default function MeshText({
             const tCtx = textCanvas.getContext("2d", { willReadFrequently: true });
             if (!tCtx) return;
 
+            let resolvedColor = color || "#ffffff";
+            if (resolvedColor.startsWith("var(")) {
+              const varName = resolvedColor.slice(4, -1).trim();
+              resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || "#D8B15B";
+            }
+
             tCtx.clearRect(0, 0, w, h);
-            tCtx.fillStyle = color || "#ffffff"; // Draw text mask in heading color
+            tCtx.fillStyle = resolvedColor; // Draw text mask in heading color
             tCtx.textAlign = "center";
             tCtx.textBaseline = "middle";
             tCtx.font = `${fontStyle} ${fontWeight} ${fontSizeVal * dpr}px ${fontFamily}, sans-serif`;
@@ -283,7 +289,12 @@ export default function MeshText({
             const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
             const pSize = Math.max(2.0, fontSizeVal * dpr * 0.08);
 
-            ctx.fillStyle = color;
+            let activeColor = color;
+            if (color && color.startsWith("var(")) {
+              const varName = color.slice(4, -1).trim();
+              activeColor = getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || "#D8B15B";
+            }
+            ctx.fillStyle = activeColor;
 
             // 2. Draw smaller bubbling particles on top
             for (let i = 0; i < particles.length; i++) {
@@ -382,7 +393,17 @@ export default function MeshText({
 
         rafId = requestAnimationFrame(tick);
 
+        const observer = new MutationObserver(() => {
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            const w = Math.max(10, Math.round(rect.width * dpr + PADDING_X * dpr * 2));
+            const h = Math.max(10, Math.round(rect.height * dpr + PADDING_Y * dpr * 2));
+            buildDistanceFieldAndCache(w, h, dpr);
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style"] });
+
         return () => {
+            observer.disconnect();
             cancelled = true;
             cancelAnimationFrame(rafId);
             ro.disconnect();

@@ -3,33 +3,8 @@
 import React from "react";
 import { ShieldCheck, Award } from "lucide-react";
 
-const IssuerLogo = ({ issuer }) => {
-  const normalized = String(issuer).toLowerCase();
-  if (normalized.includes("google")) {
-    return (
-      <svg className="w-5 h-5 text-[#E9B15D]" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 5.92 1 12 5.92 1 12s4.92 11 11.24 11c6.6 0 11-4.65 11-11.2 0-.756-.08-1.333-.178-1.815H12.24z"/>
-      </svg>
-    );
-  }
-  if (normalized.includes("microsoft")) {
-    return (
-      <svg className="w-4.5 h-4.5 text-[#E9B15D]" viewBox="0 0 23 23" fill="currentColor">
-        <path d="M0 0h11v11H0zM12 0h11v11H12zM0 12h11v11H0zM12 12h11v11H12z"/>
-      </svg>
-    );
-  }
-  if (normalized.includes("hp")) {
-    return (
-      <span className="text-sm font-sans font-black text-[#E9B15D] tracking-tight leading-none">hp</span>
-    );
-  }
-  if (normalized.includes("tata") || normalized.includes("tcs")) {
-    return (
-      <span className="text-[10px] font-mono font-bold text-[#E9B15D] tracking-tight leading-none">TATA</span>
-    );
-  }
-  return <Award className="w-4 h-4 text-[#E9B15D]" />;
+const IssuerLogo = () => {
+  return <Award className="w-4 h-4" style={{ color: "var(--accent-primary)" }} />;
 };
 
 export default function CertificateCard({ certificate, isCentered, onClick }) {
@@ -38,11 +13,25 @@ export default function CertificateCard({ certificate, isCentered, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`group relative w-full h-full p-5 rounded-[30px] border bg-[#121214]/75 backdrop-blur-[18px] text-left flex flex-col justify-between transition-all duration-500 cursor-pointer outline-none overflow-hidden select-none ${
-        isCentered 
-          ? "border-[#E9B15D]/40 shadow-[0_20px_50px_rgba(233,177,93,0.18)]" 
-          : "border-[#E9B15D]/15 hover:border-[#E9B15D]/40 hover:shadow-[0_20px_50px_rgba(233,177,93,0.12)]"
-      }`}
+      className={`group relative w-full h-full p-5 rounded-[30px] border bg-[#121214]/75 backdrop-blur-[18px] text-left flex flex-col justify-between transition-all duration-500 cursor-pointer outline-none overflow-hidden select-none`}
+      style={{
+        borderColor: isCentered ? "rgba(var(--accent-glow-raw), 0.4)" : "rgba(var(--accent-glow-raw), 0.15)",
+        boxShadow: isCentered 
+          ? "0 20px 50px var(--accent-glow)" 
+          : "0 20px 50px rgba(0,0,0,0.12)"
+      }}
+      onMouseEnter={(e) => {
+        if (!isCentered) {
+          e.currentTarget.style.borderColor = "rgba(var(--accent-glow-raw), 0.4)";
+          e.currentTarget.style.boxShadow = "0 20px 50px var(--accent-glow)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isCentered) {
+          e.currentTarget.style.borderColor = "rgba(var(--accent-glow-raw), 0.15)";
+          e.currentTarget.style.boxShadow = "0 20px 50px rgba(0,0,0,0.12)";
+        }
+      }}
     >
       {/* 1. COMPACT PREVIEW LAYER (Active when NOT centered) */}
       <div 
@@ -52,8 +41,8 @@ export default function CertificateCard({ certificate, isCentered, onClick }) {
       >
         {/* Header */}
         <div className="w-full flex items-center justify-between gap-4">
-          <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#E9B15D]/5 border border-[#E9B15D]/15 shadow-inner">
-            <IssuerLogo issuer={issuer} />
+          <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-white/[0.03] border border-white/10 shadow-inner">
+            <IssuerLogo />
           </div>
           <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20 text-emerald-400">
             <ShieldCheck className="w-3 h-3 flex-shrink-0" />
@@ -63,7 +52,7 @@ export default function CertificateCard({ certificate, isCentered, onClick }) {
 
         {/* Title */}
         <div className="flex-grow flex items-center py-2">
-          <h4 className="text-[13px] font-bold text-white leading-snug tracking-tight font-sans group-hover:text-[#E9B15D] transition-colors duration-300">
+          <h4 className="text-[13px] font-bold text-white leading-snug tracking-tight font-sans group-hover:text-primary transition-colors duration-300">
             {title}
           </h4>
         </div>
@@ -104,23 +93,23 @@ export default function CertificateCard({ certificate, isCentered, onClick }) {
           </h4>
           <div className="flex items-center justify-between text-[8px] font-mono tracking-wide text-white/40 mt-1">
             <span>ISSUED: {issued}</span>
-            <span className="text-[#E9B15D] tracking-widest">{issuer.toUpperCase()}</span>
+            <span className="tracking-widest" style={{ color: "var(--accent-primary)" }}>{issuer.toUpperCase()}</span>
           </div>
         </div>
       </div>
 
       {/* Decorative reflection elements */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out z-0 pointer-events-none" />
-      <div className="absolute top-[-50px] right-[-50px] w-36 h-36 rounded-full bg-[radial-gradient(circle,rgba(233,177,93,0.04)_0%,transparent_70%)] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
+      <div className="absolute top-[-50px] right-[-50px] w-36 h-36 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.01)_0%,transparent_70%)] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
       
       {/* Orbit Rings Backdrop (Micro-Space Design Element) */}
-      <div className="absolute bottom-[-10px] right-[-10px] w-24 h-24 border border-[#E9B15D]/[0.02] rounded-full flex items-center justify-center pointer-events-none z-0">
-        <div className="w-16 h-16 border border-[#E9B15D]/[0.015] border-dashed rounded-full group-hover:rotate-[45deg] transition-transform duration-1000 ease-out" />
+      <div className="absolute bottom-[-10px] right-[-10px] w-24 h-24 rounded-full flex items-center justify-center pointer-events-none z-0" style={{ border: "1px solid rgba(var(--accent-glow-raw), 0.05)" }}>
+        <div className="w-16 h-16 border border-dashed rounded-full group-hover:rotate-[45deg] transition-transform duration-1000 ease-out" style={{ borderColor: "rgba(var(--accent-glow-raw), 0.03)" }} />
       </div>
 
       <style jsx global>{`
         .text-glow-gold {
-          text-shadow: 0 0 8px rgba(233, 177, 93, 0.15);
+          text-shadow: 0 0 8px rgba(var(--accent-glow-raw), 0.15);
         }
       `}</style>
     </button>

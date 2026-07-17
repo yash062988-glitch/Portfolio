@@ -190,8 +190,8 @@ export default function ProjectMesh({
     }
   });
 
-  const accentColor = project.accentColor || "rgba(233, 177, 93, 0.15)";
-  const hoverBorderColor = project.hoverBorderColor || "rgba(233, 177, 93, 0.45)";
+  const accentColor = "var(--accent-glow)";
+  const hoverBorderColor = "var(--accent-primary)";
 
   return (
     <group ref={groupRef}>
@@ -267,8 +267,8 @@ export default function ProjectMesh({
               <div 
                 className="absolute inset-0 rounded-[22px] border bg-white/[0.03] opacity-0 group-hover:opacity-100 transition-opacity z-0 pointer-events-none"
                 style={{
-                  borderColor: hoverBorderColor,
-                  boxShadow: `0 20px 50px ${accentColor.replace("0.2", "0.4")}`,
+                  borderColor: "var(--accent-primary)",
+                  boxShadow: "0 20px 50px var(--accent-glow)",
                   transition: "opacity 280ms cubic-bezier(.22,.61,.36,1)"
                 }}
               />
@@ -357,7 +357,7 @@ export default function ProjectMesh({
                     minHeight: 0
                   }}
                 >
-                  <span className="text-[9px] font-mono tracking-widest text-[#e9b15d]/80 uppercase block font-bold leading-none mb-1 select-none overflow-wrap-anywhere word-break-break-word">
+                  <span className="text-[9px] font-mono tracking-widest uppercase block font-bold leading-none mb-1 select-none overflow-wrap-anywhere word-break-break-word" style={{ color: "var(--accent-primary)" }}>
                     Featured Project
                   </span>
                   
@@ -379,7 +379,7 @@ export default function ProjectMesh({
                       wordBreak: "break-word"
                     }}
                   >
-                    <span className="font-bold text-[#e9b15d] uppercase">{project.category}</span>
+                    <span className="font-bold uppercase" style={{ color: "var(--accent-primary)" }}>{project.category}</span>
                     {project.tech && project.tech.length > 0 && (
                       <>
                         <span>•</span>
@@ -438,7 +438,8 @@ export default function ProjectMesh({
                       e.stopPropagation();
                       document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
                     }}
-                    className="pointer-events-auto flex items-center justify-center gap-2 h-[44px] rounded-full bg-primary hover:bg-[#FAF5EF] text-[15px] font-extrabold uppercase tracking-wider text-[#120c08] transition-all duration-300 w-full text-center shadow-[0_4px_20px_rgba(233,177,93,0.15)] hover:shadow-[0_8px_25px_rgba(233,177,93,0.3)] select-none cursor-pointer min-w-0"
+                    className="pointer-events-auto flex items-center justify-center gap-2 h-[44px] rounded-full bg-primary hover:bg-[#FAF5EF] text-[15px] font-extrabold uppercase tracking-wider text-[#120c08] transition-all duration-300 w-full text-center select-none cursor-pointer min-w-0"
+                    style={{ boxShadow: "0 4px 20px var(--accent-glow)" }}
                   >
                     Let's Build Yours
                     <ArrowRight className="w-4 h-4 shrink-0" />
@@ -469,7 +470,8 @@ export default function ProjectMesh({
                       onPointerDown={(e) => e.stopPropagation()}
                       onPointerUp={(e) => e.stopPropagation()}
                       onClick={(e) => e.stopPropagation()}
-                      className="pointer-events-auto flex items-center justify-center gap-2 h-[44px] rounded-full bg-primary hover:bg-[#FAF5EF] text-[15px] font-extrabold uppercase tracking-wider text-[#120c08] transition-all duration-300 w-full text-center shadow-[0_4px_20px_rgba(233,177,93,0.15)] hover:shadow-[0_8px_25px_rgba(233,177,93,0.3)] select-none min-w-0"
+                      className="pointer-events-auto flex items-center justify-center gap-2 h-[44px] rounded-full bg-primary hover:bg-[#FAF5EF] text-[15px] font-extrabold uppercase tracking-wider text-[#120c08] transition-all duration-300 w-full text-center select-none min-w-0"
+                      style={{ boxShadow: "0 4px 20px var(--accent-glow)" }}
                     >
                       <ExternalLink className="w-4 h-4 shrink-0" />
                       <span className="truncate">Live Demo</span>

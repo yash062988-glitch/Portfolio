@@ -1,6 +1,9 @@
 import React from "react";
+import { useAccentColors } from "@/hooks/useAccentColors";
 
 export default function ProjectLights() {
+  const accent = useAccentColors();
+
   return (
     <>
       {/* Soft ambient environment lighting */}
@@ -17,7 +20,7 @@ export default function ProjectLights() {
       <directionalLight 
         position={[-6, 4, -6]} 
         intensity={0.4} 
-        color="#e9b15d" 
+        color={accent.primary} 
       />
 
       {/* Gentle fill light from bottom-left to soften shadows */}

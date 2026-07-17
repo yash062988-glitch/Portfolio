@@ -22,17 +22,29 @@ export default function ExpandedCertificate({ certificate, layoutId, onClose }) 
   return (
     <motion.div
       layoutId={layoutId}
-      className="fixed inset-x-6 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 max-w-4xl w-[calc(100%-48px)] p-6 sm:p-8 rounded-[30px] border border-[#E9B15D]/45 bg-[#121214]/95 backdrop-blur-[24px] shadow-[0_30px_80px_rgba(0,0,0,0.85)] z-[95] overflow-y-auto flex flex-col md:flex-row gap-8 justify-between select-none"
+      className="fixed inset-x-6 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 max-w-4xl w-[calc(100%-48px)] p-6 sm:p-8 rounded-[30px] border bg-[#121214]/95 backdrop-blur-[24px] shadow-[0_30px_80px_rgba(0,0,0,0.85)] z-[95] overflow-y-auto flex flex-col md:flex-row gap-8 justify-between select-none"
       style={{
         top: "50%",
         y: "-50%",
-        maxHeight: "90vh"
+        maxHeight: "90vh",
+        borderColor: "rgba(var(--accent-glow-raw), 0.45)"
       }}
     >
       {/* Close Button */}
       <button
         onClick={onClose}
-        className="absolute top-5 right-5 w-8 h-8 rounded-full border border-white/10 hover:border-[#E9B15D]/45 bg-white/[0.03] text-white hover:text-[#E9B15D] flex items-center justify-center transition-all duration-300 cursor-pointer shadow-sm z-[95]"
+        className="absolute top-5 right-5 w-8 h-8 rounded-full border border-white/10 bg-white/[0.03] text-white flex items-center justify-center transition-all duration-300 cursor-pointer shadow-sm z-[95] hover:text-primary"
+        style={{
+          borderColor: "rgba(255, 255, 255, 0.1)"
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = "var(--accent-primary)";
+          e.currentTarget.style.color = "var(--accent-primary)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
+          e.currentTarget.style.color = "white";
+        }}
       >
         <X className="w-4 h-4" />
       </button>
@@ -47,7 +59,7 @@ export default function ExpandedCertificate({ certificate, layoutId, onClose }) 
         <div className="flex flex-col gap-4">
           {/* Tag and Verified label */}
           <div className="flex items-center gap-3">
-            <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-[#E9B15D] px-2.5 py-1 rounded bg-[#E9B15D]/5 border border-[#E9B15D]/20 leading-none">
+            <span className="text-[9px] uppercase tracking-[0.2em] font-bold px-2.5 py-1 rounded leading-none" style={{ color: "var(--accent-primary)", backgroundColor: "rgba(var(--accent-glow-raw), 0.05)", border: "1px solid rgba(var(--accent-glow-raw), 0.2)" }}>
               {issuer} Mapped
             </span>
             <div className="flex items-center gap-1.5 text-emerald-400">
@@ -74,7 +86,7 @@ export default function ExpandedCertificate({ certificate, layoutId, onClose }) 
             {credential && (
               <div className="col-span-2">
                 <span className="text-[8px] text-white/30 uppercase tracking-[0.1em] block mb-0.5">Credential Log ID</span>
-                <span className="text-[#E9B15D] font-mono font-semibold">{credential}</span>
+                <span className="font-mono font-semibold" style={{ color: "var(--accent-primary)" }}>{credential}</span>
               </div>
             )}
           </div>
@@ -106,15 +118,33 @@ export default function ExpandedCertificate({ certificate, layoutId, onClose }) 
         <div className="flex items-center gap-3 pt-4 border-t border-white/5">
           <button
             onClick={() => window.open(pdfUrl, "_blank")}
-            className="flex-grow h-11 flex items-center justify-center gap-2 rounded-xl bg-[#E9B15D] hover:bg-[#d89f4b] text-xs font-bold text-[#120c08] transition-all duration-300 cursor-pointer shadow-[0_4px_15px_rgba(233,177,93,0.2)]"
+            className="flex-grow h-11 flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-[#FAF5EF] text-xs font-bold text-[#120c08] transition-all duration-300 cursor-pointer"
+            style={{
+              backgroundColor: "var(--accent-primary)",
+              boxShadow: "0 4px 15px var(--accent-glow)"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--accent-secondary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--accent-primary)";
+            }}
           >
             View Certificate
             <ExternalLink className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleDownload}
-            className="w-12 h-11 flex items-center justify-center rounded-xl border border-white/10 hover:border-[#E9B15D]/45 bg-white/[0.03] text-white hover:text-[#E9B15D] transition-all duration-300 cursor-pointer"
+            className="w-12 h-11 flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-white transition-all duration-300 cursor-pointer"
             aria-label="Download PDF certificate file"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "var(--accent-primary)";
+              e.currentTarget.style.color = "var(--accent-primary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
+              e.currentTarget.style.color = "white";
+            }}
           >
             <Download className="w-4 h-4" />
           </button>

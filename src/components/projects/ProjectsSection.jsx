@@ -380,7 +380,7 @@ export default function ProjectsSection() {
           <div 
             className="absolute w-[200%] h-[200%] top-[-50%] left-[-50%] opacity-20 pointer-events-none"
             style={{
-              backgroundImage: "radial-gradient(1px 1px at 40px 60px, #ffffff, transparent), radial-gradient(1.5px 1.5px at 120px 200px, #e9b15d, transparent), radial-gradient(2px 2px at 250px 350px, #ffffff, transparent)",
+              backgroundImage: "radial-gradient(1px 1px at 40px 60px, #ffffff, transparent), radial-gradient(1.5px 1.5px at 120px 200px, var(--accent-primary), transparent), radial-gradient(2px 2px at 250px 350px, #ffffff, transparent)",
               backgroundSize: "400px 400px",
               animation: "starsFloat 160s linear infinite"
             }}

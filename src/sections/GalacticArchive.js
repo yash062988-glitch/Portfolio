@@ -68,7 +68,7 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
 
       {/* Transparent HUD intersecting guide circle */}
       <div
-        className={`absolute rounded-full border border-dashed pointer-events-none transition-all duration-700 ${isHovered ? "w-44 h-44 opacity-45 border-[#e9b15d]" : "w-32 h-32 opacity-12 border-white/40"
+        className={`absolute rounded-full border border-dashed pointer-events-none transition-all duration-700 ${isHovered ? "w-44 h-44 opacity-45 border-primary" : "w-32 h-32 opacity-12 border-white/40"
           }`}
       />
 
@@ -131,7 +131,7 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         {/* Floating coordinate sector number identifier */}
         <div
           className={`absolute -top-1.5 -right-1.5 z-30 pointer-events-none px-2 py-0.5 rounded text-[8.5px] font-mono tracking-widest border transition-all duration-500 bg-[#0d0908]/95 ${isHovered
-              ? "text-[#e9b15d] border-[#e9b15d]/50 shadow-[0_0_12px_rgba(233,177,93,0.3)]"
+              ? "text-primary border-primary/50 shadow-[0_0_12px_var(--accent-glow)]"
               : "text-white/45 border-white/10"
             }`}
         >
@@ -141,7 +141,7 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         {/* Outer glass refraction ring */}
         <div
           className={`absolute inset-0 rounded-full border transition-all duration-700 bg-gradient-to-b from-white/[0.04] to-white/[0.01] backdrop-blur-[4px] ${isHovered
-              ? "border-[#e9b15d]/60 shadow-[inset_0_1px_4px_rgba(233,177,93,0.3),0_16px_36px_rgba(0,0,0,0.75)]"
+              ? "border-primary/60 shadow-[inset_0_1px_4px_var(--accent-glow),0_16px_36px_rgba(0,0,0,0.75)]"
               : "border-white/15 shadow-[inset_0_1px_3px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.55)]"
             }`}
         />
@@ -190,7 +190,7 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
 
         {/* Emissive energy ring */}
         <div
-          className={`absolute inset-[10px] rounded-full border transition-all duration-700 pointer-events-none z-10 ${isHovered ? "border-[#e9b15d]/40 scale-102" : "border-white/5"
+          className={`absolute inset-[10px] rounded-full border transition-all duration-700 pointer-events-none z-10 ${isHovered ? "border-primary/40 scale-102" : "border-white/5"
             }`}
           style={{
             boxShadow: isHovered ? `0 0 16px ${sector.color}35` : "none"
@@ -218,10 +218,10 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         {/* Node Name Label Beneath */}
         <div className="absolute top-[106%] flex flex-col items-center pointer-events-none whitespace-nowrap transition-all duration-500">
           <span
-            className={`text-[10px] uppercase font-extrabold tracking-[0.25em] transition-colors duration-500 ${isHovered ? "text-[#e9b15d]" : "text-white/80"
+            className={`text-[10px] uppercase font-extrabold tracking-[0.25em] transition-colors duration-500 ${isHovered ? "text-primary" : "text-white/80"
               }`}
             style={{
-              textShadow: isHovered ? "0 0 12px rgba(233,177,93,0.5)" : "none"
+              textShadow: isHovered ? "0 0 12px var(--accent-glow)" : "none"
             }}
           >
             {sector.name}
@@ -722,7 +722,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
 
         {/* Header HUD Readout Title (Fixed at the top center with premium spacing) */}
         <div className="flex flex-col items-center text-center w-full pt-6 pb-4 pointer-events-none">
-          <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-[#e9b15d] uppercase select-none mb-3">
+          <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-primary uppercase select-none mb-3">
             SYSTEM LOG // NAV MODULE
           </span>
           <MeshText
@@ -733,7 +733,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
           <p className="text-white/45 text-[10px] tracking-[0.2em] uppercase font-light mt-5">
             MAPPING MY JOURNEY THROUGH INNOVATION
           </p>
-          <span className="text-[8px] font-mono tracking-[0.25em] text-[#e9b15d]/70 mt-4 border border-[#e9b15d]/20 px-3 py-1 rounded bg-[#e9b15d]/5">
+          <span className="text-[8px] font-mono tracking-[0.25em] text-primary/70 mt-4 border border-primary/20 px-3 py-1 rounded bg-primary/5">
             SYSTEM STATUS : EVOLVING
           </span>
         </div>
@@ -761,7 +761,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
                         gradientUnits="userSpaceOnUse"
                       >
                         <stop offset="0%" stopColor={s1.color} stopOpacity="0.15" />
-                        <stop offset="50%" stopColor="#e9b15d" stopOpacity="0.7" />
+                        <stop offset="50%" stopColor="var(--accent-primary)" stopOpacity="0.7" />
                         <stop offset="100%" stopColor={s2.color} stopOpacity="0.15" />
                       </linearGradient>
                     );
@@ -771,9 +771,9 @@ export default function GalacticArchive({ setIsPortalActive }) {
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
                   <linearGradient id="orbitGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="rgba(233,177,93,0.1)" />
-                    <stop offset="50%" stopColor="#e9b15d" stopOpacity="0.65" />
-                    <stop offset="100%" stopColor="rgba(233,177,93,0.1)" />
+                    <stop offset="0%" stopColor="rgba(var(--accent-glow-raw),0.1)" />
+                    <stop offset="50%" stopColor="var(--accent-primary)" stopOpacity="0.65" />
+                    <stop offset="100%" stopColor="rgba(var(--accent-glow-raw),0.1)" />
                   </linearGradient>
                 </defs>
 
@@ -813,11 +813,12 @@ export default function GalacticArchive({ setIsPortalActive }) {
                       ref={completedPathRef}
                       d={fullSplinePath}
                       fill="none"
-                      stroke="#e9b15d"
+                      stroke="var(--accent-primary)"
                       strokeWidth="2.5"
                       strokeDasharray="1000"
-                      className="opacity-0 filter drop-shadow-[0_0_8px_#e9b15d]"
+                      className="opacity-0 filter"
                       style={{
+                        filter: "drop-shadow(0 0 8px var(--accent-primary))",
                         strokeDashoffset: 1000,
                         transition: "opacity 300ms ease"
                       }}
@@ -889,7 +890,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
                   className="object-contain"
                 />
                 {/* Engine fire/thruster glow particle tail */}
-                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2 h-4 rounded-full bg-gradient-to-t from-transparent via-[#e9b15d]/40 to-[#e9b15d] blur-[2px] opacity-75 animate-pulse" />
+                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2 h-4 rounded-full bg-gradient-to-t from-transparent via-primary/40 to-primary blur-[2px] opacity-75 animate-pulse" />
               </div>
             </div>
           </motion.div>
@@ -910,7 +911,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
                 {/* Left Col: Milestone Meta Details */}
                 <div className="flex flex-col gap-2.5 max-w-md items-start">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[8px] font-mono uppercase font-bold tracking-[0.25em] text-[#e9b15d] leading-none">
+                    <span className="text-[8px] font-mono uppercase font-bold tracking-[0.25em] text-primary leading-none">
                       SECTOR {activeSector.num} // MISSION ARCHIVE
                     </span>
                     <h3 className="text-2xl font-extrabold text-white tracking-tight leading-normal uppercase">
@@ -923,8 +924,8 @@ export default function GalacticArchive({ setIsPortalActive }) {
                   </span>
 
                   <div className="flex items-center gap-1.5 mt-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#e9b15d] animate-ping" />
-                    <span className="text-[8px] font-mono tracking-widest text-[#e9b15d] uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+                    <span className="text-[8px] font-mono tracking-widest text-primary uppercase">
                       {activeSector.status}
                     </span>
                   </div>
@@ -946,7 +947,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
                     {activeSector.represents.map((focus, index) => (
                       <span
                         key={index}
-                        className="text-[8.5px] font-mono px-2 py-1 rounded bg-white/[0.02] border border-white/[0.04] text-white/65 hover:text-white hover:border-[#e9b15d]/20 transition-all duration-300"
+                        className="text-[8.5px] font-mono px-2 py-1 rounded bg-white/[0.02] border border-white/[0.04] text-white/65 hover:text-white hover:border-primary/20 transition-all duration-300"
                       >
                         {focus}
                       </span>

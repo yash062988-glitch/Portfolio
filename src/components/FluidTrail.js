@@ -504,7 +504,11 @@ export default function FluidTrail(props) {
 
         function applyPointerInput() {
             if (!pointer.moved) return;
-            const c = parseColor(propsRef.current?.color ?? "#e9b15d");
+            let activeColor = "#D8B15B";
+            if (typeof document !== "undefined") {
+                activeColor = getComputedStyle(document.documentElement).getPropertyValue("--accent-primary").trim() || "#D8B15B";
+            }
+            const c = parseColor(activeColor);
             const col = [
                 c[0] * 0.7,
                 c[1] * 0.7,

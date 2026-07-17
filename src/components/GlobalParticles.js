@@ -52,16 +52,16 @@ export default function GlobalParticles() {
     const particleCount = getParticleCount();
     const particles = [];
 
-    // Particle Color Palette (White, Purple, Blue, Gold theme accent, Soft Amber theme accent)
-    const colors = [
-      "rgba(255, 255, 255, ",   // White
-      "rgba(168, 85, 247, ",   // Purple
-      "rgba(59, 130, 246, ",    // Blue
-      "rgba(233, 177, 93, ",    // Gold Theme Accent
-      "rgba(255, 221, 168, ",   // Soft Amber Theme Accent
-    ];
+    function hexToRgbaPrefix(hex) {
+      let h = hex.replace("#", "").trim();
+      if (h.length === 3) h = h.split("").map((x) => x + x).join("");
+      const r = parseInt(h.slice(0, 2), 16);
+      const g = parseInt(h.slice(2, 4), 16);
+      const b = parseInt(h.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, `;
+    }
 
-    // Initialize Particles
+    // Initialize Particles with dynamic color indices
     for (let i = 0; i < particleCount; i++) {
       const depth = Math.random() * 0.8 + 0.2; // 0.2 (back) to 1.0 (front)
       particles.push({
@@ -70,7 +70,7 @@ export default function GlobalParticles() {
         vx: (Math.random() - 0.5) * 0.25,
         vy: (Math.random() - 0.5) * 0.25,
         radius: (Math.random() * 1.8 + 0.6) * depth, // 1px to 2.4px based on depth
-        baseColor: colors[Math.floor(Math.random() * colors.length)],
+        colorIdx: Math.floor(Math.random() * 5),
         depth: depth,
         brightness: Math.random() * 0.4 + 0.2, // Base opacity factor
         angle: Math.random() * Math.PI * 2,
@@ -104,6 +104,18 @@ export default function GlobalParticles() {
         center.x = w / 2 + Math.cos(center.angle) * center.rx;
         center.y = h / 2 + Math.sin(center.angle) * center.ry;
       });
+
+      const rootStyle = getComputedStyle(document.documentElement);
+      const primaryHex = rootStyle.getPropertyValue("--accent-primary").trim() || "#D8B15B";
+      const secondaryHex = rootStyle.getPropertyValue("--accent-secondary").trim() || "#F0C979";
+
+      const liveColors = [
+        "rgba(255, 255, 255, ",   // White
+        "rgba(168, 85, 247, ",   // Purple
+        "rgba(59, 130, 246, ",    // Blue
+        hexToRgbaPrefix(primaryHex),
+        hexToRgbaPrefix(secondaryHex)
+      ];
 
       // 1. Update Physics and Draw Particles
       for (let i = 0; i < particleCount; i++) {
@@ -174,7 +186,7 @@ export default function GlobalParticles() {
 
         // Draw particle node
         const opacity = p.brightness * (0.3 + (p.yRendered / h) * 0.5); // Fades slightly near top
-        ctx.fillStyle = `${p.baseColor}${opacity})`;
+        ctx.fillStyle = `${liveColors[p.colorIdx]}${opacity})`;
         ctx.beginPath();
         ctx.arc(p.x, p.yRendered, p.radius, 0, Math.PI * 2);
         ctx.fill();

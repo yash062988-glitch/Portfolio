@@ -37,7 +37,7 @@ export default function IdentityStrip() {
                 }}
                 className={`text-[9px] md:text-[10px] tracking-[0.25em] font-bold ${
                   isBullet 
-                    ? "text-[#E9B15D]" 
+                    ? "text-primary" 
                     : item === "OPEN TO OPPORTUNITIES"
                       ? "text-primary font-extrabold"
                       : "text-white"

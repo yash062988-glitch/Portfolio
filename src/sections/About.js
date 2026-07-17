@@ -56,12 +56,13 @@ export default function About({ portraitImage = "/images/about section image.png
   };
 
   const hoverConfig = {
-    y: -4,
-    borderColor: "rgba(233, 177, 93, 0.45)",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 25px rgba(233, 177, 93, 0.08)"
+    y: -10,
+    scale: 1.025,
+    borderColor: "rgba(var(--accent-glow-raw), 0.65)",
+    boxShadow: "0 30px 60px -15px rgba(0, 0, 0, 0.85), 0 0 35px rgba(var(--accent-glow-raw), 0.25)"
   };
 
-  const transitionConfig = { duration: 0.3, ease: [0.16, 1, 0.3, 1] };
+  const transitionConfig = { duration: 0.35, ease: "easeOut" };
 
   const outlineFocusClasses = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black";
 
@@ -160,9 +161,10 @@ export default function About({ portraitImage = "/images/about section image.png
               onMouseMove={handlePortraitMouseMove}
               onMouseLeave={handlePortraitMouseLeave}
               whileHover={{ 
-                y: -4,
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 25px rgba(233, 177, 93, 0.08)",
-                borderColor: "rgba(233, 177, 93, 0.45)"
+                y: -10,
+                scale: 1.025,
+                boxShadow: "0 30px 60px -15px rgba(0, 0, 0, 0.85), 0 0 35px rgba(var(--accent-glow-raw), 0.25)",
+                borderColor: "rgba(var(--accent-glow-raw), 0.65)"
               }}
               transition={transitionConfig}
               tabIndex={0}
