@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { 
@@ -8,6 +8,143 @@ import {
   MapPin, Quote
 } from "lucide-react";
 import MeshText from "@/components/design-system/MeshText";
+
+const AboutSlideshow = ({ fallbackImage, parentX, parentY }) => {
+  const [images, setImages] = useState([]);
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [nextIdx, setNextIdx] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const containerRef = useRef(null);
+  const activeTimerRef = useRef(null);
+  const [isInView, setIsInView] = useState(true); // Default true so it starts playing immediately
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      setPrefersReducedMotion(mediaQuery.matches);
+      const listener = (e) => setPrefersReducedMotion(e.matches);
+      mediaQuery.addEventListener('change', listener);
+      return () => mediaQuery.removeEventListener('change', listener);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/about-images')
+      .then(res => res.json())
+      .then(data => {
+        console.log("About Page Slideshow Images:", data);
+        if (Array.isArray(data) && data.length > 0) {
+          setImages(data);
+        }
+      })
+      .catch(err => {
+        console.error("About Page Slideshow Fetch Error:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsInView(entry.isIntersecting);
+    }, { threshold: 0.05 });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (images.length <= 1 || !isInView) return;
+
+    const interval = setInterval(() => {
+      const nextIndex = (activeIdx + 1) % images.length;
+      setNextIdx(nextIndex);
+      console.log(`Transitioning: ${activeIdx} -> ${nextIndex} (${images[nextIndex]})`);
+      
+      if (prefersReducedMotion) {
+        setActiveIdx(nextIndex);
+      } else {
+        setIsTransitioning(true);
+        activeTimerRef.current = setTimeout(() => {
+          setActiveIdx(nextIndex);
+          setIsTransitioning(false);
+        }, 800);
+      }
+    }, 2300); // 1.5s display + 0.8s transition
+
+    return () => {
+      clearInterval(interval);
+      if (activeTimerRef.current) {
+        clearTimeout(activeTimerRef.current);
+      }
+    };
+  }, [images, activeIdx, isInView, prefersReducedMotion]);
+
+  if (images.length === 0) {
+    return (
+      <motion.div
+        className="w-full h-full relative rounded-[22px] overflow-hidden"
+        style={{ x: parentX, y: parentY }}
+        whileHover={{ scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      >
+        <Image
+          src={fallbackImage}
+          alt="Yash Jain Portrait Fallback"
+          fill
+          priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          className="object-cover rounded-[22px] filter brightness-[0.92] group-hover:brightness-[0.98]"
+        />
+      </motion.div>
+    );
+  }
+
+  const currentImgSrc = `/api/about-images?name=${images[activeIdx]}`;
+  const nextImgSrc = `/api/about-images?name=${images[nextIdx]}`;
+
+  return (
+    <div ref={containerRef} className="w-full h-full relative overflow-hidden rounded-[22px]">
+      <motion.div
+        className="w-full h-full relative rounded-[22px] overflow-hidden"
+        style={{ x: parentX, y: parentY }}
+        whileHover={{ scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      >
+        {/* Layer 1 (Bottom image) */}
+        <div className="absolute inset-0 w-full h-full">
+          <Image
+            src={currentImgSrc}
+            alt="Yash Jain Slideshow Base"
+            fill
+            unoptimized
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover rounded-[22px] filter brightness-[0.92] group-hover:brightness-[0.98]"
+          />
+        </div>
+
+        {/* Layer 2 (Top image, crossfades on top of Layer 1) */}
+        <div 
+          className="absolute inset-0 w-full h-full opacity-0"
+          style={{
+            opacity: isTransitioning ? 1 : 0,
+            transition: prefersReducedMotion ? 'none' : 'opacity 800ms cubic-bezier(0.25, 1, 0.5, 1)'
+          }}
+        >
+          <Image
+            src={nextImgSrc}
+            alt="Yash Jain Slideshow Overlay"
+            fill
+            unoptimized
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover rounded-[22px] filter brightness-[0.92] group-hover:brightness-[0.98]"
+          />
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 export default function About({ portraitImage = "/images/about section image.png" }) {
   const portraitX = useMotionValue(0);
@@ -178,23 +315,13 @@ export default function About({ portraitImage = "/images/about section image.png
               {/* Subtle glass shimmer hover swipe */}
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out z-30 pointer-events-none" />
 
-              {/* Portrait Image Container */}
+              {/* Portrait Image Container (Slideshow) */}
               <div className="absolute inset-0 z-20 p-4">
-                <motion.div
-                  className="w-full h-full relative rounded-[22px] overflow-hidden"
-                  style={{ x: smoothX, y: smoothY }}
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                >
-                  <Image
-                    src={portraitImage}
-                    alt="Yash Jain Portrait"
-                    fill
-                    priority
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover rounded-[22px] transition-all duration-700 filter brightness-[0.92] group-hover:brightness-[0.98]"
-                  />
-                </motion.div>
+                <AboutSlideshow 
+                  fallbackImage={portraitImage}
+                  parentX={smoothX}
+                  parentY={smoothY}
+                />
               </div>
 
               {/* Bottom floating badge */}
