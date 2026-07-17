@@ -99,12 +99,12 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
 
   const N = filteredCertificates.length;
 
-  // Staggered coordinate resolver
+  // Staggered coordinate resolver (Framer Motion driven style targets)
   const getCardStyle = (idx) => {
     if (N === 0) return { x: 0, y: 0, scale: 0.5, opacity: 0, zIndex: 0, pointerEvents: "none" };
 
     let diff = idx - activeIndex;
-    // Circular index wrap
+    // Circular index wrap (infinite carousel loop logic)
     diff = ((diff + Math.floor(N / 2)) % N + N) % N - Math.floor(N / 2);
 
     // Hidden offscreen Left
@@ -156,7 +156,7 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
       };
     }
 
-    // Center card
+    // Center card (Spotlight Presentation State)
     return {
       x: "0%",
       y: 0,
@@ -171,6 +171,8 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
     let diff = idx - activeIndex;
     diff = ((diff + Math.floor(N / 2)) % N + N) % N - Math.floor(N / 2);
 
+    // Clicking left/right cards transitions them into center spotlight
+    // Clicking the center spotlight card opens the details panel modal overlay
     if (diff === 0) {
       setSelectedId(uniqueId);
     } else {
@@ -234,6 +236,10 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
             const style = getCardStyle(idx);
             const uniqueId = `${cert.id}__${idx}`;
 
+            let diff = idx - activeIndex;
+            diff = ((diff + Math.floor(N / 2)) % N + N) % N - Math.floor(N / 2);
+            const isCentered = diff === 0;
+
             return (
               <motion.div
                 key={uniqueId}
@@ -263,6 +269,7 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
               >
                 <CertificateCard
                   certificate={{ ...cert, uniqueId }}
+                  isCentered={isCentered}
                   onClick={() => handleCardClick(idx, uniqueId)}
                 />
               </motion.div>
