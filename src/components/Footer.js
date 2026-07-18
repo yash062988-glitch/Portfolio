@@ -36,7 +36,7 @@ export default function Footer() {
         className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none select-none"
         style={{
           opacity: 0.24, // 20-28% opacity
-          filter: "none",
+          filter: "contrast(1.25) brightness(1.2) saturate(1.4)",
           backdropFilter: "none",
           transform: "translateZ(0)",
           willChange: "transform",

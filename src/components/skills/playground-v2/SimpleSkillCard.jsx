@@ -11,13 +11,54 @@ export default function SimpleSkillCard({ skill, categoryLabel, cardRef }) {
     </svg>
   ));
 
+  const BRAND_COLORS = {
+    // Frontend
+    "React": "#61dafb",
+    "Next.js": "#ffffff",
+    "JavaScript": "#f7df1e",
+    "TypeScript": "#3178c6",
+    "HTML5": "#e34f26",
+    "CSS3": "#1572b6",
+    "Tailwind CSS": "#06b6d4",
+    "GSAP": "#88ce02",
+    "Framer Motion": "#f028b9",
+    
+    // Backend
+    "Node.js": "#339933",
+    "Express": "#ffffff",
+    "Python": "#3776ab",
+    "FastAPI": "#059669",
+    "MongoDB": "#47a248",
+    "Firebase": "#ffca28",
+    "REST API": "#005b96",
+    "SQL": "#e38c00",
+    "Git": "#f05032",
+
+    // Tools
+    "Cursor": "#38bdf8",
+    "Antigravity": "#d8b15b",
+    "ChatGPT": "#10a37f",
+    "Figma": "#f24e1e",
+    "Framer": "#0055ff",
+    "Canva": "#00c4cc",
+    "Blender": "#ea7600",
+    "VS Code": "#007acc",
+    "GitHub": "#ffffff",
+    "Vercel": "#ffffff",
+    "Postman": "#ff6c37",
+    "npm": "#cb3837"
+  };
+
+  const brandColor = BRAND_COLORS[skill.name] || "#ffffff";
+
   return (
     <div
       ref={cardRef}
+      style={{ "--brand-color": brandColor }}
       className="skill-card-physics relative select-none w-[160px] h-[64px] flex items-center gap-3 px-3 py-2 text-left bg-[#130f0d]/55 border border-white/5 rounded-xl backdrop-blur-md transition-colors duration-300 hover:bg-[#1c1613]/60 group"
     >
       {/* Outlined Icon Container */}
-      <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/[0.02] border border-white/[0.03] text-zinc-400 group-hover:text-primary group-hover:border-primary/20 transition-all duration-300 transform group-hover:scale-1.08 shrink-0">
+      <div className="skill-icon-container flex items-center justify-center w-9 h-9 rounded-lg bg-white/[0.02] border border-white/[0.03] text-zinc-400 transition-all duration-300 transform group-hover:scale-1.08 shrink-0">
         <IconComponent className="w-5 h-5 transition-transform duration-300" />
       </div>
 

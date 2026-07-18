@@ -47,6 +47,12 @@ export default function MeshText({
     const wrapperRef = useRef(null);
     const particlesRef = useRef([]);
     const distRef = useRef(null);
+    const textCanvasRef = useRef(null);
+    
+    // Character by character stagger refs
+    const startTimeRef = useRef(0);
+    const getCharIndexRef = useRef(null);
+
     const mouseRef = useRef({
         x: -9999,
         y: -9999,
@@ -59,6 +65,25 @@ export default function MeshText({
     const [blurValue, setBlurValue] = useState(2.2);
     const reactId = useId().replace(/[^a-zA-Z0-9_-]/g, "-");
     const filterId = `liquid-goo-${reactId}`;
+
+    useEffect(() => {
+        const wrapper = wrapperRef.current;
+        if (!wrapper) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    startTimeRef.current = performance.now();
+                    observer.unobserve(wrapper);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        observer.observe(wrapper);
+        return () => {
+            observer.disconnect();
+        };
+    }, [text]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -74,11 +99,11 @@ export default function MeshText({
         const fontSizeVal = parseFloat(styles.fontSize) || 40;
         const fontWeight = styles.fontWeight || "700";
         const fontStyle = styles.fontStyle || "normal";
+        const letterSpacingVal = styles.letterSpacing || "normal";
 
         let cancelled = false;
         let lastWidth = 0;
         let lastHeight = 0;
-        let textCanvas = null;
 
         const sampleSpawnPoint = (distMap, w, h) => {
             if (!distMap) return { x: Math.random() * w, y: Math.random() * h };
@@ -117,24 +142,57 @@ export default function MeshText({
         };
 
         const buildDistanceFieldAndCache = (w, h, dpr) => {
-            textCanvas = document.createElement("canvas");
-            textCanvas.width = w;
-            textCanvas.height = h;
-            const tCtx = textCanvas.getContext("2d", { willReadFrequently: true });
+            textCanvasRef.current = document.createElement("canvas");
+            textCanvasRef.current.width = w;
+            textCanvasRef.current.height = h;
+            const tCtx = textCanvasRef.current.getContext("2d", { willReadFrequently: true });
             if (!tCtx) return;
 
             let resolvedColor = color || "#ffffff";
             if (resolvedColor.startsWith("var(")) {
               const varName = resolvedColor.slice(4, -1).trim();
-              resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || "#D8B15B";
+              const root = document.documentElement;
+              const rawVal = root.style.getPropertyValue(varName);
+              resolvedColor = (rawVal ? rawVal.trim() : getComputedStyle(root).getPropertyValue(varName).trim()) || "#D8B15B";
             }
 
             tCtx.clearRect(0, 0, w, h);
-            tCtx.fillStyle = resolvedColor; // Draw text mask in heading color
-            tCtx.textAlign = "center";
+            tCtx.fillStyle = resolvedColor;
+            tCtx.textAlign = "left";
             tCtx.textBaseline = "middle";
             tCtx.font = `${fontStyle} ${fontWeight} ${fontSizeVal * dpr}px ${fontFamily}, sans-serif`;
-            tCtx.fillText(text, w / 2, h / 2);
+            if (letterSpacingVal && letterSpacingVal !== "normal" && typeof tCtx.letterSpacing !== "undefined") {
+              if (letterSpacingVal.endsWith("px")) {
+                const pxVal = parseFloat(letterSpacingVal);
+                tCtx.letterSpacing = `${pxVal * dpr}px`;
+              } else {
+                tCtx.letterSpacing = letterSpacingVal;
+              }
+            }
+
+            const charBounds = [];
+            const totalW = tCtx.measureText(text).width;
+            let currentX = w / 2 - totalW / 2;
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const charW = tCtx.measureText(char).width;
+                charBounds.push({
+                    left: currentX,
+                    right: currentX + charW
+                });
+                tCtx.fillText(char, currentX, h / 2);
+                currentX += charW;
+            }
+
+            getCharIndexRef.current = (x) => {
+                for (let i = 0; i < charBounds.length; i++) {
+                    if (x >= charBounds[i].left && x <= charBounds[i].right) {
+                        return i;
+                    }
+                }
+                return 0;
+            };
 
             let data;
             try {
@@ -182,8 +240,10 @@ export default function MeshText({
                 const p = {};
                 if (i % 2 === 0) spawnAtBottom(p, dist, w, h);
                 else spawnAtTop(p, dist, w, h);
-                // Stagger initial positions vertically
                 p.y = Math.random() * h;
+                
+                // Assign initial character index
+                p.charIndex = getCharIndexRef.current ? getCharIndexRef.current(p.x) : 0;
                 list.push(p);
             }
             particlesRef.current = list;
@@ -275,9 +335,58 @@ export default function MeshText({
             ctx.globalCompositeOperation = "source-over";
             ctx.clearRect(0, 0, w, h);
 
-            // 1. Draw solid text first as the base for 100% legibility
-            if (textCanvas) {
-                ctx.drawImage(textCanvas, 0, 0);
+            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            const pSize = Math.max(2.0, fontSizeVal * dpr * 0.08);
+
+            let activeColor = color;
+            if (color && color.startsWith("var(")) {
+              const varName = color.slice(4, -1).trim();
+              const root = document.documentElement;
+              const rawVal = root.style.getPropertyValue(varName);
+              activeColor = (rawVal ? rawVal.trim() : getComputedStyle(root).getPropertyValue(varName).trim()) || "#D8B15B";
+            }
+
+            // Stagger parameters matching SmokyMeshText visual feel
+            const charDuration = 0.45;
+            const charStagger = 0.085;
+            const elapsed = startTimeRef.current ? (performance.now() - startTimeRef.current) / 1000 : 0;
+            const totalDuration = text.length * charStagger + charDuration;
+
+            // 1. Draw text base character by character with easeOut progress opacity
+            if (elapsed >= totalDuration) {
+                if (textCanvasRef.current) {
+                    ctx.globalAlpha = 1.0;
+                    ctx.drawImage(textCanvasRef.current, 0, 0);
+                }
+            } else {
+                ctx.save();
+                ctx.textAlign = "left";
+                ctx.textBaseline = "middle";
+                ctx.font = `${fontStyle} ${fontWeight} ${fontSizeVal * dpr}px ${fontFamily}, sans-serif`;
+                if (letterSpacingVal && letterSpacingVal !== "normal" && typeof ctx.letterSpacing !== "undefined") {
+                  if (letterSpacingVal.endsWith("px")) {
+                    ctx.letterSpacing = `${parseFloat(letterSpacingVal) * dpr}px`;
+                  } else {
+                    ctx.letterSpacing = letterSpacingVal;
+                  }
+                }
+                ctx.fillStyle = activeColor;
+
+                const totalWidth = ctx.measureText(text).width;
+                let curX = w / 2 - totalWidth / 2;
+
+                for (let i = 0; i < text.length; i++) {
+                    const char = text[i];
+                    const delay = i * charStagger;
+                    const progress = Math.max(0, Math.min(1, (elapsed - delay) / charDuration));
+                    const easeProgress = progress * (2 - progress);
+                    
+                    ctx.globalAlpha = easeProgress;
+                    ctx.fillText(char, curX, h / 2);
+                    
+                    curX += ctx.measureText(char).width;
+                }
+                ctx.restore();
             }
 
             const particles = particlesRef.current;
@@ -286,19 +395,17 @@ export default function MeshText({
             const breakProb = (breakChance / 100) * dt;
             const hovering = mouse.active && hoverRadius > 0;
 
-            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-            const pSize = Math.max(2.0, fontSizeVal * dpr * 0.08);
-
-            let activeColor = color;
-            if (color && color.startsWith("var(")) {
-              const varName = color.slice(4, -1).trim();
-              activeColor = getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || "#D8B15B";
-            }
             ctx.fillStyle = activeColor;
 
-            // 2. Draw smaller bubbling particles on top
+            // 2. Draw smaller bubbling particles on top matching character progress
             for (let i = 0; i < particles.length; i++) {
                 const p = particles[i];
+                
+                const delay = p.charIndex * charStagger;
+                const progress = elapsed >= totalDuration ? 1 : Math.max(0, Math.min(1, (elapsed - delay) / charDuration));
+                const easeProgress = progress * (2 - progress);
+
+                if (easeProgress <= 0) continue; // Skip rendering before delay has passed
 
                 if (p.direction === "down") {
                     if (p.vy > 1.6) p.vy = 1.6;
@@ -356,6 +463,7 @@ export default function MeshText({
                     pt.y = spawn.y;
                     pt.vx = (Math.random() - 0.5) * 0.25;
                     pt.vy = pt.direction === "down" ? (0.9 + Math.random() * 0.3) : -(0.9 + Math.random() * 0.3);
+                    pt.charIndex = getCharIndexRef.current ? getCharIndexRef.current(spawn.x) : 0;
                 };
 
                 if (p.direction === "down") {
@@ -381,11 +489,14 @@ export default function MeshText({
 
                 const drawX = p.x + hoverOX;
                 const drawY = p.y + hoverOY;
-                const finalRadius = pSize * p.baseSize * sizeFactor;
+                const finalRadius = pSize * p.baseSize * sizeFactor * easeProgress;
 
+                ctx.save();
+                ctx.globalAlpha = easeProgress;
                 ctx.beginPath();
                 ctx.arc(drawX, drawY, finalRadius, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.restore();
             }
 
             rafId = requestAnimationFrame(tick);
@@ -394,13 +505,32 @@ export default function MeshText({
         rafId = requestAnimationFrame(tick);
 
         const observer = new MutationObserver(() => {
+            console.log('[MeshText] MutationObserver triggered - rebuilding textCanvas');
+            // Force textCanvas recreation
+            textCanvasRef.current = null;
+            
             const rect = wrapper.getBoundingClientRect();
             const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
             const w = Math.max(10, Math.round(rect.width * dpr + PADDING_X * dpr * 2));
             const h = Math.max(10, Math.round(rect.height * dpr + PADDING_Y * dpr * 2));
+            
             buildDistanceFieldAndCache(w, h, dpr);
         });
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style"] });
+
+        // Also listen for custom theme change event
+        const handleThemeChange = () => {
+            // Force textCanvas recreation
+            textCanvasRef.current = null;
+            
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            const w = Math.max(10, Math.round(rect.width * dpr + PADDING_X * dpr * 2));
+            const h = Math.max(10, Math.round(rect.height * dpr + PADDING_Y * dpr * 2));
+            
+            buildDistanceFieldAndCache(w, h, dpr);
+        };
+        window.addEventListener('theme-change', handleThemeChange);
 
         return () => {
             observer.disconnect();
@@ -409,6 +539,7 @@ export default function MeshText({
             ro.disconnect();
             wrapper.removeEventListener("pointermove", onMove);
             wrapper.removeEventListener("pointerleave", onLeave);
+            window.removeEventListener('theme-change', handleThemeChange);
         };
     }, [text, color]);
 

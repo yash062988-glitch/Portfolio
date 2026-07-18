@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring, useReducedMotion, useMotionValueEvent, animate } from "framer-motion";
 import { Quaternion, Euler } from "three";
-import MeshText from "@/components/design-system/MeshText";
+import SmokyMeshText from "@/components/design-system/SmokyMeshText";
 
 // Sub-component for individual premium luxury holographic navigation beacons
 function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnter, onMouseLeave }) {
@@ -131,8 +131,8 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         {/* Floating coordinate sector number identifier */}
         <div
           className={`absolute -top-1.5 -right-1.5 z-30 pointer-events-none px-2 py-0.5 rounded text-[8.5px] font-mono tracking-widest border transition-all duration-500 bg-[#0d0908]/95 ${isHovered
-              ? "text-primary border-primary/50 shadow-[0_0_12px_var(--accent-glow)]"
-              : "text-white/45 border-white/10"
+            ? "text-primary border-primary/50 shadow-[0_0_12px_var(--accent-glow)]"
+            : "text-white/45 border-white/10"
             }`}
         >
           {sector.num}
@@ -141,8 +141,8 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         {/* Outer glass refraction ring */}
         <div
           className={`absolute inset-0 rounded-full border transition-all duration-700 bg-gradient-to-b from-white/[0.04] to-white/[0.01] backdrop-blur-[4px] ${isHovered
-              ? "border-primary/60 shadow-[inset_0_1px_4px_var(--accent-glow),0_16px_36px_rgba(0,0,0,0.75)]"
-              : "border-white/15 shadow-[inset_0_1px_3px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.55)]"
+            ? "border-primary/60 shadow-[inset_0_1px_4px_var(--accent-glow),0_16px_36px_rgba(0,0,0,0.75)]"
+            : "border-white/15 shadow-[inset_0_1px_3px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.55)]"
             }`}
         />
 
@@ -150,8 +150,8 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         <div
           style={{ transform: "translateZ(15px)" }}
           className={`absolute inset-[-10px] rounded-full pointer-events-none transition-all duration-700 ${isHovered
-              ? "animate-spin-fast opacity-95 scale-105"
-              : "animate-spin-slow opacity-40"
+            ? "animate-spin-fast opacity-95 scale-105"
+            : "animate-spin-slow opacity-40"
             }`}
         >
           <svg viewBox="0 0 120 120" className="w-full h-full">
@@ -171,8 +171,8 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         {/* Rotating middle segmented HUD ring */}
         <div
           className={`absolute inset-[3px] rounded-full pointer-events-none transition-all duration-700 ${isHovered
-              ? "animate-spin-reverse-fast opacity-85"
-              : "animate-spin-reverse-slow opacity-25"
+            ? "animate-spin-reverse-fast opacity-85"
+            : "animate-spin-reverse-slow opacity-25"
             }`}
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -725,11 +725,10 @@ export default function GalacticArchive({ setIsPortalActive }) {
           <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-primary uppercase select-none mb-3">
             SYSTEM LOG // NAV MODULE
           </span>
-          <MeshText
-            text="ORBITAL NEXUS"
-            className="text-4xl md:text-5xl font-extrabold text-white tracking-[0.22em] leading-none uppercase"
-            as="h2"
-          />
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-[0.22em] leading-none uppercase flex flex-wrap justify-center gap-x-4">
+            <SmokyMeshText text="ORBITAL" className="text-4xl md:text-5xl font-extrabold text-white tracking-[0.22em] leading-none uppercase font-sans font-black" as="span" />
+            <SmokyMeshText text="NEXUS" className="text-4xl md:text-5xl font-extrabold text-primary tracking-[0.22em] leading-none uppercase font-sans font-black" color="var(--accent-primary)" as="span" />
+          </h2>
           <p className="text-white/45 text-[10px] tracking-[0.2em] uppercase font-light mt-5">
             MAPPING MY JOURNEY THROUGH INNOVATION
           </p>

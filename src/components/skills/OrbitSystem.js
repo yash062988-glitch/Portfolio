@@ -221,7 +221,8 @@ export default function OrbitSystem({ parallaxY, parallaxX, translateZ = 0 }) {
       frameCounter.current += 1;
 
       const containerWidth = containerRef.current ? containerRef.current.clientWidth : 900;
-      const currentScale = containerWidth / 900;
+      // On desktop, keep scale at full 1.05 so orbits don't contract and can float in the background. On mobile, scale down.
+      const currentScale = windowWidth >= 1024 ? 1.05 : (containerWidth / 900);
 
       // 1. Update SVG Ellipse guides (animate independent rotators & asynchronous pulses)
       ORBITS_CONFIG.forEach((orbit, index) => {
@@ -338,7 +339,8 @@ export default function OrbitSystem({ parallaxY, parallaxX, translateZ = 0 }) {
         if (hoveredIndexRef.current === index) {
           zIndex = 50;
           opacity = 1.0;
-          depthScale = 1.35;
+          // Keep normal depth scale on hover, no scaling up popup
+          depthScale = isBehind ? (0.65 + (depthSin + 1) * 0.15) : (0.80 + depthSin * 0.20);
           blurVal = 0;
           bobY = 0; // Pause bobbing on hover
         } else {
@@ -546,7 +548,7 @@ export default function OrbitSystem({ parallaxY, parallaxX, translateZ = 0 }) {
             <div
               className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border backdrop-blur-md relative cursor-pointer transition-all duration-300 ${
                 isHovered
-                  ? "border-primary/60 scale-120 -translate-y-1 shadow-[0_0_30px_var(--glow-color)] bg-black/50"
+                  ? "border-primary/60 shadow-[0_0_30px_var(--glow-color)] bg-black/50"
                   : "border-white/10 bg-white/[0.03] hover:border-primary/30"
               }`}
               style={{
@@ -564,21 +566,6 @@ export default function OrbitSystem({ parallaxY, parallaxX, translateZ = 0 }) {
                   className="w-full h-full object-contain pointer-events-none select-none"
                 />
               </div>
-
-              {/* Tooltip containing skill name directly underneath hovered icon */}
-              <AnimatePresence>
-                {isHovered && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="absolute top-[75px] sm:top-[85px] left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/90 backdrop-blur-md border border-primary/30 text-[10px] text-primary font-bold px-2.5 py-1 rounded-md shadow-[0_5px_15px_rgba(0,0,0,0.6)] z-[10000] pointer-events-none"
-                  >
-                    {icon.name}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </div>
         );

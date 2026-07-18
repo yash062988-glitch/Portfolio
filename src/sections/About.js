@@ -7,7 +7,8 @@ import {
   User, GraduationCap, Briefcase, Globe, 
   MapPin, Quote
 } from "lucide-react";
-import MeshText from "@/components/design-system/MeshText";
+import SmokyMeshText from "@/components/design-system/SmokyMeshText";
+import { useAccentColors } from "@/hooks/useAccentColors";
 
 const AboutSlideshow = ({ fallbackImage, parentX, parentY }) => {
   const [images, setImages] = useState([]);
@@ -147,6 +148,7 @@ const AboutSlideshow = ({ fallbackImage, parentX, parentY }) => {
 };
 
 export default function About({ portraitImage = "/images/about section image.png" }) {
+  const { primary } = useAccentColors();
   const portraitX = useMotionValue(0);
   const portraitY = useMotionValue(0);
   const springConfig = { stiffness: 120, damping: 20 };
@@ -262,11 +264,10 @@ export default function About({ portraitImage = "/images/about section image.png
           <span className="text-[12px] font-bold tracking-[0.25em] text-primary uppercase select-none">
             GET TO KNOW ME
           </span>
-          <MeshText
-            text="About Me"
-            className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white tracking-[0.05em] leading-none"
-            as="h2"
-          />
+          <h2 className="text-4xl md:text-5xl lg:text-[54px] font-extrabold tracking-[0.05em] leading-none flex flex-wrap gap-x-4">
+            <SmokyMeshText text="About" className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white tracking-[0.05em] leading-none font-sans" as="span" />
+            <SmokyMeshText text="Me" className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-primary tracking-[0.05em] leading-none font-sans" color="var(--accent-primary)" as="span" />
+          </h2>
           <p className="text-white/60 text-xs md:text-sm lg:text-base font-light leading-relaxed mt-3 max-w-3xl">
             I'm a passionate developer who loves building <span className="text-primary font-medium">intelligent</span>, user-centric digital experiences.
           </p>

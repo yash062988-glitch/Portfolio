@@ -7,6 +7,7 @@ import { Mail, Phone, MapPin, Send, CheckCircle, Sparkles } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/Icons";
 import SectionHeading from "@/components/design-system/SectionHeading";
 import GlassCard from "@/components/design-system/GlassCard";
+import SmokyMeshText from "@/components/design-system/SmokyMeshText";
 import PrimaryButton from "@/components/design-system/PrimaryButton";
 
 export default function Contact() {
@@ -119,7 +120,12 @@ export default function Contact() {
         {/* Standardized Section Header */}
         <SectionHeading
           label="Contact"
-          title="Get In Touch"
+          title={
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-none flex flex-wrap gap-x-3">
+              <SmokyMeshText text="Get In" className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-none font-sans" as="span" />
+              <SmokyMeshText text="Touch" className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary tracking-tight leading-none font-sans" color="var(--accent-primary)" as="span" />
+            </h2>
+          }
           description="Let's discuss opportunities, collaborations, or simply connect. Send a message and let's construct something together."
         />
 

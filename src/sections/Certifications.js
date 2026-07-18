@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import MeshText from "@/components/design-system/MeshText";
+import SmokyMeshText from "@/components/design-system/SmokyMeshText";
 import CertificateWorld from "@/components/certificates/CertificateWorld";
 
 export default function Certifications() {
@@ -15,11 +15,10 @@ export default function Certifications() {
           <span className="text-xs font-bold tracking-[0.25em] text-primary uppercase">
             Mission Log
           </span>
-          <MeshText
-            text="Certifications"
-            className="text-4xl md:text-5xl font-bold text-white tracking-tight"
-            as="h2"
-          />
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-none flex flex-wrap gap-x-4">
+            <SmokyMeshText text="Professional" className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-none font-sans" as="span" />
+            <SmokyMeshText text="Certifications" className="text-4xl md:text-5xl font-bold text-primary tracking-tight leading-none font-sans" color="var(--accent-primary)" as="span" />
+          </h2>
           <p className="text-white/70 text-sm md:text-base font-light leading-relaxed">
             Verified milestones across AI, web development, cloud technologies, and software engineering.
           </p>

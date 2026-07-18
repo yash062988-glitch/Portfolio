@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PROJECTS_DATA } from "@/constants/data";
 import SectionHeading from "@/components/design-system/SectionHeading";
 import ProjectDetailsPanel from "@/components/projects/ProjectDetailsPanel";
+import SmokyMeshText from "@/components/design-system/SmokyMeshText";
 import { ArrowRight } from "lucide-react";
 
 // Register GSAP ScrollTrigger plugin safely
@@ -538,7 +539,12 @@ export default function ProjectsSection() {
         <div className="w-full max-w-7xl mx-auto px-6 relative z-30 select-none">
           <SectionHeading
             label="Missions"
-            title="Featured Projects"
+            title={
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-none flex flex-wrap gap-x-4">
+                <SmokyMeshText text="Featured" className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-none font-sans" as="span" />
+                <SmokyMeshText text="Projects" className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary tracking-tight leading-none font-sans" color="var(--accent-primary)" as="span" />
+              </h2>
+            }
             description="Explore a curated selection of my work spanning frontend platforms, machine learning pipelines, and semantic AI tools."
             className="!mb-0"
           />

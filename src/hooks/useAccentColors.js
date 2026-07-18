@@ -13,11 +13,19 @@ export function useAccentColors() {
     if (typeof window === "undefined") return;
 
     const updateColors = () => {
-      const rootStyle = getComputedStyle(document.documentElement);
+      const root = document.documentElement;
+      const getThemeColor = (varName, fallback) => {
+        let val = root.style.getPropertyValue(varName);
+        if (!val) {
+          val = getComputedStyle(root).getPropertyValue(varName);
+        }
+        return val.trim() || fallback;
+      };
+
       setColors({
-        primary: rootStyle.getPropertyValue("--accent-primary").trim() || "#D8B15B",
-        secondary: rootStyle.getPropertyValue("--accent-secondary").trim() || "#F0C979",
-        glow: rootStyle.getPropertyValue("--accent-glow").trim() || "rgba(216, 177, 91, 0.35)",
+        primary: getThemeColor("--accent-primary", "#D8B15B"),
+        secondary: getThemeColor("--accent-secondary", "#F0C979"),
+        glow: getThemeColor("--accent-glow", "rgba(216, 177, 91, 0.35)"),
       });
     };
 

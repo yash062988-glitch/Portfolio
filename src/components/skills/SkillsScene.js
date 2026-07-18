@@ -8,7 +8,7 @@ import AuraRings from "./AuraRings";
 import PlatformGlow from "./PlatformGlow";
 import SkillCard from "./SkillCard";
 import dynamic from "next/dynamic";
-import MeshText from "@/components/design-system/MeshText";
+import SmokyMeshText from "@/components/design-system/SmokyMeshText";
 
 export default function SkillsScene() {
   const containerRef = useRef(null);
@@ -97,11 +97,11 @@ export default function SkillsScene() {
           <span className="text-[12px] font-bold tracking-[0.25em] text-primary uppercase select-none">
             SKILLS
           </span>
-          <MeshText
-            text="Skills & Stack"
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-none"
-            as="h2"
-          />
+          <h2 className="text-4xl md:text-5xl lg:text-[54px] font-extrabold tracking-[0.05em] leading-none flex flex-wrap gap-x-4">
+                     <SmokyMeshText text="Skills" className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white tracking-[0.05em] leading-none font-sans" as="span" />
+                     <SmokyMeshText text="&" className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-primary tracking-[0.05em] leading-none font-sans" color="var(--accent-primary)" as="span" />
+                     <SmokyMeshText text="Stack" className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white tracking-[0.05em] leading-none font-sans" as="span" />
+                   </h2>
           <p className="text-white/60 text-xs md:text-sm lg:text-base font-light leading-relaxed mt-2">
             Technologies I use to build modern digital experiences.
           </p>
