@@ -288,3 +288,19 @@ header a {
 .click-through-canvas > div {
   pointer-events: none !important;
 }
+
+/* UFO Companion Animation Keyframes */
+@keyframes ufo-bob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes engine-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes antenna-blink {
+  0%, 85%, 100% { opacity: 0.9; }
+  90%, 95% { opacity: 0.15; }
+}

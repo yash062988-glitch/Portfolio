@@ -1,6 +1,7 @@
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import ThemeController from "@/components/ThemeController";
+import UfoCompanion from "@/components/UfoCompanion";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -46,6 +47,7 @@ export default function RootLayout({ children }) {
       <body className={`${spaceGrotesk.variable} font-sans text-white bg-black antialiased`}>
         {children}
         <ThemeController />
+        <UfoCompanion />
       </body>
     </html>
   );

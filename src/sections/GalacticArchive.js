@@ -647,10 +647,22 @@ export default function GalacticArchive({ setIsPortalActive }) {
           {activeSector && activeSector.image && (
             <motion.div
               key={`bg-${activeSector.id}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.7, ease: "easeInOut" }}
+              initial={{ 
+                clipPath: `circle(0% at ${activeSector.x}% ${activeSector.y}%)`,
+                opacity: 0 
+              }}
+              animate={{ 
+                clipPath: `circle(150% at ${activeSector.x}% ${activeSector.y}%)`,
+                opacity: 1 
+              }}
+              exit={{ 
+                clipPath: `circle(0% at ${activeSector.x}% ${activeSector.y}%)`,
+                opacity: 0 
+              }}
+              transition={{ 
+                clipPath: { duration: 1.4, ease: [0.16, 1, 0.3, 1] },
+                opacity: { duration: 0.8, ease: "easeInOut" }
+              }}
               className="absolute inset-0 w-full h-full"
             >
               {/* Cinematic expand zoom animation */}
