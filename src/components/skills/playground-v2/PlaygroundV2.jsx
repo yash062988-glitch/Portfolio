@@ -841,29 +841,48 @@ export default function PlaygroundV2() {
           will-change: transform;
           transition: border-color 0.25s ease, box-shadow 0.25s ease;
         }
+        .skill-icon-container {
+          color: var(--brand-color) !important;
+          border-color: color-mix(in srgb, var(--brand-color) 20%, transparent) !important;
+          box-shadow: inset 0 0 6px color-mix(in srgb, var(--brand-color) 10%, transparent), 0 0 10px color-mix(in srgb, var(--brand-color) 15%, transparent) !important;
+          transition: color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease !important;
+        }
+        .skill-icon-container svg {
+          filter: drop-shadow(0 0 3px var(--brand-color));
+          transition: filter 0.3s ease !important;
+        }
         .skill-card-physics:hover,
         .skill-card-physics.is-hovered {
-          border-color: color-mix(in srgb, var(--brand-color) 40%, transparent) !important;
-          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.85), 0 0 25px color-mix(in srgb, var(--brand-color) 15%, transparent) !important;
+          border-color: color-mix(in srgb, var(--accent-primary) 45%, transparent) !important;
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.85), 0 0 25px color-mix(in srgb, var(--accent-primary) 18%, transparent) !important;
           cursor: grab;
         }
         .skill-card-physics:hover .skill-icon-container,
         .skill-card-physics.is-hovered .skill-icon-container {
-          color: var(--brand-color) !important;
-          border-color: color-mix(in srgb, var(--brand-color) 25%, transparent) !important;
+          color: var(--accent-primary) !important;
+          border-color: color-mix(in srgb, var(--accent-primary) 35%, transparent) !important;
+          box-shadow: inset 0 0 8px color-mix(in srgb, var(--accent-primary) 15%, transparent), 0 0 15px color-mix(in srgb, var(--accent-primary) 25%, transparent) !important;
+        }
+        .skill-card-physics:hover .skill-icon-container svg,
+        .skill-card-physics.is-hovered .skill-icon-container svg {
+          filter: drop-shadow(0 0 5px var(--accent-primary)) !important;
         }
         .skill-card-physics:active {
           cursor: grabbing;
         }
         .skill-card-physics.is-dragging {
-          border-color: color-mix(in srgb, var(--brand-color) 65%, transparent) !important;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 35px color-mix(in srgb, var(--brand-color) 25%, transparent) !important;
+          border-color: color-mix(in srgb, var(--accent-primary) 70%, transparent) !important;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 35px color-mix(in srgb, var(--accent-primary) 30%, transparent) !important;
           cursor: grabbing !important;
           z-index: 99999 !important;
         }
         .skill-card-physics.is-dragging .skill-icon-container {
-          color: var(--brand-color) !important;
-          border-color: color-mix(in srgb, var(--brand-color) 35%, transparent) !important;
+          color: var(--accent-primary) !important;
+          border-color: color-mix(in srgb, var(--accent-primary) 45%, transparent) !important;
+          box-shadow: inset 0 0 10px color-mix(in srgb, var(--accent-primary) 20%, transparent), 0 0 20px color-mix(in srgb, var(--accent-primary) 35%, transparent) !important;
+        }
+        .skill-card-physics.is-dragging .skill-icon-container svg {
+          filter: drop-shadow(0 0 6px var(--accent-primary)) !important;
         }
       `}</style>
     </div>

@@ -543,14 +543,12 @@ export default function About({ portraitImage = "/images/about section image.png
             <div>
               <div className="flex flex-wrap gap-2.5">
                 {["Freelance", "Full Stack", "AI Projects", "UI Engineering", "Open Source"].map((chip, idx) => (
-                  <motion.span 
+                  <span 
                     key={`${chip}-${idx}`} 
-                    whileHover={{ y: -3, borderColor: "rgba(233, 177, 93, 0.4)", color: "#E9B15D" }}
-                    transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                    className="inline-flex items-center h-8 px-4 rounded-full bg-white/[0.03] border border-white/10 text-[11px] font-bold uppercase tracking-wider text-white/80 select-none cursor-default transition-colors duration-300"
+                    className="inline-flex items-center h-8 px-4 rounded-full bg-white/[0.03] border border-white/10 text-[11px] font-bold uppercase tracking-wider text-white/80 select-none cursor-default transition-all duration-300 hover:-translate-y-0.5 hover:text-[var(--accent-primary)] hover:border-[color-mix(in_srgb,var(--accent-primary)_40%,transparent)]"
                   >
                     {chip}
-                  </motion.span>
+                  </span>
                 ))}
               </div>
             </div>
@@ -590,30 +588,30 @@ export default function About({ portraitImage = "/images/about section image.png
                   </defs>
 
                   {/* Atmospheric haze outer glow */}
-                  <circle cx="50" cy="50" r="41" stroke="#E9B15D" strokeWidth="0.5" opacity="0.15" filter="url(#globeGlow)" />
-                  <circle cx="50" cy="50" r="40" stroke="#E9B15D" strokeWidth="1" opacity="0.4" filter="url(#globeGlow)" />
+                  <circle cx="50" cy="50" r="41" stroke="var(--accent-primary)" strokeWidth="0.5" opacity="0.15" filter="url(#globeGlow)" />
+                  <circle cx="50" cy="50" r="40" stroke="var(--accent-primary)" strokeWidth="1" opacity="0.4" filter="url(#globeGlow)" />
 
                   {/* Latitudes */}
-                  <ellipse cx="50" cy="50" rx="40" ry="8" stroke="#E9B15D" strokeWidth="0.5" opacity="0.2" />
-                  <ellipse cx="50" cy="50" rx="40" ry="20" stroke="#E9B15D" strokeWidth="0.5" opacity="0.2" />
-                  <ellipse cx="50" cy="50" rx="40" ry="32" stroke="#E9B15D" strokeWidth="0.5" opacity="0.15" />
-                  <line x1="10" y1="50" x2="90" y2="50" stroke="#E9B15D" strokeWidth="0.5" opacity="0.3" />
+                  <ellipse cx="50" cy="50" rx="40" ry="8" stroke="var(--accent-primary)" strokeWidth="0.5" opacity="0.2" />
+                  <ellipse cx="50" cy="50" rx="40" ry="20" stroke="var(--accent-primary)" strokeWidth="0.5" opacity="0.2" />
+                  <ellipse cx="50" cy="50" rx="40" ry="32" stroke="var(--accent-primary)" strokeWidth="0.5" opacity="0.15" />
+                  <line x1="10" y1="50" x2="90" y2="50" stroke="var(--accent-primary)" strokeWidth="0.5" opacity="0.3" />
 
                   {/* Rotating Globe Content masked to a sphere */}
                   <g mask="url(#sphereMask)">
                     {/* Rotating Longitudes */}
                     <g opacity="0.35">
-                      <path d="M 50 10 A 40 40 0 0 0 50 90" stroke="#E9B15D" strokeWidth="0.5">
+                      <path d="M 50 10 A 40 40 0 0 0 50 90" stroke="var(--accent-primary)" strokeWidth="0.5">
                         <animate attributeName="d" 
                           values="M 50 10 A 0 40 0 0 0 50 90; M 50 10 A 15 40 0 0 0 50 90; M 50 10 A 30 40 0 0 0 50 90; M 50 10 A 40 40 0 0 0 50 90; M 50 10 A 30 40 0 0 1 50 90; M 50 10 A 15 40 0 0 1 50 90; M 50 10 A 0 40 0 0 0 50 90" 
                           dur="16s" repeatCount="indefinite" />
                       </path>
-                      <path d="M 50 10 A 20 40 0 0 0 50 90" stroke="#E9B15D" strokeWidth="0.5">
+                      <path d="M 50 10 A 20 40 0 0 0 50 90" stroke="var(--accent-primary)" strokeWidth="0.5">
                         <animate attributeName="d" 
                           values="M 50 10 A 20 40 0 0 0 50 90; M 50 10 A 30 40 0 0 0 50 90; M 50 10 A 40 40 0 0 0 50 90; M 50 10 A 30 40 0 0 1 50 90; M 50 10 A 15 40 0 0 1 50 90; M 50 10 A 0 40 0 0 0 50 90; M 50 10 A 20 40 0 0 0 50 90" 
                           dur="16s" repeatCount="indefinite" />
                       </path>
-                      <path d="M 50 10 A 30 40 0 0 1 50 90" stroke="#E9B15D" strokeWidth="0.5">
+                      <path d="M 50 10 A 30 40 0 0 1 50 90" stroke="var(--accent-primary)" strokeWidth="0.5">
                         <animate attributeName="d" 
                           values="M 50 10 A 30 40 0 0 1 50 90; M 50 10 A 15 40 0 0 1 50 90; M 50 10 A 0 40 0 0 0 50 90; M 50 10 A 15 40 0 0 0 50 90; M 50 10 A 30 40 0 0 0 50 90; M 50 10 A 40 40 0 0 0 50 90; M 50 10 A 30 40 0 0 1 50 90" 
                           dur="16s" repeatCount="indefinite" />
@@ -621,7 +619,7 @@ export default function About({ portraitImage = "/images/about section image.png
                     </g>
 
                     {/* Dotted Abstract Landmasses */}
-                    <g fill="#E9B15D" opacity="0.25">
+                    <g fill="var(--accent-primary)" opacity="0.25">
                       <g>
                         <circle cx="25" cy="40" r="3" />
                         <circle cx="28" cy="43" r="2" />
@@ -659,15 +657,15 @@ export default function About({ portraitImage = "/images/about section image.png
 
                   {/* Sparkly particle glitter */}
                   <g opacity="0.6">
-                    <circle cx="35" cy="20" r="0.6" fill="#E9B15D" className="animate-pulse" />
-                    <circle cx="72" cy="75" r="0.8" fill="#E9B15D" className="animate-pulse" style={{ animationDelay: "1s" }} />
-                    <circle cx="20" cy="65" r="0.5" fill="#E9B15D" className="animate-pulse" style={{ animationDelay: "1.5s" }} />
+                    <circle cx="35" cy="20" r="0.6" fill="var(--accent-primary)" className="animate-pulse" />
+                    <circle cx="72" cy="75" r="0.8" fill="var(--accent-primary)" className="animate-pulse" style={{ animationDelay: "1s" }} />
+                    <circle cx="20" cy="65" r="0.5" fill="var(--accent-primary)" className="animate-pulse" style={{ animationDelay: "1.5s" }} />
                   </g>
                   
                   {/* Blinking Location Beacon over Delhi */}
                   <g>
-                    <circle cx="62" cy="35" r="2" fill="#E9B15D" filter="url(#globeGlow)" />
-                    <circle cx="62" cy="35" r="7" stroke="#E9B15D" strokeWidth="0.75">
+                    <circle cx="62" cy="35" r="2" fill="var(--accent-primary)" filter="url(#globeGlow)" />
+                    <circle cx="62" cy="35" r="7" stroke="var(--accent-primary)" strokeWidth="0.75">
                       <animate attributeName="r" values="2;10;2" dur="2.5s" repeatCount="indefinite" />
                       <animate attributeName="opacity" values="1;0;1" dur="2.5s" repeatCount="indefinite" />
                     </circle>

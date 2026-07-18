@@ -11,51 +11,87 @@ import SmokyMeshText from "@/components/design-system/SmokyMeshText";
 
 export default function Hero() {
   const { primary } = useAccentColors();
-  const [v1Opacity, setV1Opacity] = useState(1);
-  const [v2Opacity, setV2Opacity] = useState(0);
   const video1Ref = useRef(null);
   const video2Ref = useRef(null);
-  const crossfadeTriggeredRef = useRef(false);
+  const activeVideoRef = useRef(1); // Keeps track of active video (1 or 2)
 
-  const handleTimeUpdate = (e) => {
-    const video = e.target;
-    const duration = video.duration;
-    const currentTime = video.currentTime;
-    if (!duration || crossfadeTriggeredRef.current) return;
+  useEffect(() => {
+    const v1 = video1Ref.current;
+    const v2 = video2Ref.current;
+    if (!v1 || !v2) return;
 
-    // Start crossfade 1.5 seconds before the current video ends
-    if (currentTime > duration - 1.5) {
-      crossfadeTriggeredRef.current = true;
+    // Initial setup
+    v1.style.opacity = "1";
+    v2.style.opacity = "0";
+    v1.play().catch(() => {});
+    v2.pause();
 
-      const isV1 = video === video1Ref.current;
-      const nextVideo = isV1 ? video2Ref.current : video1Ref.current;
-      const currentVideo = isV1 ? video1Ref.current : video2Ref.current;
+    let cancelled = false;
+    let crossfading = false;
+    let fadeStartTime = 0;
 
-      if (nextVideo) {
-        nextVideo.currentTime = 0;
-        nextVideo.play().then(() => {
-          // Switch opacities
-          if (isV1) {
-            setV1Opacity(0);
-            setV2Opacity(1);
-          } else {
-            setV1Opacity(1);
-            setV2Opacity(0);
-          }
+    // The video is 8.0 seconds long.
+    // Let's start the crossfade at 6.0 seconds, giving a 1.6 second crossfade.
+    // The loop wraps at 7.6 seconds (avoiding the last 0.4 seconds of ending sequence loop jump).
+    const LOOP_END = 6.2;
+    const FADE_DURATION = 1.4;
 
-          // Pause old video after crossfade duration completes (1.5s)
-          setTimeout(() => {
-            if (currentVideo) {
-              currentVideo.pause();
-            }
-            crossfadeTriggeredRef.current = false;
-          }, 1500);
-        }).catch(() => {
-          crossfadeTriggeredRef.current = false;
-        });
+    const check = () => {
+      if (cancelled) return;
+
+      const currentVideo = activeVideoRef.current === 1 ? v1 : v2;
+      const otherVideo = activeVideoRef.current === 1 ? v2 : v1;
+
+      if (currentVideo && !crossfading) {
+        const curTime = currentVideo.currentTime;
+        if (curTime >= LOOP_END) {
+          crossfading = true;
+          fadeStartTime = performance.now();
+          
+          otherVideo.currentTime = 0.2; // Skip first 0.2s of decode delay
+          otherVideo.play().then(() => {
+            // Other video started playing
+          }).catch(() => {});
+        }
       }
-    }
-  };
+
+      if (crossfading) {
+        const now = performance.now();
+        const elapsed = (now - fadeStartTime) / 1000;
+        const progress = Math.min(1, elapsed / FADE_DURATION);
+
+        if (activeVideoRef.current === 1) {
+          v1.style.opacity = String(1 - progress);
+          v2.style.opacity = String(progress);
+        } else {
+          v2.style.opacity = String(1 - progress);
+          v1.style.opacity = String(progress);
+        }
+
+        if (progress >= 1) {
+          if (activeVideoRef.current === 1) {
+            v1.style.opacity = "0";
+            v2.style.opacity = "1";
+            v1.pause();
+            activeVideoRef.current = 2;
+          } else {
+            v2.style.opacity = "0";
+            v1.style.opacity = "1";
+            v2.pause();
+            activeVideoRef.current = 1;
+          }
+          crossfading = false;
+        }
+      }
+
+      requestAnimationFrame(check);
+    };
+
+    requestAnimationFrame(check);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Parallax Motion Values
   const mouseX = useMotionValue(0);
@@ -556,9 +592,8 @@ export default function Hero() {
           autoPlay
           muted
           playsInline
-          onTimeUpdate={handleTimeUpdate}
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-[1200ms] ease-in-out"
-          style={{ opacity: v1Opacity, filter: "contrast(1.25) brightness(1.2) saturate(1.4)" }}
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+          style={{ opacity: 1, filter: "contrast(1.25) brightness(1.2) saturate(1.4)" }}
         >
           <source src="/hero-page-video.mp4" type="video/mp4" />
           Your browser does not support the video tag.
@@ -569,9 +604,8 @@ export default function Hero() {
           ref={video2Ref}
           muted
           playsInline
-          onTimeUpdate={handleTimeUpdate}
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-[1200ms] ease-in-out"
-          style={{ opacity: v2Opacity, filter: "contrast(1.25) brightness(1.2) saturate(1.4)" }}
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+          style={{ opacity: 0, filter: "contrast(1.25) brightness(1.2) saturate(1.4)" }}
         >
           <source src="/hero-page-video.mp4" type="video/mp4" />
           Your browser does not support the video tag.

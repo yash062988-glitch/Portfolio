@@ -269,7 +269,7 @@ export default function MeshText({
                 buildDistanceFieldAndCache(w, h, dpr);
 
                 const pSize = Math.max(2.0, fontSizeVal * dpr * 0.08);
-                const computedBlur = Math.max(0.3, Math.min(pSize * 0.35, 4 * 0.35));
+                const computedBlur = Math.max(0.25, Math.min(pSize * 0.22, 2.2 * 0.35));
                 setBlurValue(computedBlur);
             }
         };
@@ -544,7 +544,7 @@ export default function MeshText({
     }, [text, color]);
 
     const filterActive = true;
-    const matrix = `1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7`;
+    const matrix = `1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 30 -15`;
 
     return (
         <div

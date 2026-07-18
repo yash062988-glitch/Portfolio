@@ -119,7 +119,7 @@ export const PROJECTS_DATA = [
     tech: [],
     github: "",
     demo: "",
-    image: "/images/hero-bg.png",
+    image: "/images/skills/your project here.png",
     isPlaceholder: true,
     accentColor: "rgba(233, 177, 93, 0.15)", // Neutral gold glow
     hoverBorderColor: "rgba(233, 177, 93, 0.45)"

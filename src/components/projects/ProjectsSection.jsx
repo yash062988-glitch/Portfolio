@@ -619,15 +619,17 @@ export default function ProjectsSection() {
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+                      className="absolute inset-0 w-full h-full pointer-events-none select-none object-cover object-center"
                     />
-                    {/* Dark gradient overlay left 0% -> 75% for readable typography */}
-                    <div 
-                      className="absolute inset-0 pointer-events-none z-10"
-                      style={{
-                        background: "linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 45%, transparent 75%)"
-                      }}
-                    />
+                    {/* Dark gradient overlay left 0% -> 75% for readable typography (skipped for placeholder cards to make them fully visible) */}
+                    {!project.isPlaceholder && (
+                      <div 
+                        className="absolute inset-0 pointer-events-none z-10"
+                        style={{
+                          background: "linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 45%, transparent 75%)"
+                        }}
+                      />
+                    )}
                   </div>
 
                   {/* Content wrapper */}

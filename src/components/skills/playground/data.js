@@ -15,7 +15,7 @@ export const SkillIcons = {
   "Next.js": (props) => (
     <svg viewBox="0 0 180 180" fill="none" {...props}>
       <mask id="next-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="180" height="180">
-        <circle cx="90" cy="90" r="90" fill="black" />
+        <circle cx="90" cy="90" r="90" fill="white" />
       </mask>
       <g mask="url(#next-mask)">
         <circle cx="90" cy="90" r="90" fill="currentColor" className="text-white" />
