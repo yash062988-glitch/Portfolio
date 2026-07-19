@@ -2,22 +2,11 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { X, ExternalLink, Download, ShieldCheck } from "lucide-react";
+import { X, ExternalLink, ShieldCheck } from "lucide-react";
 import CertificatePreview from "./CertificatePreview";
 
 export default function ExpandedCertificate({ certificate, layoutId, onClose }) {
   const { title, issuer, issued, pdfUrl, company, skills, description, credential } = certificate;
-
-  // Handler to download the file directly
-  const handleDownload = (e) => {
-    e.stopPropagation();
-    const link = document.createElement("a");
-    link.href = pdfUrl;
-    link.download = pdfUrl.split("/").pop();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   return (
     <motion.div
@@ -118,7 +107,7 @@ export default function ExpandedCertificate({ certificate, layoutId, onClose }) 
         <div className="flex items-center gap-3 pt-4 border-t border-white/5">
           <button
             onClick={() => window.open(pdfUrl, "_blank")}
-            className="flex-grow h-11 flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-[#FAF5EF] text-xs font-bold text-[#120c08] transition-all duration-300 cursor-pointer"
+            className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-[#FAF5EF] text-xs font-semibold font-space-grotesk text-[#120c08] transition-all duration-300 cursor-pointer"
             style={{
               backgroundColor: "var(--accent-primary)",
               boxShadow: "0 4px 15px var(--accent-glow)"
@@ -132,21 +121,6 @@ export default function ExpandedCertificate({ certificate, layoutId, onClose }) 
           >
             View Certificate
             <ExternalLink className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={handleDownload}
-            className="w-12 h-11 flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-white transition-all duration-300 cursor-pointer"
-            aria-label="Download PDF certificate file"
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "var(--accent-primary)";
-              e.currentTarget.style.color = "var(--accent-primary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-              e.currentTarget.style.color = "white";
-            }}
-          >
-            <Download className="w-4 h-4" />
           </button>
         </div>
       </div>

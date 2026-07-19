@@ -282,7 +282,7 @@ export default function About({ portraitImage = "/images/about section image.png
           className="grid grid-cols-1 lg:grid-cols-24 gap-8 items-stretch animate-fade-in"
         >
           {/* 1. LEFT COLUMN: VISUAL CARD WRAPPER (Occupies 3 rows) */}
-          <div className="col-span-12 lg:col-span-7 lg:col-start-1 lg:row-start-1 lg:row-span-3 flex flex-col relative order-1">
+          <div className="col-span-full lg:col-span-7 lg:col-start-1 lg:row-start-1 lg:row-span-3 flex flex-col relative order-1">
             {/* Decorative horizontal lines above the image card */}
             <div className="w-full flex flex-col gap-2 mb-6 pointer-events-none opacity-30 select-none">
               <div className="relative w-full h-[1px] bg-gradient-to-r from-primary/40 via-primary/10 to-transparent">
@@ -341,7 +341,7 @@ export default function About({ portraitImage = "/images/about section image.png
             transition={transitionConfig}
             tabIndex={0}
             aria-label="About Yash Jain summary details"
-            className={`col-span-12 lg:col-span-10 lg:col-start-8 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[260px] order-2 ${outlineFocusClasses}`}
+            className={`col-span-full lg:col-span-10 lg:col-start-8 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[260px] order-2 ${outlineFocusClasses}`}
           >
             <div className="flex items-center justify-between mb-8">
               <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-white/40">ABOUT ME</span>
@@ -376,7 +376,7 @@ export default function About({ portraitImage = "/images/about section image.png
             transition={transitionConfig}
             tabIndex={0}
             aria-label="Education, Interests, Goals, and Mission details"
-            className={`col-span-12 lg:col-span-7 lg:col-start-18 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[385px] order-3 ${outlineFocusClasses}`}
+            className={`col-span-full lg:col-span-7 lg:col-start-18 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[385px] order-3 ${outlineFocusClasses}`}
           >
             {/* Tab Navigation header */}
             <div className="flex items-center justify-between mb-6 gap-2">
@@ -534,7 +534,7 @@ export default function About({ portraitImage = "/images/about section image.png
             transition={transitionConfig}
             tabIndex={0}
             aria-label="Experience floating technology chips"
-            className={`col-span-12 lg:col-span-9 lg:col-start-8 lg:row-start-2 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[150px] order-4 ${outlineFocusClasses}`}
+            className={`col-span-full lg:col-span-9 lg:col-start-8 lg:row-start-2 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[150px] order-4 ${outlineFocusClasses}`}
           >
             <div className="flex items-center justify-between mb-6">
               <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-white/40">EXPERIENCE</span>
@@ -555,7 +555,7 @@ export default function About({ portraitImage = "/images/about section image.png
           </motion.div>
 
           {/* 5. RIGHT MIDDLE COLUMN: LOCATION & LANGUAGES SIDE-BY-SIDE (Column 3 - Row 2 - Expanded Width) */}
-          <div className="col-span-12 lg:col-span-8 lg:col-start-17 lg:row-start-2 grid grid-cols-2 gap-8 order-5">
+          <div className="col-span-full lg:col-span-8 lg:col-start-17 lg:row-start-2 grid grid-cols-1 sm:grid-cols-2 gap-8 order-5">
             {/* LOCATION CARD (With glowing Earth wireframe hologram) */}
             <motion.div
               variants={cardVariants}
@@ -707,12 +707,12 @@ export default function About({ portraitImage = "/images/about section image.png
             transition={transitionConfig}
             tabIndex={0}
             aria-label="Philosophy quote card"
-            className={`col-span-12 lg:col-span-17 lg:col-start-8 lg:row-start-3 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[130px] relative overflow-hidden order-6 ${outlineFocusClasses}`}
+            className={`col-span-full lg:col-span-17 lg:col-start-8 lg:row-start-3 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[130px] relative overflow-hidden order-6 ${outlineFocusClasses}`}
           >
 
             
             {/* Background Artwork Masked */}
-            <div className="absolute right-0 bottom-0 top-0 w-[40%] opacity-70 pointer-events-none select-none z-0">
+            <div className="absolute right-0 bottom-0 top-0 w-[40%] opacity-25 sm:opacity-70 pointer-events-none select-none z-0">
               <div 
                 className="w-full h-full bg-no-repeat bg-bottom bg-contain"
                 style={{ 
@@ -728,7 +728,7 @@ export default function About({ portraitImage = "/images/about section image.png
               <Quote className="w-4 h-4 text-primary/40" />
             </div>
             
-            <div className="relative pt-2 z-10 max-w-[55%] flex flex-col gap-4">
+            <div className="relative pt-2 z-10 max-w-full sm:max-w-[70%] md:max-w-[55%] flex flex-col gap-4">
               {/* Thin decorative gold line */}
               <div className="w-12 h-[2px] bg-gradient-to-r from-primary to-transparent" />
               <p className="text-white/85 text-sm md:text-base leading-relaxed font-light italic pl-4 border-l border-primary/20">

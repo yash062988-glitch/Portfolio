@@ -152,7 +152,7 @@ function NavItem({
   );
 }
 
-export default function Navbar({ isPortalActive }) {
+export default function Navbar({ isPortalActive, onOpenResume }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -242,12 +242,8 @@ export default function Navbar({ isPortalActive }) {
   };
 
   const downloadResume = () => {
-    alert("Downloading Yash Jain's Resume...");
-    const link = document.createElement("a");
-    link.href = "#"; // Replace with actual resume link
-    link.setAttribute("download", "Yash_Jain_Resume.pdf");
-    document.body.appendChild(link);
-    document.body.removeChild(link);
+    onOpenResume();
+    setMobileMenuOpen(false);
   };
 
   const scrollToChat = () => {

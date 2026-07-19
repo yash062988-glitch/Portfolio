@@ -9,7 +9,7 @@ import { useAccentColors } from "@/hooks/useAccentColors";
 import { gsap } from "gsap";
 import SmokyMeshText from "@/components/design-system/SmokyMeshText";
 
-export default function Hero() {
+export default function Hero({ onOpenResume }) {
   const { primary } = useAccentColors();
   const video1Ref = useRef(null);
   const video2Ref = useRef(null);
@@ -566,7 +566,7 @@ export default function Hero() {
   };
 
   const downloadResume = () => {
-    alert("Downloading Yash Jain's Resume...");
+    onOpenResume();
   };
 
   return (
@@ -618,7 +618,7 @@ export default function Hero() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
         style={{ x: textX, y: textY }}
-        className="absolute left-6 sm:left-12 lg:left-[140px] top-1/2 -translate-y-1/2 w-full max-w-[480px] z-20 pointer-events-auto flex flex-col text-left"
+        className="absolute left-6 sm:left-12 lg:left-[140px] top-1/2 -translate-y-1/2 w-[calc(100%-48px)] sm:w-full max-w-[480px] z-20 pointer-events-auto flex flex-col text-left"
       >
         {/* Eyebrow Heading */}
         <div className="flex items-center gap-4 w-full select-none">

@@ -21,8 +21,19 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
 
   const providers = ["All", "Google", "Microsoft", "HP", "Tata"];
 
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== "undefined") {
+      setIsMobile(window.innerWidth < 640);
+      const handleResize = () => setIsMobile(window.innerWidth < 640);
+      window.addEventListener("resize", handleResize);
+      return () => {
+        setMounted(false);
+        window.removeEventListener("resize", handleResize);
+      };
+    }
     return () => setMounted(false);
   }, []);
 
@@ -134,9 +145,9 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
     if (diff === -1) {
       const isEven = idx % 2 === 0;
       return {
-        x: "-110%",
+        x: isMobile ? "-70%" : "-110%",
         y: isEven ? -45 : 45,
-        scale: 0.75,
+        scale: isMobile ? 0.65 : 0.75,
         opacity: 0.35,
         zIndex: 10,
         pointerEvents: "auto"
@@ -147,9 +158,9 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
     if (diff === 1) {
       const isEven = idx % 2 === 0;
       return {
-        x: "110%",
+        x: isMobile ? "70%" : "110%",
         y: isEven ? 45 : -45,
-        scale: 0.75,
+        scale: isMobile ? 0.65 : 0.75,
         opacity: 0.35,
         zIndex: 10,
         pointerEvents: "auto"
@@ -160,7 +171,7 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
     return {
       x: "0%",
       y: 0,
-      scale: 1.15,
+      scale: isMobile ? 1.05 : 1.15,
       opacity: 1.0,
       zIndex: 30,
       pointerEvents: "auto"
@@ -231,7 +242,7 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
         onPointerEnter={() => setIsHovered(true)}
         onPointerLeave={() => setIsHovered(false)}
       >
-        <div className="relative w-[320px] h-[220px]">
+        <div className="relative w-[260px] sm:w-[320px] h-[180px] sm:h-[220px]">
           {filteredCertificates.map((cert, idx) => {
             const style = getCardStyle(idx);
             const uniqueId = `${cert.id}__${idx}`;

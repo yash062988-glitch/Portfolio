@@ -20,10 +20,12 @@ import GlobalStarfield from "@/components/GlobalStarfield";
 
 import ContactFooterWrapper from "@/components/ContactFooterWrapper";
 import FluidTrail from "@/components/FluidTrail";
+import ResumeModal from "@/components/ResumeModal";
 
 export default function ClientHome({ portraitImage }) {
   const [loading, setLoading] = useState(true);
   const [isPortalActive, setIsPortalActive] = useState(false);
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
 
   return (
     <ChatProvider>
@@ -44,10 +46,10 @@ export default function ClientHome({ portraitImage }) {
 
             <ScrollRestoration />
 
-            <Navbar isPortalActive={isPortalActive} />
+            <Navbar isPortalActive={isPortalActive} onOpenResume={() => setIsResumeOpen(true)} />
 
             <main className="w-full">
-              <Hero />
+              <Hero onOpenResume={() => setIsResumeOpen(true)} />
 
               <IdentityStrip />
 
@@ -76,7 +78,7 @@ export default function ClientHome({ portraitImage }) {
 
             <CursorGlow />
 
-            {/* {mountCompanion && <CharizardCompanion />} */}
+            <ResumeModal isOpen={isResumeOpen} onClose={() => setIsResumeOpen(false)} />
           </div>
         </>
       )}
