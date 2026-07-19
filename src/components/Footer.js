@@ -70,26 +70,26 @@ export default function Footer() {
         {/* Left: Branding & Tech details */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4">
           <div className="flex items-center gap-2.5">
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary text-[#120c08] font-bold text-sm tracking-wider">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary text-[#120c08] font-semibold text-sm tracking-wider font-space-grotesk">
               YJ
             </span>
-            <span className="font-semibold text-base text-white">
+            <span className="font-semibold text-base text-white font-space-grotesk">
               Yash Jain
             </span>
           </div>
           
-          <p className="text-white/40 text-xs max-w-xs font-light leading-relaxed">
+          <p className="text-white/40 text-xs max-w-xs font-normal font-inter leading-relaxed">
             Built with Next.js, React, Tailwind CSS, and Framer Motion. Handcrafted with luxury cinematic vibes.
           </p>
 
-          <span className="text-white/40 text-xs font-light pt-2 block md:hidden">
+          <span className="text-white/40 text-xs font-normal font-inter pt-2 block md:hidden">
             © 2026 Yash Jain. All rights reserved.
           </span>
         </div>
 
         {/* Center: Social Links */}
         <div className="flex flex-col items-center md:items-start gap-4">
-          <span className="text-white/40 text-[10px] uppercase font-bold tracking-wider">
+          <span className="text-white/40 text-[10px] uppercase font-medium font-mono tracking-[0.18em]">
             Quick Links
           </span>
           <div className="flex items-center gap-6 text-sm text-white/70">
@@ -126,7 +126,7 @@ export default function Footer() {
           {/* Scroll to Top */}
           <button
             onClick={scrollToTop}
-            className={`p-3 rounded-full border border-white/10 bg-white/[0.03] text-white/70 hover:text-primary hover:border-primary/45 hover:bg-primary/5 shadow-[0_4px_12px_rgba(0,0,0,0.4)] hover:shadow-[0_0_15px_rgba(233,177,93,0.3)] cursor-pointer transform transition-all duration-300 ${
+            className={`p-3 rounded-full border border-white/10 bg-white/[0.03] text-white/70 hover:text-primary hover:border-primary/45 hover:bg-primary/5 shadow-[0_4px_12px_rgba(0,0,0,0.4)] hover:shadow-[0_0_15px_rgba(233,177,93,0.3)] cursor-pointer transform transition-all duration-300 font-space-grotesk font-semibold ${
               showScrollTop ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-90 translate-y-2 pointer-events-none"
             }`}
             aria-label="Back to top"
@@ -134,7 +134,7 @@ export default function Footer() {
             <ArrowUp className="w-4 h-4" />
           </button>
 
-          <span className="text-white/40 text-xs font-light hidden md:block">
+          <span className="text-white/40 text-xs font-normal font-inter hidden md:block">
             © 2026 Yash Jain. All rights reserved.
           </span>
         </div>

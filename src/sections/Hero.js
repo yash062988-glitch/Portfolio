@@ -632,13 +632,13 @@ export default function Hero() {
         </div>
 
         {/* Large Typography Heading (Eyebrow -> Heading: 20px) */}
-        <h1 ref={headingRef} className="text-[44px] sm:text-[64px] lg:text-[84px] font-black tracking-tight leading-none font-sans flex flex-wrap items-baseline gap-x-3 uppercase select-none mt-[36px]">
-          <SmokyMeshText text="YASH" className="text-[44px] sm:text-[64px] lg:text-[84px] font-black text-white tracking-tight leading-none font-sans" as="span" />
-          <SmokyMeshText text="JAIN" className="text-[44px] sm:text-[64px] lg:text-[84px] font-black text-primary tracking-tight leading-none font-sans" color="var(--accent-primary)" as="span" />
+        <h1 ref={headingRef} className="text-[44px] sm:text-[64px] lg:text-[84px] font-bold tracking-tight leading-none font-space-grotesk flex flex-wrap items-baseline gap-x-3 uppercase select-none mt-[36px]">
+          <SmokyMeshText text="YASH" className="text-[44px] sm:text-[64px] lg:text-[84px] font-bold text-white tracking-tight leading-none font-space-grotesk" as="span" />
+          <SmokyMeshText text="JAIN" className="text-[44px] sm:text-[64px] lg:text-[84px] font-bold text-primary tracking-tight leading-none font-space-grotesk" color="var(--accent-primary)" as="span" />
         </h1>
 
         {/* Subtitle / Role Line (Heading -> Roles: 24px) */}
-        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-white/90 text-[11.5px] sm:text-[13px] tracking-[0.22em] uppercase font-mono font-semibold mt-[38px]">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-white/90 text-[11.5px] sm:text-[13px] tracking-[0.18em] uppercase font-mono font-medium mt-[38px]">
           <span>Full Stack Developer</span>
           <span className="w-1 h-1 rounded-full bg-primary animate-pulse" style={{ backgroundColor: "var(--accent-primary)" }} />
           <span>AI Engineer</span>
@@ -655,7 +655,7 @@ export default function Hero() {
         <div className="flex items-center gap-6 sm:gap-7 mt-[36px]">
           <button
             onClick={() => scrollToSection("projects")}
-            className="group flex items-center gap-2 text-[10.5px] font-bold tracking-[0.2em] uppercase text-[#120c08] bg-primary px-6 py-3.5 rounded-full hover:bg-secondary hover:shadow-[0_0_30px_rgba(var(--accent-glow-raw),0.4)] transition-all duration-300 cursor-pointer shrink-0"
+            className="group flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.2em] uppercase text-[#120c08] bg-primary px-6 py-3.5 rounded-full hover:bg-secondary hover:shadow-[0_0_30px_rgba(var(--accent-glow-raw),0.4)] transition-all duration-300 cursor-pointer shrink-0 font-space-grotesk"
             style={{ backgroundColor: "var(--accent-primary)" }}
           >
             <span>Explore Universe</span>
@@ -663,7 +663,7 @@ export default function Hero() {
           </button>
           <button
             onClick={downloadResume}
-            className="text-[10.5px] font-bold tracking-[0.2em] uppercase text-primary border border-primary/30 px-6 py-3.5 rounded-full cursor-pointer bg-primary/[0.03] hover:bg-primary/[0.08] hover:border-primary/60 hover:shadow-[0_0_20px_rgba(var(--accent-glow-raw),0.2)] transition-all duration-300"
+            className="text-[10.5px] font-semibold tracking-[0.2em] uppercase text-primary border border-primary/30 px-6 py-3.5 rounded-full cursor-pointer bg-primary/[0.03] hover:bg-primary/[0.08] hover:border-primary/60 hover:shadow-[0_0_20px_rgba(var(--accent-glow-raw),0.2)] transition-all duration-300 font-space-grotesk"
             style={{ color: "var(--accent-primary)", borderColor: "rgba(var(--accent-glow-raw), 0.3)" }}
           >
             Resume

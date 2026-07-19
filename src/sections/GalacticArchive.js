@@ -130,7 +130,7 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
       >
         {/* Floating coordinate sector number identifier */}
         <div
-          className={`absolute -top-1.5 -right-1.5 z-30 pointer-events-none px-2 py-0.5 rounded text-[8.5px] font-mono tracking-widest border transition-all duration-500 bg-[#0d0908]/95 ${isHovered
+          className={`absolute -top-1.5 -right-1.5 z-30 pointer-events-none px-2 py-0.5 rounded text-[8.5px] font-orbitron font-semibold tracking-wide border transition-all duration-500 bg-[#0d0908]/95 ${isHovered
             ? "text-primary border-primary/50 shadow-[0_0_12px_var(--accent-glow)]"
             : "text-white/45 border-white/10"
             }`}
@@ -218,7 +218,7 @@ function PlanetNode({ sector, isHovered, hoveredPlanet, shipProgress, onMouseEnt
         {/* Node Name Label Beneath */}
         <div className="absolute top-[106%] flex flex-col items-center pointer-events-none whitespace-nowrap transition-all duration-500">
           <span
-            className={`text-[10px] uppercase font-extrabold tracking-[0.25em] transition-colors duration-500 ${isHovered ? "text-primary" : "text-white/80"
+            className={`text-xs uppercase font-medium font-mono tracking-[0.18em] transition-colors duration-500 ${isHovered ? "text-primary" : "text-white/80"
               }`}
             style={{
               textShadow: isHovered ? "0 0 12px var(--accent-glow)" : "none"
@@ -354,15 +354,15 @@ export default function GalacticArchive({ setIsPortalActive }) {
     {
       id: 1,
       num: "01",
-      name: "Genesis Sector",
-      title: "Genesis Core",
-      subtitle: "Where everything began.",
-      desc: "Curiosity initialized. Discovering computer architecture, writing my first lines of code, and discovering a lifelong passion for designing digital logic.",
+      name: "MISSION ORIGIN",
+      title: "MISSION ORIGIN",
+      subtitle: "Started Programming",
+      desc: "First line of code. Built curiosity through small web projects and learned the fundamentals.",
       status: "ACTIVE DEVELOPMENT",
       x: 5,
       y: 24,
       camTranslate: { x: "-2px", y: "2px" },
-      image: "/images/origin_bg.png",
+      image: "/images/image_1_on.png",
       color: "#d97706", // Warm Gold
       baseScale: 1.05,
       baseOpacity: 0.9,
@@ -374,35 +374,35 @@ export default function GalacticArchive({ setIsPortalActive }) {
     {
       id: 2,
       num: "02",
-      name: "Current Orbit",
-      title: "Current Orbit",
-      subtitle: "Where I am today.",
-      desc: "Navigating full stack systems, crafting high-performance creative user interfaces, building custom shader components, and integrating generative AI engines.",
+      name: "SYSTEM UPGRADE",
+      title: "SYSTEM UPGRADE",
+      subtitle: "Learning & Building",
+      desc: "Mastered React, Next.js, Three.js, Tailwind CSS, TypeScript, UI/UX principles, and modern frontend development while continuously improving problem-solving skills.",
       status: "COMPLETED",
       x: 28,
       y: 74,
       camTranslate: { x: "-2.5px", y: "3px" },
-      image: "/images/habita_ai_bg.png",
+      image: "/images/image_2_on.png",
       color: "#3b82f6", // Electric Blue
-      baseScale: 0.85,
-      baseOpacity: 0.65,
+      baseScale: 1.05,
+      baseOpacity: 0.9,
       depthZ: 10,
-      blurClass: "blur-[0.8px]",
-      glowIntensity: "opacity-10",
+      blurClass: "blur-0",
+      glowIntensity: "opacity-25",
       represents: ["Web Development", "UI / UX", "Artificial Intelligence", "Machine Learning", "Data Analysis", "Creative Design"]
     },
     {
       id: 3,
       num: "03",
-      name: "Construction Zone",
-      title: "Construction Zone",
-      subtitle: "Currently Building.",
-      desc: "Architecting interactive frameworks, experimenting with real-time web-graphics pipelines, and writing AI-agent driven workspace environments.",
+      name: "MISSION CONTROL",
+      title: "MISSION CONTROL",
+      subtitle: "Real Projects",
+      desc: "Built production-ready websites, AI-powered applications, interactive 3D experiences, and premium portfolio projects focused on performance and user experience.",
       status: "ACTIVE DEVELOPMENT",
       x: 52,
       y: 26,
       camTranslate: { x: "2.5px", y: "3px" },
-      image: "/images/creative_nebula_bg.png",
+      image: "/images/image_3_on.png",
       color: "#a855f7", // Premium Purple
       baseScale: 1.15,
       baseOpacity: 0.98,
@@ -414,35 +414,35 @@ export default function GalacticArchive({ setIsPortalActive }) {
     {
       id: 4,
       num: "04",
-      name: "Launch Sequence",
-      title: "Launch Sequence",
-      subtitle: "Preparing For What's Next.",
-      desc: "Deploying high-performance SaaS environments, preparing public open-source developer tool pipelines, and building autonomous agent solutions.",
+      name: "AI INTEGRATION",
+      title: "AI INTEGRATION",
+      subtitle: "Building Intelligent Products",
+      desc: "Integrated Large Language Models (LLMs), automation workflows, AI assistants, computer vision, and intelligent features into modern web applications.",
       status: "ACTIVE DEVELOPMENT",
       x: 76,
       y: 76,
       camTranslate: { x: "3px", y: "-2.5px" },
-      image: "/images/current_mission_bg.png",
+      image: "/images/image_4_on.png",
       color: "#ea580c", // Orange
-      baseScale: 0.95,
-      baseOpacity: 0.8,
+      baseScale: 1.05,
+      baseOpacity: 0.9,
       depthZ: 14,
-      blurClass: "blur-[0.4px]",
-      glowIntensity: "opacity-20",
+      blurClass: "blur-0",
+      glowIntensity: "opacity-25",
       represents: ["Freelancing", "SaaS Products", "Open Source", "AI Products", "Startup Ideas"]
     },
     {
       id: 5,
       num: "05",
-      name: "Beyond Horizon",
-      title: "Beyond Horizon",
-      subtitle: "The Future I'm Working Towards.",
-      desc: "Building scalable technology ecosystems used by millions globally, founding innovative AI startups, and defining state-of-the-art interactive platforms.",
+      name: "NEXT DESTINATION",
+      title: "NEXT DESTINATION",
+      subtitle: "Future Vision",
+      desc: "Focused on building premium SaaS products, AI-powered startups, immersive web experiences, and impactful software that solves real-world problems.",
       status: "ACTIVE DEVELOPMENT",
       x: 95,
       y: 38,
       camTranslate: { x: "4px", y: "-3px" },
-      image: "/images/future_horizons_bg.png",
+      image: "/images/image_5_on.png",
       color: "#06b6d4", // Cyan
       baseScale: 1.1,
       baseOpacity: 0.95,
@@ -642,21 +642,21 @@ export default function GalacticArchive({ setIsPortalActive }) {
       `}} />
 
       {/* LAYER 1: Full-Screen Cinematic Image Expansion (Smoothly reveals active hovered sector image) */}
-      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-black/60 pointer-events-none">
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-black/30 pointer-events-none">
         <AnimatePresence>
           {activeSector && activeSector.image && (
             <motion.div
               key={`bg-${activeSector.id}`}
               initial={{ 
-                clipPath: `circle(0% at ${activeSector.x}% ${activeSector.y}%)`,
+                clipPath: `circle(0% at ${8 + 0.84 * activeSector.x}% ${10 + 0.78 * activeSector.y}%)`,
                 opacity: 0 
               }}
               animate={{ 
-                clipPath: `circle(150% at ${activeSector.x}% ${activeSector.y}%)`,
+                clipPath: `circle(150% at ${8 + 0.84 * activeSector.x}% ${10 + 0.78 * activeSector.y}%)`,
                 opacity: 1 
               }}
               exit={{ 
-                clipPath: `circle(0% at ${activeSector.x}% ${activeSector.y}%)`,
+                clipPath: `circle(0% at ${8 + 0.84 * activeSector.x}% ${10 + 0.78 * activeSector.y}%)`,
                 opacity: 0 
               }}
               transition={{ 
@@ -711,7 +711,7 @@ export default function GalacticArchive({ setIsPortalActive }) {
 
         {/* Darkening veil sits in z-10 layer (behind map container at z-30) */}
         <motion.div
-          animate={{ opacity: hoveredPlanet ? 0.72 : 0 }}
+          animate={{ opacity: hoveredPlanet ? 0.42 : 0 }}
           transition={{ duration: 0.5 }}
           className="absolute inset-0 bg-black pointer-events-none"
         />
@@ -922,21 +922,21 @@ export default function GalacticArchive({ setIsPortalActive }) {
                 {/* Left Col: Milestone Meta Details */}
                 <div className="flex flex-col gap-2.5 max-w-md items-start">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[8px] font-mono uppercase font-bold tracking-[0.25em] text-primary leading-none">
-                      SECTOR {activeSector.num} // MISSION ARCHIVE
+                    <span className="text-[10px] font-mono uppercase font-medium tracking-[0.18em] text-primary leading-none">
+                      SECTOR <span className="font-orbitron font-semibold">{activeSector.num}</span> // MISSION ARCHIVE
                     </span>
-                    <h3 className="text-2xl font-extrabold text-white tracking-tight leading-normal uppercase">
+                    <h3 className="text-3xl font-medium font-mono text-white tracking-[0.18em] leading-normal uppercase">
                       {activeSector.name}
                     </h3>
                   </div>
 
-                  <span className="text-[10px] font-sans font-medium text-white/50 tracking-wider">
+                  <span className="text-xs font-space-grotesk font-semibold text-white/50 tracking-wide">
                     {activeSector.subtitle}
                   </span>
 
                   <div className="flex items-center gap-1.5 mt-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-                    <span className="text-[8px] font-mono tracking-widest text-primary uppercase">
+                    <span className="text-[10px] font-mono font-medium tracking-[0.18em] text-primary uppercase">
                       {activeSector.status}
                     </span>
                   </div>
@@ -944,21 +944,21 @@ export default function GalacticArchive({ setIsPortalActive }) {
 
                 {/* Mid Col: Description Paragraph */}
                 <div className="flex-grow max-w-lg">
-                  <p className="text-white/60 text-xs font-light leading-relaxed">
+                  <p className="text-white/75 text-sm font-normal font-inter leading-relaxed">
                     {activeSector.desc}
                   </p>
                 </div>
 
                 {/* Right Col: Focus Capabilities / Represents Grid */}
                 <div className="flex flex-col gap-2 min-w-[200px] border-l border-white/5 pl-6">
-                  <span className="text-[7.5px] uppercase font-bold tracking-[0.2em] text-white/35 leading-none">
+                  <span className="text-[9px] uppercase font-bold tracking-[0.2em] text-white/35 leading-none">
                     KEY CAPABILITIES
                   </span>
                   <div className="flex flex-wrap gap-1.5 mt-1.5">
                     {activeSector.represents.map((focus, index) => (
                       <span
                         key={index}
-                        className="text-[8.5px] font-mono px-2 py-1 rounded bg-white/[0.02] border border-white/[0.04] text-white/65 hover:text-white hover:border-primary/20 transition-all duration-300"
+                        className="text-[10px] font-mono px-2 py-1 rounded bg-white/[0.02] border border-white/[0.04] text-white/65 hover:text-white hover:border-primary/20 transition-all duration-300"
                       >
                         {focus}
                       </span>

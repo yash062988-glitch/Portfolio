@@ -1,4 +1,4 @@
-import { Space_Grotesk } from "next/font/google";
+import { Space_Grotesk, Inter, IBM_Plex_Mono, Orbitron } from "next/font/google";
 import "./globals.css";
 import ThemeController from "@/components/ThemeController";
 import UfoCompanion from "@/components/UfoCompanion";
@@ -6,7 +6,29 @@ import UfoCompanion from "@/components/UfoCompanion";
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+});
+
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  display: "swap",
 });
 
 export const metadata = {
@@ -44,7 +66,7 @@ export default function RootLayout({ children }) {
           })();
         `}} />
       </head>
-      <body className={`${spaceGrotesk.variable} font-sans text-white bg-black antialiased`}>
+      <body className={`${spaceGrotesk.variable} ${inter.variable} ${ibmPlexMono.variable} ${orbitron.variable} font-sans text-white bg-black antialiased`}>
         {children}
         <ThemeController />
         <UfoCompanion />

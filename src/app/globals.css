@@ -30,7 +30,12 @@
 }
 
 @theme {
-  --font-sans: var(--font-space-grotesk), sans-serif;
+  --font-space-grotesk: var(--font-space-grotesk), sans-serif;
+  --font-inter: var(--font-inter), sans-serif;
+  --font-ibm-plex-mono: var(--font-ibm-plex-mono), monospace;
+  --font-orbitron: var(--font-orbitron), sans-serif;
+  
+  --font-sans: var(--font-inter), sans-serif;
   --color-primary: var(--accent-primary);
   --color-secondary: var(--accent-secondary);
   --color-glass: rgba(255, 255, 255, 0.08);
@@ -93,7 +98,9 @@ body {
   background-color: #000000;
   color: #ffffff;
   overflow-x: hidden;
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
   margin: 0;
   padding: 0;
 }

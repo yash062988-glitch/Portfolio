@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import emailjs from "@emailjs/browser";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, CheckCircle, Sparkles } from "lucide-react";
@@ -12,8 +13,8 @@ import PrimaryButton from "@/components/design-system/PrimaryButton";
 
 export default function Contact() {
   const [formState, setFormState] = useState({
-    name: "",
-    email: "",
+    from_name: "",
+    reply_to: "",
     subject: "",
     message: ""
   });
@@ -21,32 +22,101 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [isFormFocused, setIsFormFocused] = useState(false);
   const [showContactPopup, setShowContactPopup] = useState(false);
+  const [errors, setErrors] = useState({
+    from_name: false,
+    reply_to: false,
+    subject: false,
+    message: false
+  });
+  const [toast, setToast] = useState(null);
   const shouldReduceMotion = useReducedMotion();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: false }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formState.name || !formState.email || !formState.message) return;
+
+    const validateEmail = (emailStr) => {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr);
+    };
+
+    const newErrors = {
+      from_name: !formState.from_name.trim(),
+      reply_to: !formState.reply_to.trim() || !validateEmail(formState.reply_to.trim()),
+      subject: !formState.subject.trim(),
+      message: !formState.message.trim()
+    };
+
+    setErrors(newErrors);
+
+    const hasErrors = Object.values(newErrors).some(val => val);
+    if (hasErrors) {
+      setToast({
+        type: "error",
+        title: "Validation Error",
+        message: "Please fill in all fields correctly.",
+        subMessage: !validateEmail(formState.reply_to.trim()) && formState.reply_to.trim()
+          ? "Please enter a valid email address."
+          : "All fields are required."
+      });
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
 
     setIsSubmitting(true);
-    // Construct direct mailto link to yash062988@gmail.com
-    const mailtoUrl = `mailto:yash062988@gmail.com?subject=${encodeURIComponent(formState.subject || "Portfolio Contact Inquiry")}&body=${encodeURIComponent(`Name: ${formState.name}\nEmail: ${formState.email}\n\nMessage:\n${formState.message}`)}`;
 
-    setTimeout(() => {
+    const templateParams = {
+      from_name: formState.from_name,
+      reply_to: formState.reply_to,
+      subject: formState.subject,
+      message: formState.message,
+      date: new Date().toLocaleDateString(),
+      time: new Date().toLocaleTimeString()
+    };
+
+    try {
+      await emailjs.send(
+        "service_q22elbn",
+        "template_ubsmak7",
+        templateParams,
+        "IDiWMFsr0uKTrs-FX"
+      );
+
+      // On Success
+      setFormState({ from_name: "", reply_to: "", subject: "", message: "" });
+      setErrors({ from_name: false, reply_to: false, subject: false, message: false });
       setIsSubmitting(false);
       setSubmitted(true);
-      setFormState({ name: "", email: "", subject: "", message: "" });
-      
-      // Open the mail client populated with details
-      window.location.href = mailtoUrl;
-      
-      // Reset success state after a few seconds
-      setTimeout(() => setSubmitted(false), 5000);
-    }, 1200);
+
+      setToast({
+        type: "success",
+        title: "🚀 Message Sent Successfully!",
+        message: "Thanks for reaching out.",
+        subMessage: "I'll get back to you as soon as possible."
+      });
+
+      setTimeout(() => {
+        setSubmitted(false);
+        setToast(null);
+      }, 5000);
+
+    } catch (error) {
+      // On Failure
+      setIsSubmitting(false);
+      setSubmitted(false);
+      setToast({
+        type: "error",
+        title: "Failed to send message.",
+        message: "Please try again."
+      });
+      setTimeout(() => setToast(null), 4000);
+    }
   };
 
   return (
@@ -216,11 +286,11 @@ export default function Contact() {
 
             <GlassCard hover={false} className="p-6 md:p-8 bg-white/[0.02] border border-white/10 shadow-2xl relative overflow-hidden z-10">
               
-              <h3 className="text-lg font-bold text-white mb-8 tracking-tight">
+              <h3 className="text-lg font-semibold font-space-grotesk text-white mb-8 tracking-tight">
                 Send a Message
               </h3>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} noValidate className="space-y-6">
                 
                 {/* Name and Email side-by-side */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -230,18 +300,22 @@ export default function Contact() {
                     <input
                       type="text"
                       id="name"
-                      name="name"
+                      name="from_name"
                       required
                       placeholder=" "
-                      value={formState.name}
+                      value={formState.from_name}
                       onChange={handleInputChange}
                       onFocus={() => setIsFormFocused(true)}
                       onBlur={() => setIsFormFocused(false)}
-                      className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-black/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
+                      className={`peer w-full px-5 py-3.5 rounded-xl border bg-black/80 text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm font-medium font-inter ${
+                        errors.from_name 
+                          ? "border-red-500/60 focus:border-red-500/80" 
+                          : "border-white/10 focus:border-primary/50"
+                      }`}
                     />
                     <label
                       htmlFor="name"
-                      className="absolute left-5 top-5.5 text-[10px] font-bold text-white/40 uppercase tracking-wider origin-[0] -translate-y-7 scale-90 transform transition-all duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-7 peer-focus:scale-90 peer-focus:text-primary pointer-events-none select-none"
+                      className="absolute left-5 top-5.5 text-[10px] font-medium font-mono text-white/40 uppercase tracking-[0.18em] origin-[0] -translate-y-7 scale-90 transform transition-all duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-7 peer-focus:scale-90 peer-focus:text-primary pointer-events-none select-none"
                     >
                       Your Name
                     </label>
@@ -252,18 +326,22 @@ export default function Contact() {
                     <input
                       type="email"
                       id="email"
-                      name="email"
+                      name="reply_to"
                       required
                       placeholder=" "
-                      value={formState.email}
+                      value={formState.reply_to}
                       onChange={handleInputChange}
                       onFocus={() => setIsFormFocused(true)}
                       onBlur={() => setIsFormFocused(false)}
-                      className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-black/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
+                      className={`peer w-full px-5 py-3.5 rounded-xl border bg-black/80 text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm font-medium font-inter ${
+                        errors.reply_to 
+                          ? "border-red-500/60 focus:border-red-500/80" 
+                          : "border-white/10 focus:border-primary/50"
+                      }`}
                     />
                     <label
                       htmlFor="email"
-                      className="absolute left-5 top-5.5 text-[10px] font-bold text-white/40 uppercase tracking-wider origin-[0] -translate-y-7 scale-90 transform transition-all duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-7 peer-focus:scale-90 peer-focus:text-primary pointer-events-none select-none"
+                      className="absolute left-5 top-5.5 text-[10px] font-medium font-mono text-white/40 uppercase tracking-[0.18em] origin-[0] -translate-y-7 scale-90 transform transition-all duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-7 peer-focus:scale-90 peer-focus:text-primary pointer-events-none select-none"
                     >
                       Your Email
                     </label>
@@ -282,11 +360,15 @@ export default function Contact() {
                     onChange={handleInputChange}
                     onFocus={() => setIsFormFocused(true)}
                     onBlur={() => setIsFormFocused(false)}
-                    className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-black/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm"
+                    className={`peer w-full px-5 py-3.5 rounded-xl border bg-black/80 text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm font-medium font-inter ${
+                      errors.subject 
+                        ? "border-red-500/60 focus:border-red-500/80" 
+                        : "border-white/10 focus:border-primary/50"
+                    }`}
                   />
                   <label
                     htmlFor="subject"
-                    className="absolute left-5 top-5.5 text-[10px] font-bold text-white/40 uppercase tracking-wider origin-[0] -translate-y-7 scale-90 transform transition-all duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-7 peer-focus:scale-90 peer-focus:text-primary pointer-events-none select-none"
+                    className="absolute left-5 top-5.5 text-[10px] font-medium font-mono text-white/40 uppercase tracking-[0.18em] origin-[0] -translate-y-7 scale-90 transform transition-all duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-7 peer-focus:scale-90 peer-focus:text-primary pointer-events-none select-none"
                   >
                     Subject
                   </label>
@@ -304,11 +386,15 @@ export default function Contact() {
                     onChange={handleInputChange}
                     onFocus={() => setIsFormFocused(true)}
                     onBlur={() => setIsFormFocused(false)}
-                    className="peer w-full px-5 py-3.5 rounded-xl border border-white/10 bg-black/80 text-white placeholder-transparent focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm resize-none"
+                    className={`peer w-full px-5 py-3.5 rounded-xl border bg-black/80 text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-xs md:text-sm resize-none font-medium font-inter ${
+                      errors.message 
+                        ? "border-red-500/60 focus:border-red-500/80" 
+                        : "border-white/10 focus:border-primary/50"
+                    }`}
                   />
                   <label
                     htmlFor="message"
-                    className="absolute left-5 top-5.5 text-[10px] font-bold text-white/40 uppercase tracking-wider origin-[0] -translate-y-7 scale-90 transform transition-all duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-7 peer-focus:scale-90 peer-focus:text-primary pointer-events-none select-none"
+                    className="absolute left-5 top-5.5 text-[10px] font-medium font-mono text-white/40 uppercase tracking-[0.18em] origin-[0] -translate-y-7 scale-90 transform transition-all duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-7 peer-focus:scale-90 peer-focus:text-primary pointer-events-none select-none"
                   >
                     Message
                   </label>
@@ -411,6 +497,44 @@ export default function Contact() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* Premium Success/Error Toast notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className={`fixed bottom-6 right-6 z-[100] max-w-sm w-[calc(100vw-48px)] md:w-80 p-5 rounded-2xl border backdrop-blur-xl shadow-2xl flex flex-col gap-1 ${
+              toast.type === "success"
+                ? "bg-[#120c08]/95 border-[#E9B15D]/30 shadow-[#E9B15D]/5 text-white"
+                : "bg-[#120c08]/95 border-red-500/30 shadow-red-500/5 text-white"
+            }`}
+          >
+            <div className="flex items-start justify-between">
+              <h4 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-primary">
+                {toast.title}
+              </h4>
+              <button
+                type="button"
+                onClick={() => setToast(null)}
+                className="text-white/40 hover:text-white transition-colors duration-200 text-xs font-bold leading-none cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-white/90 text-xs font-semibold mt-1">
+              {toast.message}
+            </p>
+            {toast.subMessage && (
+              <p className="text-white/60 text-[10px] font-light mt-0.5 leading-relaxed">
+                {toast.subMessage}
+              </p>
+            )}
+          </motion.div>
         )}
       </AnimatePresence>
     </section>

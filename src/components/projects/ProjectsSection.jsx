@@ -634,22 +634,22 @@ export default function ProjectsSection() {
 
                   {/* Content wrapper */}
                   <div className="relative z-10 flex flex-col justify-end w-full h-full">
-                    <span className="text-[10px] font-mono tracking-widest text-primary/80 uppercase font-bold select-none mb-1">
+                    <span className="text-[10px] font-mono tracking-[0.18em] text-primary/80 uppercase font-medium select-none mb-1">
                       {project.category}
                     </span>
 
-                    <h3 className="text-2xl md:text-5xl font-extrabold text-white leading-none uppercase tracking-tight select-none truncate">
+                    <h3 className="text-2xl md:text-5xl font-semibold font-space-grotesk text-white leading-none uppercase tracking-tight select-none truncate">
                       {project.title}
                     </h3>
 
-                    <p className="text-xs md:text-sm text-white/70 max-w-[460px] leading-relaxed font-light mt-1 md:mt-2 line-clamp-3">
+                    <p className="text-xs md:text-sm text-white/70 max-w-[460px] leading-relaxed font-normal font-inter mt-1 md:mt-2 line-clamp-3">
                       {project.shortDesc}
                     </p>
 
                     {/* Circular Gold arrow button */}
                     <div className="mt-3 md:mt-5 flex-shrink-0 select-none">
                       <button 
-                        className="group/btn flex items-center gap-3.5 text-xs md:text-sm font-bold uppercase tracking-wider text-primary hover:text-white transition-all duration-300"
+                        className="group/btn flex items-center gap-3.5 text-xs md:text-sm font-semibold font-space-grotesk uppercase tracking-wider text-primary hover:text-white transition-all duration-300"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (isPlaceholder) {

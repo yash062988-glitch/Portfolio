@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { Menu, X, ArrowUpRight, MessageSquare, Sun, Moon } from "lucide-react";
+import { Menu, X, ArrowUpRight, MessageSquare } from "lucide-react";
 import { useChat } from "@/context/ChatContext";
 
 // Local Sub-component for performance optimization & isolated magnetic/hover states
@@ -70,7 +70,7 @@ function NavItem({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       whileTap={{ scale: 0.97 }}
-      className={`relative px-4 py-2 text-xs font-semibold tracking-wide transition-colors duration-300 block select-none cursor-pointer ${
+      className={`relative px-4 py-2 text-xs font-medium font-space-grotesk tracking-wide transition-colors duration-300 block select-none cursor-pointer ${
         isActive ? "text-white" : "text-white/70 hover:text-white"
       }`}
     >
@@ -162,7 +162,6 @@ export default function Navbar({ isPortalActive }) {
 
   // Theme Toggler state
   const [theme, setTheme] = useState("dark");
-  const [themePulse, setThemePulse] = useState(false);
 
   // Scroll Progress Bar configurations
   const { scrollYProgress } = useScroll();
@@ -221,21 +220,7 @@ export default function Navbar({ isPortalActive }) {
     };
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
 
-    if (newTheme === "light") {
-      document.documentElement.classList.add("light");
-    } else {
-      document.documentElement.classList.remove("light");
-    }
-
-    // Trigger theme glow pulse on button click
-    setThemePulse(true);
-    setTimeout(() => setThemePulse(false), 500);
-  };
 
   const navItems = [
     { label: "Home", href: "#home", id: "home" },
@@ -270,11 +255,7 @@ export default function Navbar({ isPortalActive }) {
     setMobileMenuOpen(false);
   };
 
-  const themeIconVariants = {
-    initial: { scale: 0.6, rotate: -90, opacity: 0 },
-    animate: { scale: 1, rotate: 0, opacity: 1 },
-    exit: { scale: 0.6, rotate: 90, opacity: 0 }
-  };
+
 
   return (
     <>
@@ -305,10 +286,10 @@ export default function Navbar({ isPortalActive }) {
             onClick={(e) => handleNavClick(e, "#home")}
             className="flex items-center gap-2 group"
           >
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary text-[#120c08] font-bold text-sm tracking-wider">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary text-[#120c08] font-semibold text-sm tracking-wider font-space-grotesk">
               YJ
             </span>
-            <span className="font-medium text-base tracking-wide text-white group-hover:text-primary transition-colors duration-300">
+            <span className="font-semibold text-base tracking-wide text-white group-hover:text-primary transition-colors duration-300 font-space-grotesk">
               Yash Jain
             </span>
           </a>
@@ -331,49 +312,18 @@ export default function Navbar({ isPortalActive }) {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-3">
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 backdrop-blur-md focus:outline-none select-none cursor-pointer relative overflow-hidden group
-                ${
-                  theme === "dark"
-                    ? "border-white/10 bg-white/[0.03] text-white hover:text-primary hover:border-primary/30"
-                    : "border-black/10 bg-black/[0.03] text-[#120c08] hover:text-primary hover:border-primary/30"
-                }
-                ${themePulse ? "ring-4 ring-primary/30 shadow-[0_0_15px_var(--accent-primary)]" : "shadow-sm"}
-              `}
-              aria-label="Toggle theme"
-            >
-              <span className="absolute inset-0 rounded-full bg-primary/0 group-hover:bg-primary/5 group-active:bg-primary/10 transition-colors duration-300" />
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={theme}
-                  variants={themeIconVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.35, ease: "easeInOut" }}
-                  className="flex items-center justify-center"
-                >
-                  {theme === "dark" ? (
-                    <Moon className="w-4.5 h-4.5 text-white" />
-                  ) : (
-                    <Sun className="w-4.5 h-4.5 text-[#120c08]" />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </button>
+
 
             <button
               onClick={downloadResume}
-              className="h-10 flex items-center gap-1 px-4 rounded-full border border-white/10 bg-white/[0.03] text-xs font-semibold text-white/90 hover:bg-white/10 hover:border-primary/45 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
+              className="h-10 flex items-center gap-1 px-4 rounded-full border border-white/10 bg-white/[0.03] text-xs font-semibold text-white/90 hover:bg-white/10 hover:border-primary/45 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer font-space-grotesk"
             >
               My Resume
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={scrollToChat}
-              className="h-10 flex items-center gap-1.5 px-4 rounded-full bg-gradient-to-r from-primary to-secondary text-[#120c08] text-xs font-bold hover:shadow-[0_0_15px_var(--accent-glow)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
+              className="h-10 flex items-center gap-1.5 px-4 rounded-full bg-gradient-to-r from-primary to-secondary text-[#120c08] text-xs font-semibold hover:shadow-[0_0_15px_var(--accent-glow)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer font-space-grotesk"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               Ask Yash AI
@@ -382,38 +332,7 @@ export default function Navbar({ isPortalActive }) {
 
           {/* Mobile Controls */}
           <div className="lg:hidden flex items-center gap-2">
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 backdrop-blur-md focus:outline-none select-none cursor-pointer relative overflow-hidden group
-                ${
-                  theme === "dark"
-                    ? "border-white/10 bg-white/[0.03] text-white hover:text-primary hover:border-primary/30"
-                    : "border-black/10 bg-black/[0.03] text-[#120c08] hover:text-primary hover:border-primary/30"
-                }
-                ${themePulse ? "ring-4 ring-primary/30 shadow-[0_0_15px_var(--accent-primary)]" : "shadow-sm"}
-              `}
-              aria-label="Toggle theme"
-            >
-              <span className="absolute inset-0 rounded-full bg-primary/0 group-hover:bg-primary/5 group-active:bg-primary/10 transition-colors duration-300" />
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={theme}
-                  variants={themeIconVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.35, ease: "easeInOut" }}
-                  className="flex items-center justify-center"
-                >
-                  {theme === "dark" ? (
-                    <Moon className="w-4.5 h-4.5 text-white" />
-                  ) : (
-                    <Sun className="w-4.5 h-4.5 text-[#120c08]" />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </button>
+
 
             {/* Mobile Menu Toggle */}
             <button
@@ -442,7 +361,7 @@ export default function Navbar({ isPortalActive }) {
                     key={item.label}
                     href={item.href}
                     onClick={(e) => handleNavClick(e, item.href)}
-                    className={`px-4 py-2 text-base rounded-xl transition-all duration-300 ${
+                    className={`px-4 py-2 text-base font-medium font-space-grotesk rounded-xl transition-all duration-300 ${
                       activeSection === item.id
                         ? "bg-primary/10 text-primary border-l-2 border-primary pl-3"
                         : "text-white/70 hover:text-white hover:bg-white/5"
@@ -458,14 +377,14 @@ export default function Navbar({ isPortalActive }) {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={downloadResume}
-                  className="w-full flex items-center justify-center gap-1 py-3 rounded-full border border-white/15 bg-white/5 text-sm font-medium text-white hover:bg-white/10"
+                  className="w-full flex items-center justify-center gap-1 py-3 rounded-full border border-white/15 bg-white/5 text-sm font-semibold font-space-grotesk text-white hover:bg-white/10"
                 >
                   My Resume
                   <ArrowUpRight className="w-4 h-4" />
                 </button>
                 <button
                   onClick={scrollToChat}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-primary text-[#120c08] text-sm font-medium hover:bg-secondary"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-primary text-[#120c08] text-sm font-semibold font-space-grotesk hover:bg-secondary"
                 >
                   <MessageSquare className="w-4 h-4" />
                   Ask Yash AI

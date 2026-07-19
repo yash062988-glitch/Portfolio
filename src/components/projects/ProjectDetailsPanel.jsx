@@ -43,26 +43,26 @@ export default function ProjectDetailsPanel({ selectedProject, onClose }) {
         <div className="w-full md:w-[55%] flex flex-col justify-between gap-5 overflow-y-auto pr-1">
           <div className="flex flex-col gap-4">
             <div>
-              <span className="text-[10px] font-mono tracking-widest text-primary uppercase block">
+              <span className="text-[10px] font-mono tracking-[0.18em] text-primary uppercase block font-medium">
                 {selectedProject.category}
               </span>
-              <h3 className="text-xl md:text-2xl font-extrabold text-white uppercase tracking-tight mt-1 leading-tight">
+              <h3 className="text-xl md:text-2xl font-semibold font-space-grotesk text-white uppercase tracking-tight mt-1 leading-tight">
                 {selectedProject.title}
               </h3>
             </div>
 
             {/* Project descriptions (Full, Problem solved, features) */}
-            <div className="flex flex-col gap-3 text-xs text-white/70 font-light leading-relaxed">
+            <div className="flex flex-col gap-3 text-xs text-white/70 font-normal font-inter leading-relaxed">
               <div>
-                <h4 className="text-[9px] font-mono tracking-widest text-white/40 uppercase block mb-1">
+                <h4 className="text-[9px] font-mono tracking-[0.18em] text-white/40 uppercase block mb-1 font-medium">
                   Project Description
                 </h4>
-                <p>{selectedProject.desc || selectedProject.shortDesc}</p>
+                <p className="text-white/70">{selectedProject.desc || selectedProject.shortDesc}</p>
               </div>
 
               {selectedProject.problem && (
                 <div>
-                  <h4 className="text-[9px] font-mono tracking-widest text-white/40 uppercase block mb-1">
+                  <h4 className="text-[9px] font-mono tracking-[0.18em] text-white/40 uppercase block mb-1 font-medium">
                     Problem Solved
                   </h4>
                   <p className="text-white/80">{selectedProject.problem}</p>
@@ -71,7 +71,7 @@ export default function ProjectDetailsPanel({ selectedProject, onClose }) {
 
               {selectedProject.solution && (
                 <div>
-                  <h4 className="text-[9px] font-mono tracking-widest text-white/40 uppercase block mb-1">
+                  <h4 className="text-[9px] font-mono tracking-[0.18em] text-white/40 uppercase block mb-1 font-medium">
                     Features & Solution
                   </h4>
                   <p className="text-white/80">{selectedProject.solution}</p>
@@ -81,14 +81,14 @@ export default function ProjectDetailsPanel({ selectedProject, onClose }) {
 
             {/* Technologies Used Section */}
             <div className="flex flex-col gap-2">
-              <span className="text-[9px] font-mono tracking-widest text-white/40 uppercase block leading-none">
+              <span className="text-[9px] font-mono tracking-[0.18em] text-white/40 uppercase block leading-none font-medium">
                 Technologies Used
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {selectedProject.tech.map((t, idx) => (
                   <span
                     key={`${selectedProject.id}-${t}-${idx}`}
-                    className="px-2.5 py-1 rounded bg-white/5 border border-white/5 text-[9px] text-white/70 font-mono"
+                    className="px-2.5 py-1 rounded bg-white/5 border border-white/5 text-[9px] text-white/70 font-mono font-medium"
                   >
                     {t}
                   </span>
@@ -103,7 +103,7 @@ export default function ProjectDetailsPanel({ selectedProject, onClose }) {
               href={selectedProject.github}
               target="_blank"
               rel="noreferrer"
-              className="action-btn flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-primary hover:bg-primary/95 text-[10px] font-bold uppercase tracking-wider text-[#120c08] transition-all duration-300 w-1/2 text-center font-extrabold shadow-[0_0_15px_rgba(233,177,93,0.25)]"
+              className="action-btn flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-primary hover:bg-primary/95 text-[10px] font-semibold font-space-grotesk uppercase tracking-wider text-[#120c08] transition-all duration-300 w-1/2 text-center shadow-[0_0_15px_rgba(233,177,93,0.25)]"
             >
               <GithubIcon className="w-3.5 h-3.5" />
               GitHub
@@ -112,7 +112,7 @@ export default function ProjectDetailsPanel({ selectedProject, onClose }) {
               href={selectedProject.demo}
               target="_blank"
               rel="noreferrer"
-              className="action-btn flex items-center justify-center gap-2 px-5 py-3.5 rounded-full border border-white/10 hover:border-white/20 bg-white/5 text-[10px] font-bold uppercase tracking-wider text-white transition-all duration-300 w-1/2 text-center hover:bg-white/10"
+              className="action-btn flex items-center justify-center gap-2 px-5 py-3.5 rounded-full border border-white/10 hover:border-white/20 bg-white/5 text-[10px] font-semibold font-space-grotesk uppercase tracking-wider text-white transition-all duration-300 w-1/2 text-center hover:bg-white/10"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               Live Demo

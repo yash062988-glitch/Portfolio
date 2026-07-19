@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { useSpringFollow } from '../hooks/useSpringFollow';
 
 interface Particle {
@@ -22,7 +22,7 @@ export default function UfoCompanion() {
   const particles = useRef<Particle[]>([]);
   const rafRef = useRef<number>(0);
 
-  const { x, y, vx, vy, speed } = spring;
+  const { x, y, vx, vy, speed, isHoveringInteractive } = spring;
 
   const tiltDeg = Math.max(-22, Math.min(22, vx * 3.5));
   const scaleX = 1 + Math.min(speed * 0.006, 0.12);
@@ -107,18 +107,25 @@ export default function UfoCompanion() {
   const posLeft = x - UFO_CX;
   const posTop = y - UFO_CY;
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <>
       <canvas
         ref={canvasRef}
         className="fixed inset-0 pointer-events-none"
-        style={{ zIndex: 9998 }}
+        style={{ zIndex: isHoveringInteractive ? 4 : 9998 }}
       />
 
       {/* Position layer */}
       <div
         className="fixed pointer-events-none"
-        style={{ left: posLeft, top: posTop, width: UFO_W, height: UFO_H, zIndex: 9999 }}
+        style={{ left: posLeft, top: posTop, width: UFO_W, height: UFO_H, zIndex: isHoveringInteractive ? 5 : 9999 }}
       >
         {/* Idle bob layer */}
         <div style={{ width: '100%', height: '100%', animation: isIdle ? 'ufo-bob 2.6s ease-in-out infinite' : 'none' }}>

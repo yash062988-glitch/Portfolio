@@ -8,6 +8,7 @@ export interface SpringState {
   vx: number;
   vy: number;
   speed: number;
+  isHoveringInteractive: boolean;
 }
 
 const STIFFNESS = 0.11;
@@ -26,6 +27,7 @@ export function useSpringFollow(): SpringState {
   const pos = useRef({ x: getInitialValue('x'), y: getInitialValue('y') });
   const vel = useRef({ x: 0, y: 0 });
   const raf = useRef<number>(0);
+  const isHoveringInteractive = useRef(false);
   
   const [state, setState] = useState<SpringState>({
     x: getInitialValue('x'),
@@ -33,6 +35,7 @@ export function useSpringFollow(): SpringState {
     vx: 0,
     vy: 0,
     speed: 0,
+    isHoveringInteractive: false,
   });
 
   useEffect(() => {
@@ -41,6 +44,37 @@ export function useSpringFollow(): SpringState {
     const onMove = (e: MouseEvent) => {
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
+
+      let target = e.target as Element | null;
+      let interactive = false;
+      while (target && target !== document.body) {
+        const tagName = target.tagName.toLowerCase();
+        if (['button', 'a', 'input', 'select', 'textarea', 'option'].includes(tagName)) {
+          interactive = true;
+          break;
+        }
+        const role = target.getAttribute('role');
+        if (role === 'button' || role === 'link' || role === 'checkbox' || role === 'tab') {
+          interactive = true;
+          break;
+        }
+        if (target.classList && (
+          target.classList.contains('cursor-pointer') ||
+          target.classList.contains('interactive')
+        )) {
+          interactive = true;
+          break;
+        }
+        try {
+          const style = window.getComputedStyle(target);
+          if (style.cursor === 'pointer') {
+            interactive = true;
+            break;
+          }
+        } catch (err) {}
+        target = target.parentElement;
+      }
+      isHoveringInteractive.current = interactive;
     };
     window.addEventListener('mousemove', onMove);
 
@@ -64,6 +98,7 @@ export function useSpringFollow(): SpringState {
         vx: vel.current.x,
         vy: vel.current.y,
         speed,
+        isHoveringInteractive: isHoveringInteractive.current,
       });
 
       raf.current = requestAnimationFrame(tick);
