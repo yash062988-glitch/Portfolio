@@ -69,7 +69,7 @@ export default function ClientHome({ portraitImage }) {
             <ContactFooterWrapper>
               <Contact />
 
-              <Footer />
+              <Footer onOpenResume={() => setIsResumeOpen(true)} />
             </ContactFooterWrapper>
 
             <AskAISidebar />

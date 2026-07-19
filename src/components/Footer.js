@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowUp, Mail } from "lucide-react";
+import { ArrowUp, Mail, FileText } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/Icons";
-import { motion } from "framer-motion";
 
-export default function Footer() {
+export default function Footer({ onOpenResume }) {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -24,8 +23,15 @@ export default function Footer() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleResumeClick = (e) => {
+    if (onOpenResume) {
+      e.preventDefault();
+      onOpenResume();
+    }
+  };
+
   return (
-    <footer className="w-full relative bg-transparent border-t border-white/10 py-6 md:py-8 overflow-hidden">
+    <footer className="w-full relative bg-transparent border-t border-white/10 py-3 md:py-4 overflow-hidden">
       {/* Background Video */}
       <video
         autoPlay
@@ -35,7 +41,7 @@ export default function Footer() {
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none select-none"
         style={{
-          opacity: 0.24, // 20-28% opacity
+          opacity: 0.24,
           filter: "contrast(1.25) brightness(1.2) saturate(1.4)",
           backdropFilter: "none",
           transform: "translateZ(0)",
@@ -55,51 +61,42 @@ export default function Footer() {
         }}
       />
 
-      {/* Top Fade */}
-      {/* <div 
-        className="absolute inset-x-0 top-0 h-[80px] bg-gradient-to-b from-[#0b0705] to-transparent z-2 pointer-events-none"
-        style={{
-          backdropFilter: "none",
-          filter: "none"
-        }}
-      /> */}
-
       {/* Content wrapper */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-6">
         
-        {/* Left: Branding & Tech details */}
-        <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary text-[#120c08] font-semibold text-sm tracking-wider font-space-grotesk">
-              YJ
+        {/* Left: Mission Control Branding & Description */}
+        <div className="flex flex-col items-center md:items-start text-center md:text-left gap-1 max-w-md">
+          <div className="flex items-center gap-2">
+            <span className="text-primary text-[9px] uppercase font-medium font-mono tracking-[0.25em]">
+              MISSION CONTROL
             </span>
-            <span className="font-semibold text-base text-white font-space-grotesk">
-              Yash Jain
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] font-semibold font-space-grotesk">
+              🚀 Ready for Launch
             </span>
           </div>
-          
-          <p className="text-white/40 text-xs max-w-xs font-normal font-inter leading-relaxed">
-            Built with Next.js, React, Tailwind CSS, and Framer Motion. Handcrafted with luxury cinematic vibes.
-          </p>
 
-          <span className="text-white/40 text-xs font-normal font-inter pt-2 block md:hidden">
-            © 2026 Yash Jain. All rights reserved.
-          </span>
+          <h3 className="font-semibold text-base md:text-lg text-white font-space-grotesk tracking-tight leading-snug">
+            Thanks for visiting my universe.
+          </h3>
+
+          <p className="text-white/50 text-[11px] font-normal font-inter leading-snug">
+            Every great mission starts with a conversation. Whether you're looking for a developer, a collaborator, or simply want to discuss an idea, I'm always excited to build something extraordinary together.
+          </p>
         </div>
 
-        {/* Center: Social Links */}
-        <div className="flex flex-col items-center md:items-start gap-4">
-          <span className="text-white/40 text-[10px] uppercase font-medium font-mono tracking-[0.18em]">
-            Quick Links
+        {/* Center: Mission Links */}
+        <div className="flex flex-col items-center md:items-start gap-1.5">
+          <span className="text-white/40 text-[9px] uppercase font-medium font-mono tracking-[0.18em]">
+            MISSION LINKS
           </span>
-          <div className="flex items-center gap-6 text-sm text-white/70">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3.5 md:gap-4 text-xs text-white/70 font-space-grotesk font-semibold">
             <a
               href="https://github.com/yash062988-glitch"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors duration-300 flex items-center gap-1.5"
             >
-              <GithubIcon className="w-4 h-4" />
+              <GithubIcon className="w-3.5 h-3.5" />
               GitHub
             </a>
             <a
@@ -108,35 +105,46 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors duration-300 flex items-center gap-1.5"
             >
-              <LinkedinIcon className="w-4 h-4" />
+              <LinkedinIcon className="w-3.5 h-3.5" />
               LinkedIn
             </a>
             <a
               href="mailto:yash062988@gmail.com"
               className="hover:text-primary transition-colors duration-300 flex items-center gap-1.5"
             >
-              <Mail className="w-4 h-4" />
+              <Mail className="w-3.5 h-3.5" />
               Email
+            </a>
+            <a
+              href="/Yash_Jain_Resume.html"
+              target="_blank"
+              onClick={handleResumeClick}
+              className="hover:text-primary transition-colors duration-300 flex items-center gap-1.5"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              Resume
             </a>
           </div>
         </div>
 
         {/* Right: Scroll to top & Copyright */}
-        <div className="flex flex-col items-center md:items-end text-center md:text-right gap-6">
+        <div className="flex flex-col items-center md:items-end text-center md:text-right gap-1.5">
           {/* Scroll to Top */}
           <button
             onClick={scrollToTop}
-            className={`p-3 rounded-full border border-white/10 bg-white/[0.03] text-white/70 hover:text-primary hover:border-primary/45 hover:bg-primary/5 shadow-[0_4px_12px_rgba(0,0,0,0.4)] hover:shadow-[0_0_15px_rgba(233,177,93,0.3)] cursor-pointer transform transition-all duration-300 font-space-grotesk font-semibold ${
+            className={`p-2 rounded-full border border-white/10 bg-white/[0.03] text-white/70 hover:text-primary hover:border-primary/45 hover:bg-primary/5 shadow-[0_4px_12px_rgba(0,0,0,0.4)] hover:shadow-[0_0_15px_rgba(233,177,93,0.3)] cursor-pointer transform transition-all duration-300 font-space-grotesk font-semibold ${
               showScrollTop ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-90 translate-y-2 pointer-events-none"
             }`}
             aria-label="Back to top"
           >
-            <ArrowUp className="w-4 h-4" />
+            <ArrowUp className="w-3.5 h-3.5" />
           </button>
 
-          <span className="text-white/40 text-xs font-normal font-inter hidden md:block">
-            © 2026 Yash Jain. All rights reserved.
-          </span>
+          {/* Bottom Copyright */}
+          <div className="flex flex-col items-center md:items-end text-white/40 text-[10px] font-normal font-inter leading-tight">
+            <span>© 2026 Yash Jain • Designed with Curiosity</span>
+            <span className="text-primary/70 font-mono text-[9.5px]">🚀 Exploring Ideas Beyond Earth</span>
+          </div>
         </div>
 
       </div>
