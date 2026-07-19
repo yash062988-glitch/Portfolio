@@ -1,17 +1,31 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, Download, Mail, ShieldCheck, Cpu, Code, Award, MapPin } from "lucide-react";
+import { useAccentColors } from "@/hooks/useAccentColors";
 
 export default function ResumeModal({ isOpen, onClose }) {
   const [mounted, setMounted] = useState(false);
+  const iframeRef = useRef(null);
+  const { primary, secondary } = useAccentColors();
 
   useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
   }, []);
+
+  useEffect(() => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          { type: "THEME_SYNC", primary, secondary },
+          "*"
+        );
+      } catch (e) {}
+    }
+  }, [primary, secondary, isOpen]);
 
   const handleDownload = (e) => {
     e.stopPropagation();
@@ -89,7 +103,18 @@ export default function ResumeModal({ isOpen, onClose }) {
               >
                 {/* Real Resume HTML/PDF Live Rendering */}
                 <iframe
-                  src="/Yash_Jain_Resume.html"
+                  ref={iframeRef}
+                  src={`/Yash_Jain_Resume.html?primary=${encodeURIComponent(primary || '')}&secondary=${encodeURIComponent(secondary || '')}`}
+                  onLoad={() => {
+                    if (iframeRef.current && iframeRef.current.contentWindow) {
+                      try {
+                        iframeRef.current.contentWindow.postMessage(
+                          { type: "THEME_SYNC", primary, secondary },
+                          "*"
+                        );
+                      } catch (e) {}
+                    }
+                  }}
                   className="w-full h-full border-none select-none rounded-2xl bg-[#0d0908] relative z-10"
                   title="Yash Jain Official Resume Document"
                 />
