@@ -592,11 +592,11 @@ export default function Hero({ onOpenResume }) {
           autoPlay
           muted
           playsInline
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
           style={{ opacity: 1, filter: "contrast(1.25) brightness(1.2) saturate(1.4)" }}
         >
           <source src="/hero-page-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
 
         {/* Video 2 (Background Double Buffer) */}
@@ -604,11 +604,11 @@ export default function Hero({ onOpenResume }) {
           ref={video2Ref}
           muted
           playsInline
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
           style={{ opacity: 0, filter: "contrast(1.25) brightness(1.2) saturate(1.4)" }}
         >
           <source src="/hero-page-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
       </motion.div>
 

@@ -52,8 +52,9 @@ export default function CursorGlow() {
         translateY: "-50%",
         scale: smoothScale,
         opacity: smoothOpacity,
+        background: "radial-gradient(circle, var(--accent-primary) 0%, transparent 70%)"
       }}
-      className="fixed top-0 left-0 pointer-events-none z-[80] hidden lg:block w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(233,177,93,1)_0%,transparent_70%)] blur-[80px]"
+      className="fixed top-0 left-0 pointer-events-none z-[80] hidden lg:block w-[600px] h-[600px] rounded-full blur-[80px]"
     />
   );
 }

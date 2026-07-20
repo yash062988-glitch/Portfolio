@@ -112,9 +112,6 @@ export default function ThemeController() {
     root.style.setProperty("--accent-glow", theme.glow);
     root.style.setProperty("--accent-glow-raw", theme.rawRgb);
     localStorage.setItem("accent-theme", theme.name);
-    
-    // Dispatch custom event to notify MeshText components
-    window.dispatchEvent(new Event('theme-change'));
   };
 
   const handleSelect = (theme) => {

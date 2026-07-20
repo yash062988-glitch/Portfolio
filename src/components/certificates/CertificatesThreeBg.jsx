@@ -187,9 +187,9 @@ export default function CertificatesThreeBg({ speedMultiplierRef }) {
           rotZ: Math.random() * Math.PI,
           rotSpeedX: (Math.random() - 0.5) * 0.0075,
           rotSpeedY: (Math.random() - 0.5) * 0.0075,
-          driftX: (Math.random() - 0.5) * 0.06,
-          driftY: -0.09 - Math.random() * 0.12,
-          alpha: 0,
+          driftX: 0,
+          driftY: 0,
+          alpha: Math.random() * 0.42 + 0.22,
           targetAlpha: Math.random() * 0.42 + 0.22,
           vertices: shapeDef.vertices.map(v => [...v]),
           edges: shapeDef.edges
@@ -208,10 +208,10 @@ export default function CertificatesThreeBg({ speedMultiplierRef }) {
           text: dataItems[Math.floor(Math.random() * dataItems.length)],
           x: Math.random() * width,
           y: Math.random() * height,
-          alpha: 0,
+          alpha: Math.random() * 0.3 + 0.1,
           life: Math.random() * 4 + 2,
           maxLife: 6,
-          speed: 0.12 + Math.random() * 0.2
+          speed: 0
         });
       }
     };

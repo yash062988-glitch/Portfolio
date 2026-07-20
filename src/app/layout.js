@@ -36,12 +36,24 @@ export const metadata = {
   description: "Personal portfolio of Yash Jain, a developer, AI enthusiast, and problem solver. Discover interactive web design, machine learning projects, and certifications.",
   keywords: ["Yash Jain", "Portfolio", "Next.js", "AI Enthusiast", "Web Developer", "Machine Learning", "Data Analytics"],
   authors: [{ name: "Yash Jain" }],
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+      { url: "/icon.png", type: "image/png" }
+    ],
+    shortcut: "/favicon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
+        <link rel="preload" href="/hero-page-video.mp4" as="video" type="video/mp4" />
+        <link rel="preload" href="/images/astronaut.png" as="image" />
+        <link rel="preload" href="/images/contact-astronaut.png" as="image" />
+        <link rel="preload" href="/videos/real-footer-video.webm" as="video" type="video/webm" />
         <script dangerouslySetInnerHTML={{__html: `
           (function() {
             try {

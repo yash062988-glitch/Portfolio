@@ -92,7 +92,7 @@ export default function InfiniteWorld({ speedMultiplierRef }) {
 
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % N);
-    }, 3000);
+    }, 1500);
 
     return () => clearInterval(interval);
   }, [filteredCertificates, selectedId, isHovered, isTabActive, isInViewport]);

@@ -10,8 +10,10 @@ import SectionHeading from "@/components/design-system/SectionHeading";
 import GlassCard from "@/components/design-system/GlassCard";
 import SmokyMeshText from "@/components/design-system/SmokyMeshText";
 import PrimaryButton from "@/components/design-system/PrimaryButton";
+import { useAccentColors } from "@/hooks/useAccentColors";
 
 export default function Contact() {
+  const { primary } = useAccentColors();
   const [formState, setFormState] = useState({
     from_name: "",
     reply_to: "",
@@ -464,7 +466,10 @@ export default function Contact() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 15 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="relative max-w-sm w-full p-8 rounded-[28px] bg-[#120c08]/95 border border-[#E9B15D]/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-center flex flex-col items-center z-[95]"
+              className="relative max-w-sm w-full p-8 rounded-[28px] bg-[#120c08]/95 border shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-center flex flex-col items-center z-[95]"
+              style={{
+                borderColor: "rgba(var(--accent-glow-raw), 0.35)",
+              }}
             >
               {/* Close button */}
               <button 
@@ -475,22 +480,32 @@ export default function Contact() {
                 ✕
               </button>
               
-              <h4 className="text-xl font-bold text-white tracking-wide mt-2">Yash Jain</h4>
-              <div className="w-20 h-[1.5px] bg-[#E9B15D] my-4" />
-              <p className="text-[#E9B15D] text-lg font-mono tracking-wider font-semibold mb-6 select-all">
+              <h4 className="text-xl font-bold text-white tracking-wide mt-2 font-space-grotesk">Yash Jain</h4>
+              <div 
+                className="w-20 h-[1.5px] my-4" 
+                style={{ backgroundColor: "var(--accent-primary)" }}
+              />
+              <p 
+                className="text-lg font-mono tracking-wider font-semibold mb-6 select-all"
+                style={{ color: "var(--accent-primary)" }}
+              >
                 +91 99714 15954
               </p>
               
               <div className="flex gap-4 w-full">
                 <button 
                   onClick={() => setShowContactPopup(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-white/70 text-xs font-semibold transition-colors duration-200 cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-white/70 text-xs font-semibold font-space-grotesk transition-colors duration-200 cursor-pointer"
                 >
                   Close
                 </button>
                 <a 
                   href="tel:+919971415954"
-                  className="flex-1 py-2.5 rounded-xl bg-[#E9B15D] text-[#120c08] text-xs font-bold text-center hover:bg-[#E9B15D]/90 transition-colors duration-200"
+                  className="flex-1 py-2.5 rounded-xl text-[#120c08] text-xs font-bold font-space-grotesk text-center transition-all duration-300 shadow-md cursor-pointer flex items-center justify-center"
+                  style={{
+                    backgroundColor: "var(--accent-primary)",
+                    boxShadow: "0 4px 15px var(--accent-glow)"
+                  }}
                 >
                   Call Now
                 </a>

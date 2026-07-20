@@ -7,7 +7,7 @@ import {
   User, GraduationCap, Briefcase, Globe, 
   MapPin, Quote
 } from "lucide-react";
-import SmokyMeshText from "@/components/design-system/SmokyMeshText";
+import MeshText from "@/components/design-system/MeshText";
 import { useAccentColors } from "@/hooks/useAccentColors";
 
 const AboutSlideshow = ({ fallbackImage, parentX, parentY }) => {
@@ -248,12 +248,12 @@ export default function About({ portraitImage = "/images/about section image.png
           {/* One bright star along the orbit */}
           <g transform="translate(600, 182)">
             <circle cx="0" cy="0" r="1.5" fill="#ffffff" filter="url(#orbitGlow)" />
-            <path d="M-6 0 L6 0 M0 -6 L0 6" stroke="#E9B15D" strokeWidth="0.5" opacity="0.4" />
+            <path d="M-6 0 L6 0 M0 -6 L0 6" stroke="var(--accent-primary)" strokeWidth="0.5" opacity="0.4" />
           </g>
         </svg>
-        <div className="absolute top-[15%] left-[20%] w-1 h-1 bg-[#E9B15D]/60 rounded-full animate-pulse blur-[0.5px]" />
-        <div className="absolute top-[45%] left-[75%] w-1.5 h-1.5 bg-[#E9B15D]/40 rounded-full animate-pulse blur-[0.5px]" style={{ animationDelay: "1.5s" }} />
-        <div className="absolute top-[80%] left-[40%] w-1 h-1 bg-[#E9B15D]/50 rounded-full animate-pulse blur-[0.5px]" style={{ animationDelay: "3s" }} />
+        <div className="absolute top-[15%] left-[20%] w-1 h-1 bg-primary/60 rounded-full animate-pulse blur-[0.5px]" />
+        <div className="absolute top-[45%] left-[75%] w-1.5 h-1.5 bg-primary/40 rounded-full animate-pulse blur-[0.5px]" style={{ animationDelay: "1.5s" }} />
+        <div className="absolute top-[80%] left-[40%] w-1 h-1 bg-primary/50 rounded-full animate-pulse blur-[0.5px]" style={{ animationDelay: "3s" }} />
       </div>
 
       {/* Main Container holding both separate structures */}
@@ -265,8 +265,8 @@ export default function About({ portraitImage = "/images/about section image.png
             GET TO KNOW ME
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-[54px] font-extrabold tracking-[0.05em] leading-none flex flex-wrap gap-x-4">
-            <SmokyMeshText text="About" className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white tracking-[0.05em] leading-none font-sans" as="span" />
-            <SmokyMeshText text="Me" className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-primary tracking-[0.05em] leading-none font-sans" color="var(--accent-primary)" as="span" />
+            <MeshText text="About" className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-white tracking-[0.05em] leading-none font-sans" as="span" />
+            <MeshText text="Me" className="text-4xl md:text-5xl lg:text-[54px] font-extrabold text-primary tracking-[0.05em] leading-none font-sans" color="var(--accent-primary)" as="span" />
           </h2>
           <p className="text-white/60 text-xs md:text-sm lg:text-base font-light leading-relaxed mt-3 max-w-3xl">
             I'm a passionate developer who loves building <span className="text-primary font-medium">intelligent</span>, user-centric digital experiences.
@@ -282,14 +282,14 @@ export default function About({ portraitImage = "/images/about section image.png
           className="grid grid-cols-1 lg:grid-cols-24 gap-8 items-stretch animate-fade-in"
         >
           {/* 1. LEFT COLUMN: VISUAL CARD WRAPPER (Occupies 3 rows) */}
-          <div className="col-span-full lg:col-span-7 lg:col-start-1 lg:row-start-1 lg:row-span-3 flex flex-col relative order-1">
+          <div className="col-span-12 lg:col-span-7 lg:col-start-1 lg:row-start-1 lg:row-span-3 flex flex-col relative order-1">
             {/* Decorative horizontal lines above the image card */}
             <div className="w-full flex flex-col gap-2 mb-6 pointer-events-none opacity-30 select-none">
               <div className="relative w-full h-[1px] bg-gradient-to-r from-primary/40 via-primary/10 to-transparent">
-                <div className="absolute right-1/4 -top-[1.5px] w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(233,177,93,0.8)] animate-pulse" />
+                <div className="absolute right-1/4 -top-[1.5px] w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--accent-glow-raw),0.8)] animate-pulse" />
               </div>
               <div className="relative w-[75%] h-[1px] bg-gradient-to-r from-primary/25 via-primary/5 to-transparent">
-                <div className="absolute right-[10%] -top-[1.5px] w-1 h-1 rounded-full bg-primary/70 shadow-[0_0_6px_rgba(233,177,93,0.6)] animate-pulse" style={{ animationDelay: "1.2s" }} />
+                <div className="absolute right-[10%] -top-[1.5px] w-1 h-1 rounded-full bg-primary/70 shadow-[0_0_6px_rgba(var(--accent-glow-raw),0.6)] animate-pulse" style={{ animationDelay: "1.2s" }} />
               </div>
             </div>
 
@@ -307,11 +307,11 @@ export default function About({ portraitImage = "/images/about section image.png
               transition={transitionConfig}
               tabIndex={0}
               aria-label="Yash Jain portrait presentation card"
-              className={`flex-grow min-h-[550px] lg:min-h-[640px] bg-[#120c08]/20 border border-[#E9B15D]/25 rounded-[30px] backdrop-blur-xl relative overflow-hidden group flex flex-col justify-between shadow-2xl transition-all duration-500 cursor-pointer ${outlineFocusClasses}`}
+              className={`flex-grow min-h-[550px] lg:min-h-[640px] bg-[#120c08]/20 border border-primary/25 rounded-[30px] backdrop-blur-xl relative overflow-hidden group flex flex-col justify-between shadow-2xl transition-all duration-500 cursor-pointer ${outlineFocusClasses}`}
             >
-              {/* Ambient gold spotlight behind image */}
-              <div className="absolute inset-0 bg-gradient-to-b from-[#E9B15D]/[0.03] via-[#2a1a10]/5 to-black/80 z-10 pointer-events-none" />
-              <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full bg-[radial-gradient(circle,rgba(233,177,93,0.1)_0%,transparent_70%)] blur-2xl opacity-50 pointer-events-none z-0" />
+              {/* Ambient theme spotlight behind image */}
+              <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.03] via-[#2a1a10]/5 to-black/80 z-10 pointer-events-none" />
+              <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full bg-[radial-gradient(circle,rgba(var(--accent-glow-raw),0.1)_0%,transparent_70%)] blur-2xl opacity-50 pointer-events-none z-0" />
               
               {/* Subtle glass shimmer hover swipe */}
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out z-30 pointer-events-none" />
@@ -327,7 +327,7 @@ export default function About({ portraitImage = "/images/about section image.png
 
               {/* Bottom floating badge */}
               <div className="absolute bottom-8 left-8 z-30">
-                <span className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#120c08]/50 border border-[#E9B15D]/20 text-[10px] font-bold uppercase tracking-[0.2em] text-primary shadow-lg backdrop-blur-md transition-all duration-300 group-hover:border-[#E9B15D]/40 whitespace-nowrap">
+                <span className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#120c08]/50 border border-primary/20 text-[10px] font-bold uppercase tracking-[0.2em] text-primary shadow-lg backdrop-blur-md transition-all duration-300 group-hover:border-primary/40 whitespace-nowrap">
                   Explorer • Builder • Learner
                 </span>
               </div>
@@ -341,7 +341,7 @@ export default function About({ portraitImage = "/images/about section image.png
             transition={transitionConfig}
             tabIndex={0}
             aria-label="About Yash Jain summary details"
-            className={`col-span-full lg:col-span-10 lg:col-start-8 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[260px] order-2 ${outlineFocusClasses}`}
+            className={`col-span-12 lg:col-span-10 lg:col-start-8 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[260px] order-2 ${outlineFocusClasses}`}
           >
             <div className="flex items-center justify-between mb-8">
               <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-white/40">ABOUT ME</span>
@@ -376,7 +376,7 @@ export default function About({ portraitImage = "/images/about section image.png
             transition={transitionConfig}
             tabIndex={0}
             aria-label="Education, Interests, Goals, and Mission details"
-            className={`col-span-full lg:col-span-7 lg:col-start-18 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[385px] order-3 ${outlineFocusClasses}`}
+            className={`col-span-12 lg:col-span-7 lg:col-start-18 lg:row-start-1 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[385px] order-3 ${outlineFocusClasses}`}
           >
             {/* Tab Navigation header */}
             <div className="flex items-center justify-between mb-6 gap-2">
@@ -534,7 +534,7 @@ export default function About({ portraitImage = "/images/about section image.png
             transition={transitionConfig}
             tabIndex={0}
             aria-label="Experience floating technology chips"
-            className={`col-span-full lg:col-span-9 lg:col-start-8 lg:row-start-2 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[150px] order-4 ${outlineFocusClasses}`}
+            className={`col-span-12 lg:col-span-9 lg:col-start-8 lg:row-start-2 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[150px] order-4 ${outlineFocusClasses}`}
           >
             <div className="flex items-center justify-between mb-6">
               <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-white/40">EXPERIENCE</span>
@@ -543,19 +543,21 @@ export default function About({ portraitImage = "/images/about section image.png
             <div>
               <div className="flex flex-wrap gap-2.5">
                 {["Freelance", "Full Stack", "AI Projects", "UI Engineering", "Open Source"].map((chip, idx) => (
-                  <span 
+                  <motion.span 
                     key={`${chip}-${idx}`} 
-                    className="inline-flex items-center h-8 px-4 rounded-full bg-white/[0.03] border border-white/10 text-[11px] font-bold uppercase tracking-wider text-white/80 select-none cursor-default transition-all duration-300 hover:-translate-y-0.5 hover:text-[var(--accent-primary)] hover:border-[color-mix(in_srgb,var(--accent-primary)_40%,transparent)]"
+                    whileHover={{ y: -3, borderColor: "rgba(var(--accent-glow-raw), 0.5)", color: "var(--accent-primary)" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                    className="inline-flex items-center h-8 px-4 rounded-full bg-white/[0.03] border border-white/10 text-[11px] font-bold uppercase tracking-wider text-white/80 select-none cursor-default transition-colors duration-300"
                   >
                     {chip}
-                  </span>
+                  </motion.span>
                 ))}
               </div>
             </div>
           </motion.div>
 
           {/* 5. RIGHT MIDDLE COLUMN: LOCATION & LANGUAGES SIDE-BY-SIDE (Column 3 - Row 2 - Expanded Width) */}
-          <div className="col-span-full lg:col-span-8 lg:col-start-17 lg:row-start-2 grid grid-cols-1 sm:grid-cols-2 gap-8 order-5">
+          <div className="col-span-12 lg:col-span-8 lg:col-start-17 lg:row-start-2 grid grid-cols-2 gap-8 order-5">
             {/* LOCATION CARD (With glowing Earth wireframe hologram) */}
             <motion.div
               variants={cardVariants}
@@ -707,12 +709,12 @@ export default function About({ portraitImage = "/images/about section image.png
             transition={transitionConfig}
             tabIndex={0}
             aria-label="Philosophy quote card"
-            className={`col-span-full lg:col-span-17 lg:col-start-8 lg:row-start-3 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[130px] relative overflow-hidden order-6 ${outlineFocusClasses}`}
+            className={`col-span-12 lg:col-span-17 lg:col-start-8 lg:row-start-3 p-8 glass-card rounded-[30px] flex flex-col justify-between min-h-[130px] relative overflow-hidden order-6 ${outlineFocusClasses}`}
           >
 
             
             {/* Background Artwork Masked */}
-            <div className="absolute right-0 bottom-0 top-0 w-[40%] opacity-25 sm:opacity-70 pointer-events-none select-none z-0">
+            <div className="absolute right-0 bottom-0 top-0 w-[40%] opacity-70 pointer-events-none select-none z-0">
               <div 
                 className="w-full h-full bg-no-repeat bg-bottom bg-contain"
                 style={{ 
@@ -728,7 +730,7 @@ export default function About({ portraitImage = "/images/about section image.png
               <Quote className="w-4 h-4 text-primary/40" />
             </div>
             
-            <div className="relative pt-2 z-10 max-w-full sm:max-w-[70%] md:max-w-[55%] flex flex-col gap-4">
+            <div className="relative pt-2 z-10 max-w-[55%] flex flex-col gap-4">
               {/* Thin decorative gold line */}
               <div className="w-12 h-[2px] bg-gradient-to-r from-primary to-transparent" />
               <p className="text-white/85 text-sm md:text-base leading-relaxed font-light italic pl-4 border-l border-primary/20">
